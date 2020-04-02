@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Flag
+  m_Shader: {fileID: 4800000, guid: 0765daea7c637bd4a9d1c20fd4490d88, type: 3}
+  m_ShaderKeywords: _EMISSION _NODE_456_ON
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: ac81606a79c56446abf07ad51c6b9979, type: 3}
+        m_Scale: {x: 0.2, y: 0.2}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlagDesignB:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlagDesignG:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 1.47, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2E3B31A5_Texture:
+        m_Texture: {fileID: 2800000, guid: cc88df1c940c75347a1ea4d01374db99, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2E3B31A5_Texture_1:
+        m_Texture: {fileID: 2800000, guid: cc88df1c940c75347a1ea4d01374db99, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_71B106D9_Texture:
+        m_Texture: {fileID: 2800000, guid: cc88df1c940c75347a1ea4d01374db99, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_7E2D6358_Texture:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_7E2D6358_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_A8DC9A58_Texture:
+        m_Texture: {fileID: 2800000, guid: e3cdbad5cfa9f2648b156803da2b8be2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureSample0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _node_5044:
+        m_Texture: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_14DA6CC9: 1
+    - Vector1_1A7E6D4D: 1
+    - Vector1_1B218BCB: 1
+    - Vector1_52568AA7: 5
+    - Vector1_56B7FF97: 5
+    - Vector1_62C22091: 1
+    - _Border: 0.715
+    - _BumpScale: 1
+    - _Constrainsize: 0.752
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _Gloss: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _Multiply: 1
+    - _NormalStrength: 0.558
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _Roughness: 0
+    - _Selector: 2
+    - _SineAmplitude: 0.21
+    - _SineFrequency: 1.75
+    - _SineSpeed: 12.12
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _Strength: 0.05
+    - _UVSec: 0
+    - _VerticalStrength: 0.05
+    - _WindSpeed: -1.76
+    - _XStrength: 0.8
+    - _YStrength: 0.5
+    - _ZStrength: 10
+    - _ZWrite: 1
+    - _a: 1
+    - _node_4497: 1
+    - _node_456: 1
+    - _node_5458: 3.42
+    - _node_6862: 0
+    - _node_8639: 0
+    - _strength2: 2.09
+    m_Colors:
+    - Color_1D5074DC: {r: 0, g: 0.4085999, b: 1, a: 0}
+    - Color_3E3E896: {r: 0, g: 0.4085999, b: 1, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color1: {r: 0.16933392, g: 0.45692036, b: 0.85294116, a: 1}
+    - _Color2: {r: 0.4882137, g: 0.6818637, b: 0.9485294, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FlagColor: {r: 0, g: 0.43612027, b: 1, a: 0}
