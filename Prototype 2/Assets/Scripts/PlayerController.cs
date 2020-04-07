@@ -9,6 +9,9 @@ public class PlayerController : MonoBehaviour
     public float speed;
 
     public float xRange;
+
+    public GameObject projectilePrefab;
+
     void Start()
     {
         
@@ -21,9 +24,17 @@ public class PlayerController : MonoBehaviour
         if (transform.position.x < -xRange)
         {
             transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
-        } else if (transform.position.x > xRange)
+        } 
+        else if (transform.position.x > xRange)
         {
             transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
+        }
+
+        if (Input.GetButtonDown("Fire"))
+        {
+            // Instantiate different food types to meet animals' needs
+
+            Instantiate(projectilePrefab, transform.position, projectilePrefab.transform.rotation);
         }
     }
 }
