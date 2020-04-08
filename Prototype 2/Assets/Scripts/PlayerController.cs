@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
 
     public float xRange;
 
-    public GameObject projectilePrefab;
+    public GameObject[] projectilePrefabs;  // Size 3
 
     void Start()
     {
@@ -30,11 +30,17 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
         }
 
-        if (Input.GetButtonDown("Fire"))
+        if (Input.GetButtonDown("Fire1"))
         {
-            // Instantiate different food types to meet animals' needs
-
-            Instantiate(projectilePrefab, transform.position, projectilePrefab.transform.rotation);
+            Instantiate(projectilePrefabs[0], transform.position, projectilePrefabs[0].transform.rotation);
+        } 
+        else if (Input.GetButtonDown("Fire2"))
+        {
+            Instantiate(projectilePrefabs[1], transform.position, projectilePrefabs[1].transform.rotation);
+        }
+        else if (Input.GetButtonDown("Fire3"))
+        {
+            Instantiate(projectilePrefabs[2], transform.position, projectilePrefabs[2].transform.rotation);
         }
     }
 }
