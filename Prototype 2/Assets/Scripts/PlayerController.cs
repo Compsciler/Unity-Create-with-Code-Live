@@ -6,11 +6,14 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private float horizontalInput;
-    public float speed;
+    public float translateSpeed;
+    public float rotateSpeed;
 
     public float xRange;
 
     public GameObject[] projectilePrefabs;  // Size 3
+
+    public bool isTranslate;
 
     void Start()
     {
@@ -19,15 +22,21 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * speed * horizontalInput * Time.deltaTime);
-
-        if (transform.position.x < -xRange)
+        if (isTranslate)
         {
-            transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
-        } 
-        else if (transform.position.x > xRange)
+            transform.Translate(Vector3.right * translateSpeed * horizontalInput * Time.deltaTime);
+            if (transform.position.x < -xRange)
+            {
+                transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
+            }
+            else if (transform.position.x > xRange)
+            {
+                transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
+            }
+        }
+        else
         {
-            transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
+            transform.Rotate(0, rotateSpeed * horizontalInput * Time.deltaTime, 0);
         }
 
         if (Input.GetButtonDown("Fire1"))

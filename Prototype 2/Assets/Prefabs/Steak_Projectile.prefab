@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 6079861297409180859}
   - component: {fileID: 114786048483280492}
   - component: {fileID: 114725616740740212}
+  - component: {fileID: 65587076612082962}
+  - component: {fileID: 54065391429587558}
   m_Layer: 0
   m_Name: Steak_Projectile
   m_TagString: Untagged
@@ -91,7 +93,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5259b459d473c00448450ba98ed8f457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 40
+  bottomSpeed: 40
+  topSpeed: 40
 --- !u!114 &114725616740740212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,3 +109,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zTopBound: 30
   zBottomBound: -10
+--- !u!65 &65587076612082962
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6079861297407225591}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.46739918, y: 0.08559368, z: 0.6615112}
+  m_Center: {x: 0, y: 0.04279684, z: 0}
+--- !u!54 &54065391429587558
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6079861297407225591}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
