@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
 
     public GameObject[] projectilePrefabs;  // Size 3
 
+    public bool isAlternatingInput;
     public bool isTranslate;
 
     void Start()
@@ -22,9 +23,13 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
-        if (isTranslate)
+        if (isAlternatingInput)
         {
-            transform.Translate(Vector3.right * translateSpeed * horizontalInput * Time.deltaTime);
+            isTranslate = (DetectCollisions.isTranslateSwitchOn) ? true : false;
+        }
+        if (isTranslate)  // Alternate between turning and sliding player after hit if isAlternatingInput is true
+        {
+            transform.Translate(Vector3.right * translateSpeed * horizontalInput * Time.deltaTime, Space.World);
             if (transform.position.x < -xRange)
             {
                 transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
@@ -39,17 +44,25 @@ public class PlayerController : MonoBehaviour
             transform.Rotate(0, rotateSpeed * horizontalInput * Time.deltaTime, 0);
         }
 
+        Quaternion projectileDirection;
+        if (isTranslate)
+        {
+            projectileDirection = Quaternion.identity;
+        } else
+        {
+            projectileDirection = transform.rotation;
+        }
         if (Input.GetButtonDown("Fire1"))
         {
-            Instantiate(projectilePrefabs[0], transform.position, projectilePrefabs[0].transform.rotation);
+            Instantiate(projectilePrefabs[0], transform.position, projectileDirection);
         } 
         else if (Input.GetButtonDown("Fire2"))
         {
-            Instantiate(projectilePrefabs[1], transform.position, projectilePrefabs[1].transform.rotation);
+            Instantiate(projectilePrefabs[1], transform.position, projectileDirection);
         }
         else if (Input.GetButtonDown("Fire3"))
         {
-            Instantiate(projectilePrefabs[2], transform.position, projectilePrefabs[2].transform.rotation);
+            Instantiate(projectilePrefabs[2], transform.position, projectileDirection);
         }
     }
 }
