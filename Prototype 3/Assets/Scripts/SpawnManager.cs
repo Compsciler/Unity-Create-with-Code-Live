@@ -7,7 +7,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject obstaclePrefab;
     private Vector3 spawnPos = new Vector3(25, 0, 0);
 
-    private float startDelay = 3f;
+    private float startDelay = 4f;
     private float repeatRate = 2.5f;
 
     private PlayerController playerController;
@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnObstacle()
     {
-        if (!playerController.isGameOver)
+        if (playerController.isMainPhase && !playerController.isGameOver)
         {
             Instantiate(obstaclePrefab, spawnPos, obstaclePrefab.transform.rotation);
         }
