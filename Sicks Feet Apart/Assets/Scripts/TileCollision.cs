@@ -18,6 +18,6 @@ public class TileCollision : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject);
+        Debug.Log(collision.gameObject.name);
     }
 }
