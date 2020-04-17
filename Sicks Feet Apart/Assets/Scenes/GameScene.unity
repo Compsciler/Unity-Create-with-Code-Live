@@ -537,7 +537,7 @@ MonoBehaviour:
   xTileRange: 40
   zTileRange: 20
   tileSize: 10
-  wallTotal: 120
+  wallTotal: 40
   wallPrefab: {fileID: 4195490445557766273, guid: 8bd0472a9907bb34c81160293a4a3e2e,
     type: 3}
 --- !u!1 &170076733

@@ -8,7 +8,8 @@ public class GenerateWalls : MonoBehaviour
     public float zTileRange = 20f;
     public float tileSize = 10f;
 
-    public int wallTotal;
+    [Range(0, 100)]
+    public int wallTotal;  // 40 + 64 - 4 = 100 is maximum wall total
     public GameObject wallPrefab;
 
     // Start is called before the first frame update
@@ -38,7 +39,7 @@ public class GenerateWalls : MonoBehaviour
 
             foreach (GameObject wall2 in walls)
             {
-                if (wall2.transform.position.Equals(wall.transform.position))
+                if (wall2.transform.position == wall.transform.position)  // wall2.transform.position.Equals(wall.transform.position
                 {
                     goto REPEAT;  // Essentially continues outer loop if position matches
                 }
