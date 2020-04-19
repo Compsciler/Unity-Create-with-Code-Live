@@ -11,6 +11,7 @@ public class GenerateWalls : MonoBehaviour
     [Range(0, 100)]
     public int wallTotal;  // 40 + 64 - 4 = 100 is maximum wall total
     public GameObject wallPrefab;
+    public Transform wallsGO_Transform;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +32,7 @@ public class GenerateWalls : MonoBehaviour
         List<GameObject> walls = new List<GameObject>();
         for (int i = 0; i < wallTotal; i++){
             Vector3 tilePos = tilePosList[Random.Range(0, tilePosList.Count)];
-            GameObject wall = Instantiate(wallPrefab, tilePos, Quaternion.identity, transform);
+            GameObject wall = Instantiate(wallPrefab, tilePos, Quaternion.identity, wallsGO_Transform);
 
             // Rotate wall to one of four orientations
             wall.transform.Translate(Vector3.forward * tileSize / 2);
