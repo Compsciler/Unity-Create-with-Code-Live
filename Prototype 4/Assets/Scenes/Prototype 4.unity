@@ -436,6 +436,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 6835193426742055021, guid: 3017b476e378e5d44adcd0064ca13eca,
     type: 3}
+  powerUpPrefab: {fileID: 3511136199859759590, guid: b6c5a9128ecd9954c8b941a0942e1044,
+    type: 3}
 --- !u!1 &1211016355
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,7 +707,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dcd699bf8516dc4abae4de14fcf4e35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 50
+  keyboardRotationSpeed: 50
+  mouseRotationSpeed: 2500
 --- !u!4 &1520796306
 Transform:
   m_ObjectHideFlags: 0
@@ -791,7 +794,7 @@ PrefabInstance:
     - target: {fileID: 6835193426742055021, guid: 3017b476e378e5d44adcd0064ca13eca,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3017b476e378e5d44adcd0064ca13eca, type: 3}
@@ -871,11 +874,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3305015820394750195, guid: b6c5a9128ecd9954c8b941a0942e1044,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3507975526838660616, guid: b6c5a9128ecd9954c8b941a0942e1044,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -935,6 +933,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PowerUp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3511136199859759590, guid: b6c5a9128ecd9954c8b941a0942e1044,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6c5a9128ecd9954c8b941a0942e1044, type: 3}

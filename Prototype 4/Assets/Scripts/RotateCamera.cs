@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class RotateCamera : MonoBehaviour
 {
-    public float rotationSpeed;
+    public float keyboardRotationSpeed;
+    public float mouseRotationSpeed;
     private float horizontalInput;
 
     // Start is called before the first frame update
@@ -16,7 +17,15 @@ public class RotateCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        transform.Rotate(Vector3.up, horizontalInput * rotationSpeed * Time.deltaTime);
+        if (PlayerController.isKeyboardControl)
+        {
+            horizontalInput = Input.GetAxis("Horizontal");
+            transform.Rotate(Vector3.up, horizontalInput * keyboardRotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            horizontalInput = Input.GetAxis("Mouse ScrollWheel");
+            transform.Rotate(Vector3.up, horizontalInput * mouseRotationSpeed * Time.deltaTime);
+        }
     }
 }

@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public float powerUpStrength = 8f;
     public float powerUpTime = 7f;
 
+    public static bool isKeyboardControl = false;
+
     public GameObject powerUpIndicator;
     public Vector3 powerUpIndicatorOffset;
 
@@ -25,14 +27,22 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        forwardInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
+        if (isKeyboardControl)
+        {
+            forwardInput = Input.GetAxis("Vertical");
+            playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
+        }
+        else
+        {
+            forwardInput = Input.GetAxis("VerticalMouse");
+            playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
+        }
         powerUpIndicator.transform.position = transform.position - powerUpIndicatorOffset;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PowerUp"))
+        if (other.CompareTag("PowerUp"))  // TODO: Enemies can collect power-ups too
         {
             hasPowerUp = true;
             Destroy(other.gameObject);
