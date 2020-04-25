@@ -20,7 +20,7 @@ public class RotateTile : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log(gameObject);
+        // Debug.Log(gameObject);
         foreach (GameObject wall in adjacentWalls)
         {
             wall.transform.RotateAround(transform.position, Vector3.up, 90f);
