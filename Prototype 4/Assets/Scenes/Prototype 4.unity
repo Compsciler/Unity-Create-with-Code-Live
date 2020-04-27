@@ -279,9 +279,9 @@ GameObject:
   - component: {fileID: 837249183}
   - component: {fileID: 837249182}
   - component: {fileID: 837249187}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -391,6 +391,11 @@ MonoBehaviour:
   powerUpTime: 7
   powerUpIndicator: {fileID: 118363089}
   powerUpIndicatorOffset: {x: 0, y: 0.5, z: 0}
+  projectilePrefab: {fileID: 983953119701019923, guid: 8ee8d7cc94293164584d8b035d67fa1a,
+    type: 3}
+  explosionForce: 2000
+  explosionRadius: 2
+  upwardsModifier: 3
 --- !u!1 &1003119539
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,7 +942,7 @@ PrefabInstance:
     - target: {fileID: 3511136199859759590, guid: b6c5a9128ecd9954c8b941a0942e1044,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6c5a9128ecd9954c8b941a0942e1044, type: 3}
