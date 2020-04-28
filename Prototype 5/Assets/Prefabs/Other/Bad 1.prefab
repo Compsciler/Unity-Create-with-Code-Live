@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3827019007421766988}
   - component: {fileID: 822289228974184672}
   m_Layer: 0
-  m_Name: Synty_Cube_01
+  m_Name: Bad 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,3 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51980493f1dd945b5b3d26014fe84d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minSpeed: 12
+  maxSpeed: 16
+  xRange: 4
+  ySpawnPos: -6
+  maxTorque: 10
+  pointValue: -10
+  explosionParticle: {fileID: 4758139293545943008, guid: c7ad2532a6eeb40b59033c75e71fa054,
+    type: 3}

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3403362573608636970}
   - component: {fileID: 4654810116196491325}
   m_Layer: 0
-  m_Name: Barrel_01P
+  m_Name: Good 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,3 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51980493f1dd945b5b3d26014fe84d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minSpeed: 12
+  maxSpeed: 16
+  xRange: 4
+  ySpawnPos: -6
+  maxTorque: 10
+  pointValue: 5
+  explosionParticle: {fileID: 3199346384015752365, guid: 307229a5540374aae98859caad2128a3,
+    type: 3}

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8432206202019365136}
   - component: {fileID: 7074216968541473790}
   m_Layer: 0
-  m_Name: Crate_Question_01
+  m_Name: Good 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,3 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51980493f1dd945b5b3d26014fe84d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minSpeed: 12
+  maxSpeed: 16
+  xRange: 4
+  ySpawnPos: -6
+  maxTorque: 10
+  pointValue: 5
+  explosionParticle: {fileID: 2088871590894813759, guid: 745208c9d6e104225bd99e1ab894e3bb,
+    type: 3}
