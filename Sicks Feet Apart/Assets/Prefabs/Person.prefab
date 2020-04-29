@@ -128,3 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
+  minDistanceRelocation: 0.1
+  xPosRange: 45
+  zPosRange: 25
+  yPos: 1.67

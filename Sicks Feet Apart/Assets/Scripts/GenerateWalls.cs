@@ -53,9 +53,6 @@ public class GenerateWalls : MonoBehaviour
             Destroy(wall);
             i--;
         }
-
-        Debug.Log(new Vector3(0, 0, 0) == new Vector3(0, 0, 0));
-        Debug.Log(new Vector3(0, 0, 0) == new Vector3(0, 1, 0));
     }
 
     // Update is called once per frame
