@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class Target : MonoBehaviour
 {
     public float minSpeed = 12f;
@@ -52,12 +51,19 @@ public class Target : MonoBehaviour
 
     void OnMouseDown()
     {
-        Destroy(gameObject);
-        gameManager.UpdateScore(pointValue);
-        Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+        if (gameManager.isGameActive)
+        {
+            Destroy(gameObject);
+            gameManager.UpdateScore(pointValue);
+            Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+        }
     }
     void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if (!gameObject.CompareTag("Bad"))
+        {
+            gameManager.GameOver();
+        }
     }
 }
