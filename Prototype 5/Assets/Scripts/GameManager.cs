@@ -20,11 +20,16 @@ public class GameManager : MonoBehaviour
 
     public Button restartButton;
 
+    private static int highScore = 0;
+    public TextMeshProUGUI highScoreText;
+
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine("SpawnTarget");
-        UpdateScore(0);
+        // UpdateScore(0);
+        scoreText.text = "Score: " + score;
+        highScoreText.text = "High Score: " + highScore;
     }
 
     // Update is called once per frame
@@ -47,22 +52,45 @@ public class GameManager : MonoBehaviour
     {
         // score += scoreToAdd;
         // scoreText.text = "Score: " + score;
-        StartCoroutine(ScoreAnimation(scoreToAdd));
+        StartCoroutine(ScoreAnimation(scoreToAdd, 0));
+        if (score > highScore)
+        {
+            StartCoroutine(ScoreAnimation(score - highScore, 1));
+        }
     }
 
-    IEnumerator ScoreAnimation(int scoreToAdd)
+    IEnumerator ScoreAnimation(int scoreToAdd, int scoreType)  // 0: Score; 1: High Score
     {
+        int tempScore = score;
+        if (scoreType == 0)
+        {
+            score += scoreToAdd;
+        }
         for (int i = 1; i <= Mathf.Abs(scoreToAdd); i++)
         {
             if (scoreToAdd > 0)
             {
-                score++;
+                if (scoreType == 0)
+                {
+                    tempScore++;
+                }
+                else
+                {
+                    highScore++;
+                }
             }
             else
             {
-                score--;
+                tempScore--;
             }
-            scoreText.text = "Score: " + score;
+            if (scoreType == 0)
+            {
+                scoreText.text = "Score: " + tempScore;
+            }
+            else
+            {
+                highScoreText.text = "High Score: " + highScore;
+            }
             yield return new WaitForSeconds(scoreAnimationLength / Mathf.Abs(scoreToAdd));
         }
     }
