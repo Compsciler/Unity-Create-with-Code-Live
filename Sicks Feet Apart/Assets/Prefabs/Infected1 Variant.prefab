@@ -72,10 +72,15 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 990dc65af02d1a74fb9f4b1074b10210, type: 2}
+    - target: {fileID: 3932065289063069565, guid: 7269599a1d39db74ca6f9aa1b0b0e0b5,
+        type: 3}
+      propertyPath: m_AgentTypeID
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3932065289063069566, guid: 7269599a1d39db74ca6f9aa1b0b0e0b5,
         type: 3}
       propertyPath: m_Name
-      value: Infected1
+      value: Infected1 Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7269599a1d39db74ca6f9aa1b0b0e0b5, type: 3}
