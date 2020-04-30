@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minSpeed: 12
-  maxSpeed: 16
+  maxSpeed: 18
   xRange: 4
   ySpawnPos: -6
   maxTorque: 10
