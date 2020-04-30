@@ -23,19 +23,9 @@ public class GameManager : MonoBehaviour
     private static int highScore = 0;
     public TextMeshProUGUI highScoreText;
 
-    public GameObject titleScreen;
-
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    public void StartGame(float difficultyModifier)
-    {
-        titleScreen.gameObject.SetActive(false);
-
-        spawnRate /= difficultyModifier;
         StartCoroutine("SpawnTarget");
         // UpdateScore(0);
         scoreText.text = "Score: " + score;
