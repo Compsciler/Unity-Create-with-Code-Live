@@ -3550,6 +3550,11 @@ PrefabInstance:
       propertyPath: m_NavMeshLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2791842802259433841, guid: 8e12e5e8c3b496542944eb84bcefa302,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2791842802259433844, guid: 8e12e5e8c3b496542944eb84bcefa302,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3605,6 +3610,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2791842802259433846, guid: 8e12e5e8c3b496542944eb84bcefa302,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4e2a68a286929234f98f619a4f4a5bcf, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e12e5e8c3b496542944eb84bcefa302, type: 3}
 --- !u!4 &1662056654 stripped
@@ -5415,7 +5425,7 @@ PrefabInstance:
     - target: {fileID: 3932065289063069565, guid: 7269599a1d39db74ca6f9aa1b0b0e0b5,
         type: 3}
       propertyPath: m_AgentTypeID
-      value: -1372625422
+      value: -334000983
       objectReference: {fileID: 0}
     - target: {fileID: 3932065289063069566, guid: 7269599a1d39db74ca6f9aa1b0b0e0b5,
         type: 3}

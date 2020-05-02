@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿// using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 // using System.Numerics;
@@ -16,11 +17,18 @@ public class PersonController : MonoBehaviour
     public float zPosRange = 25f;
     public float yPos = 1.67f;
 
+    private float tileSize = 10f;
+
+    private int healthyAgentID = -1372625422;
+    private int infectedAgentID = -334000983;
+    // private float hospitalEnterPosSideMax = 4.85f;
+
     // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
+        Debug.Log(agent.agentTypeID);
     }
 
     // Update is called once per frame
@@ -78,6 +86,14 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
+        if (isOnHospitalTile())
+        {
+            Vector3 exitPos = transform.position;
+            heal();
+            exitPos.x = -exitPos.x;
+            exitPos.z = -exitPos.z;
+            agent.Warp(exitPos);
+        }
     }
     bool CalculateNewPath(Vector3 targetPos)
     {
@@ -88,5 +104,25 @@ public class PersonController : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    bool isOnHospitalTile()
+    {
+        float halfTileSize = tileSize / 2;
+        bool isInXRange = transform.position.x > -halfTileSize && transform.position.x < halfTileSize;
+        bool isInZRange = transform.position.z > -halfTileSize && transform.position.z < halfTileSize;
+        if (isInXRange && isInZRange)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    void heal()
+    {
+        if (agent.agentTypeID == infectedAgentID)
+        {
+            agent.agentTypeID = healthyAgentID;
+        }
     }
 }
