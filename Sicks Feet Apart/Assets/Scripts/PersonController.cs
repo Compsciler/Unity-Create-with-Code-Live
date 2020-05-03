@@ -5,6 +5,7 @@ using System.Drawing;
 // using System.Numerics;
 using UnityEngine;
 using UnityEngine.AI;
+using MEC;
 
 public class PersonController : MonoBehaviour
 {
@@ -18,9 +19,11 @@ public class PersonController : MonoBehaviour
     public float yPos = 1.67f;
 
     private float tileSize = 10f;
+    private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
 
     private int healthyAgentID = -1372625422;
     private int infectedAgentID = -334000983;
+    private int recentlyHealedAgentID = 1479372276;
     // private float hospitalEnterPosSideMax = 4.85f;
 
     // Start is called before the first frame update
@@ -90,9 +93,13 @@ public class PersonController : MonoBehaviour
         {
             Vector3 exitPos = transform.position;
             heal();
+            Timing.RunCoroutine(CheckIfOffHospitalTile());
+            // Debug.Log("AFTER COROUTINE");
+            /*
             exitPos.x = -exitPos.x;
             exitPos.z = -exitPos.z;
             agent.Warp(exitPos);
+            */
         }
     }
     bool CalculateNewPath(Vector3 targetPos)
@@ -122,7 +129,18 @@ public class PersonController : MonoBehaviour
     {
         if (agent.agentTypeID == infectedAgentID)
         {
-            agent.agentTypeID = healthyAgentID;
+            agent.agentTypeID = recentlyHealedAgentID;
+            agent.SetDestination(hospitalTilePos);
         }
+    }
+
+    IEnumerator<float> CheckIfOffHospitalTile()
+    {
+        while (isOnHospitalTile())
+        {
+            Debug.Log(transform.position);
+            yield return Timing.WaitForOneFrame;
+        }
+        agent.agentTypeID = healthyAgentID;
     }
 }
