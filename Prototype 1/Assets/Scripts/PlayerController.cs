@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 15;
-    public float turnSpeed = 40;
+    [Header("Vehicle Stats")]
+    [SerializeField] float speed = 15;
+    [SerializeField] float turnSpeed = 40;
 
     private float forwardInput;
     private float horizontalInput;
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         // Axis setup
         forwardInput = Input.GetAxis("Vertical");

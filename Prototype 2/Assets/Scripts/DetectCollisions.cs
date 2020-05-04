@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class DetectCollisions : MonoBehaviour
 {
-    internal static bool isTranslateSwitchOn = true;
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        Destroy(gameObject);
+        // Instead of destroying the projectile when it collides with an animal
+        //Destroy(gameObject); 
+
+        // Just deactivate the food and destroy the animal
+        gameObject.SetActive(false);
         Destroy(other.gameObject);
-        isTranslateSwitchOn = !isTranslateSwitchOn;
+
     }
+
 }
