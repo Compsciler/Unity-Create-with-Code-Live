@@ -26,18 +26,32 @@ public class PersonController : MonoBehaviour
     private int recentlyHealedAgentID = 1479372276;
     // private float hospitalEnterPosSideMax = 4.85f;
 
+    public bool startsInfected;
+    private bool isInfected;
+    private bool isRecentlyInfected;
+
+    public float infectionDeathTime;
+
+    [Header("Materials")]
+    public Material healthyMaterial;
+    public Material[] infectedMaterials;
+    public Material deadMaterial;
+
     // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
         Debug.Log(agent.agentTypeID);
+
+        isInfected = startsInfected;
+        isRecentlyInfected = startsInfected;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (agent.remainingDistance <= minDistanceRelocation)  // Returns 0 when reached destination or when blocked, as close as it can get
+        if (agent.remainingDistance <= minDistanceRelocation && !isInfected)  // Returns 0 when reached destination or when blocked, as close as it can get
         {
             float xPos = Random.Range(-xPosRange, xPosRange);
             float zPos = Random.Range(-zPosRange, zPosRange);
@@ -101,6 +115,11 @@ public class PersonController : MonoBehaviour
             agent.Warp(exitPos);
             */
         }
+        if (isRecentlyInfected)
+        {
+            Timing.RunCoroutine(InfectionProcess());
+            isRecentlyInfected = false;
+        }
     }
     bool CalculateNewPath(Vector3 targetPos)
     {
@@ -142,5 +161,18 @@ public class PersonController : MonoBehaviour
             yield return Timing.WaitForOneFrame;
         }
         agent.agentTypeID = healthyAgentID;
+    }
+
+    IEnumerator<float> InfectionProcess()
+    {
+        agent.SetDestination(hospitalTilePos);
+        float individualStageTime = infectionDeathTime / infectedMaterials.Length;
+        for (int i = 0; i < infectedMaterials.Length; i++)
+        {
+            gameObject.GetComponent<Renderer>().material = infectedMaterials[i];
+            yield return Timing.WaitForSeconds(individualStageTime);
+        }
+        gameObject.GetComponent<Renderer>().material = deadMaterial;
+        agent.isStopped = true;
     }
 }
