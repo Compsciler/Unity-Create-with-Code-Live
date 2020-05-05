@@ -6,6 +6,7 @@ using System.Drawing;
 using UnityEngine;
 using UnityEngine.AI;
 using MEC;
+using System.Threading;
 
 public class PersonController : MonoBehaviour
 {
@@ -30,12 +31,15 @@ public class PersonController : MonoBehaviour
     private bool isInfected;
     private bool isRecentlyInfected;
 
-    public float infectionDeathTime;
+    public float infectionDeathTime = 40f;
+    public float healTime;
 
     [Header("Materials")]
     public Material healthyMaterial;
     public Material[] infectedMaterials;
     public Material deadMaterial;
+
+    // private CoroutineHandle handle;
 
     // Start is called before the first frame update
     void Start()
@@ -108,6 +112,8 @@ public class PersonController : MonoBehaviour
             Vector3 exitPos = transform.position;
             heal();
             Timing.RunCoroutine(CheckIfOffHospitalTile());
+            isRecentlyInfected = false;  // Just in case
+            Timing.RunCoroutine(HealingProcess());
             // Debug.Log("AFTER COROUTINE");
             /*
             exitPos.x = -exitPos.x;
@@ -115,10 +121,14 @@ public class PersonController : MonoBehaviour
             agent.Warp(exitPos);
             */
         }
-        if (isRecentlyInfected)
+        if (isInfected)
         {
-            Timing.RunCoroutine(InfectionProcess());
-            isRecentlyInfected = false;
+            if (isRecentlyInfected)
+            {
+                Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
+                isRecentlyInfected = false;
+            }
+            agent.SetDestination(hospitalTilePos);
         }
     }
     bool CalculateNewPath(Vector3 targetPos)
@@ -150,6 +160,8 @@ public class PersonController : MonoBehaviour
         {
             agent.agentTypeID = recentlyHealedAgentID;
             agent.SetDestination(hospitalTilePos);
+            Timing.KillCoroutines("InfectionProcess");
+            gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
     }
 
@@ -165,14 +177,21 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> InfectionProcess()
     {
-        agent.SetDestination(hospitalTilePos);
         float individualStageTime = infectionDeathTime / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
         {
             gameObject.GetComponent<Renderer>().material = infectedMaterials[i];
             yield return Timing.WaitForSeconds(individualStageTime);
         }
+        // Timing.StopCoroutine(SetDestinationAsHospitalContinuously());
         gameObject.GetComponent<Renderer>().material = deadMaterial;
         agent.isStopped = true;
+        GameManager.instance.GameOver();
+    }
+
+    IEnumerator<float> HealingProcess()
+    {
+        yield return Timing.WaitForSeconds(healTime);
+        isInfected = false;
     }
 }
