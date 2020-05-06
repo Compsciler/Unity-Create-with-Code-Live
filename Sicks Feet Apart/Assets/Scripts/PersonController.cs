@@ -21,6 +21,7 @@ public class PersonController : MonoBehaviour
 
     private float tileSize = 10f;
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
+    private float navMeshSurfaceAgentRadius = 1f;
 
     private int healthyAgentID = -1372625422;
     private int infectedAgentID = -334000983;
@@ -31,7 +32,7 @@ public class PersonController : MonoBehaviour
     private bool isInfected;
     private bool isRecentlyInfected;
 
-    public float infectionDeathTime = 40f;
+    public float infectionDeathDuration = 40f;
     public float healTime;
 
     [Header("Materials")]
@@ -107,7 +108,7 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile())
+        if (isOnHospitalTile(false))
         {
             Vector3 exitPos = transform.position;
             heal();
@@ -142,9 +143,13 @@ public class PersonController : MonoBehaviour
         return true;
     }
 
-    bool isOnHospitalTile()
+    bool isOnHospitalTile(bool isAddingTileOffset)
     {
         float halfTileSize = tileSize / 2;
+        if (isAddingTileOffset)
+        {
+            halfTileSize += navMeshSurfaceAgentRadius;
+        }
         bool isInXRange = transform.position.x > -halfTileSize && transform.position.x < halfTileSize;
         bool isInZRange = transform.position.z > -halfTileSize && transform.position.z < halfTileSize;
         if (isInXRange && isInZRange)
@@ -158,6 +163,7 @@ public class PersonController : MonoBehaviour
     {
         if (agent.agentTypeID == infectedAgentID)
         {
+            gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
             agent.SetDestination(hospitalTilePos);
             Timing.KillCoroutines("InfectionProcess");
@@ -167,9 +173,8 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> CheckIfOffHospitalTile()
     {
-        while (isOnHospitalTile())
+        while (isOnHospitalTile(true))
         {
-            Debug.Log(transform.position);
             yield return Timing.WaitForOneFrame;
         }
         agent.agentTypeID = healthyAgentID;
@@ -177,7 +182,8 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> InfectionProcess()
     {
-        float individualStageTime = infectionDeathTime / infectedMaterials.Length;
+        gameObject.tag = "Infected";
+        float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
         {
             gameObject.GetComponent<Renderer>().material = infectedMaterials[i];
