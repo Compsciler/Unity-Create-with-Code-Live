@@ -1,13 +1,14 @@
 ﻿using MEC;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InfectionCylinder : MonoBehaviour
 {
-    public float startRadius;
+    public float minRadius;
     public float maxRadius;
-    public float expandingDuration;
+    public float scalingDuration;
 
     // Start is called before the first frame update
     void Start()
@@ -21,20 +22,34 @@ public class InfectionCylinder : MonoBehaviour
         
     }
 
-    public IEnumerator<float> ExpandRadius()
+    public IEnumerator<float> ExpandRadius()  // Runs once
     {
-        Vector3 startScale = new Vector3(startRadius, gameObject.transform.localScale.y, startRadius);
+        Vector3 startScale = new Vector3(minRadius, gameObject.transform.localScale.y, minRadius);
         Vector3 endScale = new Vector3(maxRadius, gameObject.transform.localScale.y, maxRadius);
         gameObject.SetActive(true);
         float timer = 0;
-        while (timer < expandingDuration)
+        while (timer < scalingDuration)
         {
             Debug.Log(gameObject.transform.localScale);
-            gameObject.transform.localScale = Vector3.Lerp(startScale, endScale, timer / expandingDuration);
+            gameObject.transform.localScale = Vector3.Lerp(startScale, endScale, timer / scalingDuration);
             timer += Time.deltaTime;
             yield return Timing.WaitForOneFrame;
         }
         gameObject.SetActive(false);
         gameObject.transform.localScale = startScale;
+    }
+
+    public IEnumerator<float> SinusoidalRadius()  // Runs continuously
+    {
+        Vector3 maxScale = new Vector3(maxRadius, gameObject.transform.localScale.y, maxRadius);
+        float midRadius = (minRadius + maxRadius) / 2;
+        Vector3 midScale = new Vector3(midRadius, gameObject.transform.localScale.y, midRadius);
+        gameObject.SetActive(true);
+        while (true)
+        {
+            yield return Timing.WaitForOneFrame;
+            float sineTime = Mathf.Sin(Time.timeSinceLevelLoad * Mathf.PI * 2);
+            gameObject.transform.localScale = Vector3.LerpUnclamped(midScale, maxScale, sineTime);
+        }
     }
 }

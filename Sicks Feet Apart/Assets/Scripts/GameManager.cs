@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        Timing.RunCoroutine(InfectionSpread());
+        // Timing.RunCoroutine(InfectionSpread());
     }
 
     // Update is called once per frame
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
             {
                 GameObject infectionCylinder = person.transform.GetChild(0).gameObject;
                 // infectionCylinder.GetComponent<InfectionCylinder>().expandRadius();
-                Timing.RunCoroutine(infectionCylinder.GetComponent<InfectionCylinder>().ExpandRadius());
+                Timing.RunCoroutine(infectionCylinder.GetComponent<InfectionCylinder>().ExpandRadius());  // Does not work well with SinusoidalRadius()
             }
             yield return Timing.WaitForSeconds(infectionSpreadRate);
         }

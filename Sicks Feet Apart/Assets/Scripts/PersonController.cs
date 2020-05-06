@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
+// using NUnit.Framework.Internal;
 
 public class PersonController : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class PersonController : MonoBehaviour
     // private float hospitalEnterPosSideMax = 4.85f;
 
     public bool startsInfected;
-    private bool isInfected;
+    [SerializeField] bool isInfected;
     private bool isRecentlyInfected;
 
     public float infectionDeathDuration = 40f;
@@ -40,6 +41,7 @@ public class PersonController : MonoBehaviour
     public Material[] infectedMaterials;
     public Material deadMaterial;
 
+    private InfectionCylinder infectionCylinderScript;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -51,6 +53,8 @@ public class PersonController : MonoBehaviour
 
         isInfected = startsInfected;
         isRecentlyInfected = startsInfected;
+
+        infectionCylinderScript = GetComponentInChildren<InfectionCylinder>(true);
     }
 
     // Update is called once per frame
@@ -127,6 +131,7 @@ public class PersonController : MonoBehaviour
             if (isRecentlyInfected)
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
+                Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius");
                 isRecentlyInfected = false;
             }
             agent.SetDestination(hospitalTilePos);
@@ -167,6 +172,8 @@ public class PersonController : MonoBehaviour
             agent.agentTypeID = recentlyHealedAgentID;
             agent.SetDestination(hospitalTilePos);
             Timing.KillCoroutines("InfectionProcess");
+            Timing.KillCoroutines("SinusoidalRadius");
+            infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
     }
@@ -183,6 +190,7 @@ public class PersonController : MonoBehaviour
     IEnumerator<float> InfectionProcess()
     {
         gameObject.tag = "Infected";
+        agent.agentTypeID = infectedAgentID;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
         {
@@ -199,5 +207,15 @@ public class PersonController : MonoBehaviour
     {
         yield return Timing.WaitForSeconds(healTime);
         isInfected = false;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("InfectionCylinder"))
+        {
+            isInfected = true;
+            isRecentlyInfected = true;
+            Debug.Log("PERSON TO PERSON");
+        }
     }
 }
