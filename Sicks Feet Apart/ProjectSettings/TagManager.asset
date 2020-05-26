@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Infected
   - InfectionCylinder
+  - RotatableWall
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
+  - Walls
+  - Hospital Barriers
   - 
   - 
   - 

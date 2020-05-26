@@ -24,7 +24,7 @@ public class PersonController : MonoBehaviour
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
     private float navMeshSurfaceAgentRadius = 1f;
 
-    private int healthyAgentID = -1372625422;
+    private int healthyAgentID = -1372625422;  // Make these in a Constants script? (recentlyHealedAgentID is used in HospitalBarrier.cs)
     private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
     // private float hospitalEnterPosSideMax = 4.85f;
@@ -42,6 +42,9 @@ public class PersonController : MonoBehaviour
     public Material deadMaterial;
 
     private InfectionCylinder infectionCylinderScript;
+    private HospitalTile hospitalTileScript;
+
+    internal float hospitalTileDistance;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -55,6 +58,7 @@ public class PersonController : MonoBehaviour
         isRecentlyInfected = startsInfected;
 
         infectionCylinderScript = GetComponentInChildren<InfectionCylinder>(true);
+        hospitalTileScript = GameObject.Find("Hospital").GetComponent<HospitalTile>();
     }
 
     // Update is called once per frame
@@ -128,13 +132,15 @@ public class PersonController : MonoBehaviour
         }
         if (isInfected)
         {
+            agent.SetDestination(hospitalTilePos);
+            hospitalTileDistance = agent.remainingDistance;
             if (isRecentlyInfected)
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius");
+                GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
-            agent.SetDestination(hospitalTilePos);
         }
     }
     bool CalculateNewPath(Vector3 targetPos)
@@ -176,6 +182,7 @@ public class PersonController : MonoBehaviour
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
+        Timing.RunCoroutine(hospitalTileScript.HospitalQueue());
     }
 
     IEnumerator<float> CheckIfOffHospitalTile()
@@ -211,11 +218,11 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("InfectionCylinder"))
+        if (other.CompareTag("InfectionCylinder") && other.gameObject.transform.parent.gameObject != gameObject)
         {
             isInfected = true;
             isRecentlyInfected = true;
-            Debug.Log("PERSON TO PERSON");
+            // Debug.Log("PERSON TO PERSON");
         }
     }
 }

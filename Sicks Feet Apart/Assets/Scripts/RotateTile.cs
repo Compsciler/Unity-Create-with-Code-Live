@@ -29,10 +29,16 @@ public class RotateTile : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        adjacentWalls.Add(collision.gameObject);
+        if (collision.gameObject.CompareTag("RotatableWall"))
+        {
+            adjacentWalls.Add(collision.gameObject);
+        }
     }
     void OnCollisionExit(Collision collision)
     {
-        adjacentWalls.Remove(collision.gameObject);
+        if (collision.gameObject.CompareTag("RotatableWall"))
+        {
+            adjacentWalls.Remove(collision.gameObject);
+        }
     }
 }
