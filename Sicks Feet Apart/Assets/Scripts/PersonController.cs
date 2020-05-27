@@ -27,6 +27,7 @@ public class PersonController : MonoBehaviour
     private int healthyAgentID = -1372625422;  // Make these in a Constants script? (recentlyHealedAgentID is used in HospitalBarrier.cs)
     private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
+    private int priorityInfectedAgentID = -1923039037;
     // private float hospitalEnterPosSideMax = 4.85f;
 
     public bool startsInfected;
@@ -56,6 +57,7 @@ public class PersonController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
         Debug.Log(agent.agentTypeID);
+        // Debug.Log("ID: " + GetInstanceID());
 
         isInfected = startsInfected;
         isRecentlyInfected = startsInfected;
@@ -148,7 +150,7 @@ public class PersonController : MonoBehaviour
             if (isRecentlyInfected)
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
-                Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius");
+                Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
                 GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
@@ -183,13 +185,13 @@ public class PersonController : MonoBehaviour
 
     void heal()
     {
-        if (agent.agentTypeID == infectedAgentID)
+        if (agent.agentTypeID == priorityInfectedAgentID || agent.agentTypeID == infectedAgentID)  // 2nd check probably unnecessary
         {
             gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
             agent.SetDestination(hospitalTilePos);
-            Timing.KillCoroutines("InfectionProcess");
-            Timing.KillCoroutines("SinusoidalRadius");
+            Timing.KillCoroutines("InfectionProcess");  // Kills in GameManager.cs for all infected
+            Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());  // Kills in GameManager.cs for all infected
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
@@ -229,7 +231,7 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isInfected && other.CompareTag("InfectionCylinder") && other.gameObject.transform.parent.gameObject != gameObject)
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject)
         {
             isInfected = true;
             isRecentlyInfected = true;

@@ -25,10 +25,10 @@ public class HospitalTile : MonoBehaviour
 
     public IEnumerator<float> HospitalQueue()
     {
-        hospitalBarriers.SetActive(true);
+        // hospitalBarriers.SetActive(true);
         isOccupied = true;
         yield return Timing.WaitForSeconds(waitTime);
-        hospitalBarriers.SetActive(false);
+        // hospitalBarriers.SetActive(false);
         isOccupied = false;
     }
 
