@@ -26,7 +26,7 @@ public class HospitalTile : MonoBehaviour
     public IEnumerator<float> HospitalQueue()
     {
         hospitalBarriers.SetActive(true);
-        // isOccupied = true;
+        isOccupied = true;
         yield return Timing.WaitForSeconds(waitTime);
         hospitalBarriers.SetActive(false);
         isOccupied = false;

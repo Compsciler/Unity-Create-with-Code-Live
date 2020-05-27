@@ -45,6 +45,9 @@ public class PersonController : MonoBehaviour
     private HospitalTile hospitalTileScript;
 
     internal float hospitalTileDistance;
+
+    public float infectedSetPathTime = 1f;
+    private float infectedSetPathTimer = -1f;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -132,7 +135,15 @@ public class PersonController : MonoBehaviour
         }
         if (isInfected)
         {
-            agent.SetDestination(hospitalTilePos);
+            bool pathPending = true;
+            if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
+            {
+                pathPending = agent.SetDestination(hospitalTilePos);
+                infectedSetPathTimer = infectedSetPathTime;
+            }
+            infectedSetPathTimer -= Time.deltaTime;
+            // Debug.Log("GOING THERE: " + pathPending);
+            // Debug.Log("REMAINING: " + agent.remainingDistance);
             hospitalTileDistance = agent.remainingDistance;
             if (isRecentlyInfected)
             {
@@ -218,7 +229,7 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("InfectionCylinder") && other.gameObject.transform.parent.gameObject != gameObject)
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.gameObject.transform.parent.gameObject != gameObject)
         {
             isInfected = true;
             isRecentlyInfected = true;

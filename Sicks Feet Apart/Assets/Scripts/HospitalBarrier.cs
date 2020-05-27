@@ -5,7 +5,9 @@ using UnityEngine.AI;
 
 public class HospitalBarrier : MonoBehaviour
 {
+    private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
+    private int priorityInfectedAgentID = -1923039037;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +21,7 @@ public class HospitalBarrier : MonoBehaviour
         
     }
 
+    // Agent has isTrigger enabled
     /*
     void OnCollisionEnter(Collision collision)
     {
@@ -30,6 +33,7 @@ public class HospitalBarrier : MonoBehaviour
         }
         Debug.Log(agent.agentTypeID);
         Debug.Log(HospitalTile.isOccupied);
+        
         if (agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied)  // Change for different difficulty settings
         {
             Physics.IgnoreCollision(GetComponent<BoxCollider>(), collision.collider, true);
@@ -39,7 +43,7 @@ public class HospitalBarrier : MonoBehaviour
         }
     }
     */
-
+    
     void OnTriggerEnter(Collider other)
     {
         NavMeshAgent agent = other.gameObject.GetComponent<NavMeshAgent>();
@@ -50,9 +54,11 @@ public class HospitalBarrier : MonoBehaviour
         }
         Debug.Log(agent.agentTypeID);
         Debug.Log(HospitalTile.isOccupied);
-        if (agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied)  // Change for different difficulty settings
+        Debug.Log("COLLISION");
+        if (agent.agentTypeID == infectedAgentID && !HospitalTile.isOccupied)  // agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied  // Change for different difficulty settings
         {
-            // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);
+            agent.agentTypeID = priorityInfectedAgentID;
+            // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);  // Need a NavMeshModifier Ignore
             Debug.Log("IGNORED");
             HospitalTile.isOccupied = true;
             // agent.SetDestination(new Vector3(0, 1.67f, 0));
