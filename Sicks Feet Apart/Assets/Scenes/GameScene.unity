@@ -17088,7 +17088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b39957b1ea46654c9ebb6fe6d35834b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 6
+  waitTime: 12
   hospitalBarriers: {fileID: 128053462}
 --- !u!114 &1997348444
 MonoBehaviour:

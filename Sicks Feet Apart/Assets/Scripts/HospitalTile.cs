@@ -29,6 +29,7 @@ public class HospitalTile : MonoBehaviour
         isOccupied = true;
         yield return Timing.WaitForSeconds(waitTime);
         // hospitalBarriers.SetActive(false);
+        Debug.Log("UNOCCUPIED");
         isOccupied = false;
     }
 

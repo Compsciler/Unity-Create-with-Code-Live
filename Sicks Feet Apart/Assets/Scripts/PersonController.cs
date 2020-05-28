@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
+// using NUnit.Framework;
 // using NUnit.Framework.Internal;
 
 public class PersonController : MonoBehaviour
@@ -49,6 +50,8 @@ public class PersonController : MonoBehaviour
 
     public float infectedSetPathTime = 1f;
     private float infectedSetPathTimer = -1f;
+
+    private bool hasStartedHealing = false;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -121,19 +124,24 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile(false))
+        if (isOnHospitalTile(false) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
             heal();
+            Debug.Log("HEALING");
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
             Timing.RunCoroutine(HealingProcess());
+            hasStartedHealing = true;
             // Debug.Log("AFTER COROUTINE");
             /*
             exitPos.x = -exitPos.x;
             exitPos.z = -exitPos.z;
             agent.Warp(exitPos);
             */
+        } else if (!isOnHospitalTile(false))
+        {
+            hasStartedHealing = false;
         }
         if (isInfected)
         {
@@ -149,7 +157,7 @@ public class PersonController : MonoBehaviour
             hospitalTileDistance = agent.remainingDistance;
             if (isRecentlyInfected)
             {
-                Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
+                Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
                 GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
@@ -190,8 +198,8 @@ public class PersonController : MonoBehaviour
             gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
             agent.SetDestination(hospitalTilePos);
-            Timing.KillCoroutines("InfectionProcess");  // Kills in GameManager.cs for all infected
-            Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());  // Kills in GameManager.cs for all infected
+            Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Wroks fine without GetInstanceID()?
+            Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
