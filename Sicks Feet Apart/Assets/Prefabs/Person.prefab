@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7756764700643704663}
   - component: {fileID: 452651572472107545}
   - component: {fileID: 4564771794604921336}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Infection Cylinder
   m_TagString: InfectionCylinder
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 3932065289063069565}
   - component: {fileID: 3932065289063069564}
   - component: {fileID: 3932065289063069536}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Person
   m_TagString: Untagged
   m_Icon: {fileID: 0}

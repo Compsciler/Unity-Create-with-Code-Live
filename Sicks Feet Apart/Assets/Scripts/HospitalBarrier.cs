@@ -49,7 +49,7 @@ public class HospitalBarrier : MonoBehaviour
     void OnTriggerStay(Collider other)  // Changed from OnTriggerEnter  // Will this trigger once for multiple GameObjects?
     {
         NavMeshAgent agent = other.gameObject.GetComponent<NavMeshAgent>();
-        Debug.Log(other.gameObject);
+        // Debug.Log(other.gameObject);
         if (agent == null)
         {
             return;

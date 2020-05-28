@@ -232,6 +232,8 @@ public class PersonController : MonoBehaviour
         }
         // Timing.StopCoroutine(SetDestinationAsHospitalContinuously());
         gameObject.GetComponent<Renderer>().material = deadMaterial;
+        Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
+        infectionCylinderScript.gameObject.SetActive(false);
         agent.isStopped = true;
         GameManager.instance.GameOver();
     }

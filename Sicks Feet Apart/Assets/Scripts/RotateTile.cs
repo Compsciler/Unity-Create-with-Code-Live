@@ -5,11 +5,13 @@ using UnityEngine;
 public class RotateTile : MonoBehaviour
 {
     private List<GameObject> adjacentWalls = new List<GameObject>();
+    Camera mainCamera;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        mainCamera = Camera.main;
+        mainCamera.eventMask = 1; //  OnMouseDown only triggers for Layer 0: Default  // mainCamera.eventMask & (1 << 10)  OnMouseDown ignores Layer 10: Hospital Barriers
     }
 
     // Update is called once per frame
@@ -20,7 +22,7 @@ public class RotateTile : MonoBehaviour
 
     void OnMouseDown()
     {
-        // Debug.Log(gameObject);
+        // Debug.Log(gameObject.name);
         foreach (GameObject wall in adjacentWalls)
         {
             wall.transform.RotateAround(transform.position, Vector3.up, 90f);
