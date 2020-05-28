@@ -24,14 +24,14 @@ public class InfectionCylinder : MonoBehaviour
 
     public IEnumerator<float> ExpandRadius()  // Runs once
     {
-        Vector3 startScale = new Vector3(minRadius, gameObject.transform.localScale.y, minRadius);
-        Vector3 endScale = new Vector3(maxRadius, gameObject.transform.localScale.y, maxRadius);
+        Vector3 startScale = new Vector3(minRadius, transform.localScale.y, minRadius);
+        Vector3 endScale = new Vector3(maxRadius, transform.localScale.y, maxRadius);
         gameObject.SetActive(true);
         float timer = 0;
         while (timer < scalingDuration)
         {
-            Debug.Log(gameObject.transform.localScale);
-            gameObject.transform.localScale = Vector3.Lerp(startScale, endScale, timer / scalingDuration);
+            Debug.Log(transform.localScale);
+            transform.localScale = Vector3.Lerp(startScale, endScale, timer / scalingDuration);
             timer += Time.deltaTime;
             yield return Timing.WaitForOneFrame;
         }
@@ -41,15 +41,15 @@ public class InfectionCylinder : MonoBehaviour
 
     public IEnumerator<float> SinusoidalRadius()  // Runs continuously
     {
-        Vector3 maxScale = new Vector3(maxRadius, gameObject.transform.localScale.y, maxRadius);
+        Vector3 maxScale = new Vector3(maxRadius, transform.localScale.y, maxRadius);
         float midRadius = (minRadius + maxRadius) / 2;
-        Vector3 midScale = new Vector3(midRadius, gameObject.transform.localScale.y, midRadius);
+        Vector3 midScale = new Vector3(midRadius, transform.localScale.y, midRadius);
         gameObject.SetActive(true);
         while (true)
         {
             yield return Timing.WaitForOneFrame;
             float sineTime = Mathf.Sin(Time.timeSinceLevelLoad * Mathf.PI * 2);
-            gameObject.transform.localScale = Vector3.LerpUnclamped(midScale, maxScale, sineTime);
+            transform.localScale = Vector3.LerpUnclamped(midScale, maxScale, sineTime);
         }
     }
 }

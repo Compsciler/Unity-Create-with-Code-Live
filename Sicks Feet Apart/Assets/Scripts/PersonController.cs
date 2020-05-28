@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
+// using NUnit.Framework;
 // using NUnit.Framework.Internal;
 
 public class PersonController : MonoBehaviour
@@ -24,9 +25,10 @@ public class PersonController : MonoBehaviour
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
     private float navMeshSurfaceAgentRadius = 1f;
 
-    private int healthyAgentID = -1372625422;
+    private int healthyAgentID = -1372625422;  // Make these in a Constants script? (recentlyHealedAgentID is used in HospitalBarrier.cs)
     private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
+    private int priorityInfectedAgentID = -1923039037;
     // private float hospitalEnterPosSideMax = 4.85f;
 
     public bool startsInfected;
@@ -42,6 +44,17 @@ public class PersonController : MonoBehaviour
     public Material deadMaterial;
 
     private InfectionCylinder infectionCylinderScript;
+    private HospitalTile hospitalTileScript;
+
+    internal float hospitalTileDistance;
+
+    public float infectedSetPathTime = 1f;
+    private float infectedSetPathTimer = -1f;
+
+    private bool hasStartedHealing = false;
+
+    private float healthyAcceleration = 15;
+    private float infectedAcceleration = 400;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -50,11 +63,13 @@ public class PersonController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
         Debug.Log(agent.agentTypeID);
+        // Debug.Log("ID: " + GetInstanceID());
 
         isInfected = startsInfected;
         isRecentlyInfected = startsInfected;
 
         infectionCylinderScript = GetComponentInChildren<InfectionCylinder>(true);
+        hospitalTileScript = GameObject.Find("Hospital").GetComponent<HospitalTile>();
     }
 
     // Update is called once per frame
@@ -112,29 +127,44 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile(false))
+        if (isOnHospitalTile(false) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
             heal();
+            Debug.Log("HEALING");
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
             Timing.RunCoroutine(HealingProcess());
+            hasStartedHealing = true;
             // Debug.Log("AFTER COROUTINE");
             /*
             exitPos.x = -exitPos.x;
             exitPos.z = -exitPos.z;
             agent.Warp(exitPos);
             */
+        } else if (!isOnHospitalTile(false))
+        {
+            hasStartedHealing = false;
         }
         if (isInfected)
         {
+            bool pathPending = true;
+            if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
+            {
+                pathPending = agent.SetDestination(hospitalTilePos);
+                infectedSetPathTimer = infectedSetPathTime;
+            }
+            infectedSetPathTimer -= Time.deltaTime;
+            // Debug.Log("GOING THERE: " + pathPending);
+            // Debug.Log("REMAINING: " + agent.remainingDistance);
+            hospitalTileDistance = agent.remainingDistance;
             if (isRecentlyInfected)
             {
-                Timing.RunCoroutine(InfectionProcess(), "InfectionProcess");
-                Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius");
+                Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());
+                Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
+                GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
-            agent.SetDestination(hospitalTilePos);
         }
     }
     bool CalculateNewPath(Vector3 targetPos)
@@ -166,16 +196,18 @@ public class PersonController : MonoBehaviour
 
     void heal()
     {
-        if (agent.agentTypeID == infectedAgentID)
+        if (agent.agentTypeID == priorityInfectedAgentID || agent.agentTypeID == infectedAgentID)  // 2nd check probably unnecessary
         {
             gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
+            agent.acceleration = healthyAcceleration;
             agent.SetDestination(hospitalTilePos);
-            Timing.KillCoroutines("InfectionProcess");
-            Timing.KillCoroutines("SinusoidalRadius");
+            Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Wroks fine without GetInstanceID()?
+            Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
+        Timing.RunCoroutine(hospitalTileScript.HospitalQueue());
     }
 
     IEnumerator<float> CheckIfOffHospitalTile()
@@ -191,6 +223,7 @@ public class PersonController : MonoBehaviour
     {
         gameObject.tag = "Infected";
         agent.agentTypeID = infectedAgentID;
+        agent.acceleration = infectedAcceleration;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
         {
@@ -211,11 +244,11 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("InfectionCylinder"))
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(false))  // May remove Hospital immunity
         {
             isInfected = true;
             isRecentlyInfected = true;
-            Debug.Log("PERSON TO PERSON");
+            // Debug.Log("PERSON TO PERSON");
         }
     }
 }

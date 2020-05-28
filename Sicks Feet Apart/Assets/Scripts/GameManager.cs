@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MEC;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,11 +11,14 @@ public class GameManager : MonoBehaviour
     // private float gameTimer = 0;  // Could use Time.timeSinceLevelLoad with Time.timeScale instead for simple functionality
     public float infectionSpreadRate = 3f;
 
+    internal Dictionary<GameObject, float> infectedPathDistances;
+
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
         // Timing.RunCoroutine(InfectionSpread());
+        infectedPathDistances = new Dictionary<GameObject, float>();
     }
 
     // Update is called once per frame
@@ -22,6 +26,18 @@ public class GameManager : MonoBehaviour
     {
         if (isGameActive)
         {
+            float minPathDistance = float.MaxValue;
+            GameObject closestInfected = null;
+            foreach (GameObject infected in infectedPathDistances.Keys)  // Remove dictionary if only used here
+            {
+                float pathDistance = infected.GetComponent<PersonController>().hospitalTileDistance;
+                if (pathDistance < minPathDistance)
+                {
+                    minPathDistance = pathDistance;
+                    closestInfected = infected;
+                }
+                // infectedPathDistances[infected] = infected.GetComponent<PersonController>().hospitalTileDistance;
+            }
             // gameTimer += Time.deltaTime;
         }
     }
