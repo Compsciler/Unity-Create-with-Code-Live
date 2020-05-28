@@ -52,6 +52,9 @@ public class PersonController : MonoBehaviour
     private float infectedSetPathTimer = -1f;
 
     private bool hasStartedHealing = false;
+
+    private float healthyAcceleration = 15;
+    private float infectedAcceleration = 400;
     // private CoroutineHandle handle;
 
     // Start is called before the first frame update
@@ -197,6 +200,7 @@ public class PersonController : MonoBehaviour
         {
             gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
+            agent.acceleration = healthyAcceleration;
             agent.SetDestination(hospitalTilePos);
             Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Wroks fine without GetInstanceID()?
             Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
@@ -219,6 +223,7 @@ public class PersonController : MonoBehaviour
     {
         gameObject.tag = "Infected";
         agent.agentTypeID = infectedAgentID;
+        agent.acceleration = infectedAcceleration;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
         {
@@ -239,7 +244,7 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject)
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(false))  // May remove Hospital immunity
         {
             isInfected = true;
             isRecentlyInfected = true;
