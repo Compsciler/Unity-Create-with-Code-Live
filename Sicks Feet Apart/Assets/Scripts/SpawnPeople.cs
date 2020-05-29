@@ -15,8 +15,9 @@ public class SpawnPeople : MonoBehaviour
     public float repeatRateDecrease = 2f;
     public float minimumRepeatRate = 5f;
     // This would produce 0s, 25x4, 23x5, 21x5, 19x5, ... , 9x5, 7x5, 5x5, 5x5...
-    private float timer;
-    private float repeatRate;
+    internal float timer;
+    internal float repeatRate;
+    internal bool isInfectedWave = false;
     private int wave = 0;
 
     // Start is called before the first frame update
@@ -32,13 +33,14 @@ public class SpawnPeople : MonoBehaviour
         if (timer <= 0)
         {
             wave++;
-            if (wave % infectedWaveInterval == 0)
+            if (isInfectedWave)
             {
                 SpawnPerson(true);
             } else
             {
                 SpawnPerson(false);
             }
+            isInfectedWave = (wave % infectedWaveInterval == infectedWaveInterval - 1);
             if (wave % repeatRateDecreaseWaveInterval == 0)
             {
                 repeatRate -= repeatRateDecrease;
