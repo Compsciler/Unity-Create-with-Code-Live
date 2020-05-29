@@ -7,8 +7,9 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     internal static GameManager instance;
-    private bool isGameActive = true;  // Change to false later
+    [SerializeField] internal bool isGameActive = true;  // Change to false at initial menu
     // private float gameTimer = 0;  // Could use Time.timeSinceLevelLoad with Time.timeScale instead for simple functionality
+    public bool isUsingGameOver = true;
     public float infectionSpreadRate = 3f;
 
     internal Dictionary<GameObject, float> infectedPathDistances;
@@ -44,8 +45,12 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        isGameActive = false;
-        Debug.Log("Game Over!");
+        if (isUsingGameOver)
+        {
+            isGameActive = false;
+            Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
+            Debug.Log("Game Over!");
+        }
     }
 
     IEnumerator<float> InfectionSpread()  // PauseCoroutine() if game paused

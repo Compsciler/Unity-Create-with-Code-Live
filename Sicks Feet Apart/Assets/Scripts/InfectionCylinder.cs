@@ -19,7 +19,10 @@ public class InfectionCylinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!GameManager.instance.isGameActive)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     public IEnumerator<float> ExpandRadius()  // Runs once

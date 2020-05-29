@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpawnPeople : MonoBehaviour
 {
@@ -20,6 +22,8 @@ public class SpawnPeople : MonoBehaviour
     internal bool isInfectedWave = false;
     private int wave = 0;
 
+    public TextMeshProUGUI waveText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +37,7 @@ public class SpawnPeople : MonoBehaviour
         if (timer <= 0)
         {
             wave++;
+            UpdateWaveText();
             if (isInfectedWave)
             {
                 SpawnPerson(true);
@@ -52,7 +57,10 @@ public class SpawnPeople : MonoBehaviour
             timer = repeatRate;
             Debug.Log(Time.time);
         }
-        timer -= Time.deltaTime;
+        if (GameManager.instance.isGameActive)
+        {
+            timer -= Time.deltaTime;
+        }
     }
 
     void SpawnPerson(bool isInfected)
@@ -66,5 +74,10 @@ public class SpawnPeople : MonoBehaviour
         {
             Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
         }
+    }
+
+    void UpdateWaveText()  // Include animation?
+    {
+        waveText.text = "Wave " + wave;
     }
 }

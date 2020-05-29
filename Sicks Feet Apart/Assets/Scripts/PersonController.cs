@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
+// using NUnit.Framework.Internal;
 // using NUnit.Framework;
 // using NUnit.Framework.Internal;
 
@@ -75,6 +76,10 @@ public class PersonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!GameManager.instance.isGameActive)
+        {
+            agent.isStopped = true;
+        }
         if (agent.remainingDistance <= minDistanceRelocation && !isInfected)  // Returns 0 when reached destination or when blocked, as close as it can get
         {
             float xPos = Random.Range(-xPosRange, xPosRange);
@@ -202,7 +207,7 @@ public class PersonController : MonoBehaviour
             agent.agentTypeID = recentlyHealedAgentID;
             agent.acceleration = healthyAcceleration;
             agent.SetDestination(hospitalTilePos);
-            Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Wroks fine without GetInstanceID()?
+            Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Works fine without GetInstanceID()?
             Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
