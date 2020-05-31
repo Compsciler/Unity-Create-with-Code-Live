@@ -8,6 +8,7 @@ using UnityEngine.AI;
 using MEC;
 using System.Threading;
 using System.IO;
+// using System;
 // using NUnit.Framework.Internal;
 // using NUnit.Framework;
 // using NUnit.Framework.Internal;
@@ -31,6 +32,7 @@ public class PersonController : MonoBehaviour
     private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
     private int priorityInfectedAgentID = -1923039037;
+    private int farInfectedAgentID = -902729914;
     // private float hospitalEnterPosSideMax = 4.85f;
 
     public bool startsInfected;
@@ -63,6 +65,10 @@ public class PersonController : MonoBehaviour
     Vector3[][] pathModeDestinations = new Vector3[3][];
     private NavMeshAgent tempAgent;
     private bool hasPathToHospital = false;
+
+    private bool isNearHospital = false;
+    private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
+    private float wallYPos = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -141,7 +147,7 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile(false) && !hasStartedHealing)
+        if (isOnHospitalTile(0) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
             heal();
@@ -156,20 +162,44 @@ public class PersonController : MonoBehaviour
             exitPos.z = -exitPos.z;
             agent.Warp(exitPos);
             */
-        } else if (!isOnHospitalTile(false))
+        }
+        else if (!isOnHospitalTile(0))
         {
             hasStartedHealing = false;
         }
         if (isInfected)
         {
             bool pathPending = true;
+            bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;
+            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && notPriorityNorRecentlyHealed)
+            {
+                agent.agentTypeID = infectedAgentID;
+            }
             if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
             {
-                if (CalculateNewPath(hospitalTilePos, true))
+                if (agent.agentTypeID == farInfectedAgentID)
                 {
-                    tempAgent.SetPath(navMeshPath);
-                    hasPathToHospital = true;
+                    agent.SetDestination(hospitalTilePos);
                 }
+                else
+                {
+                    Vector3 shiftedOrigin = new Vector3(transform.position.x, wallYPos, transform.position.z);
+                    Vector3 hospitalDirection = hospitalTilePos - transform.position;
+                    float hospitalDistance = Vector3.Distance(transform.position, hospitalTilePos);
+                    int layerMask = 1 << 9;  // Ray cast only against colliders in Layer 9: Walls
+                    bool hasLineOfSightWithHospital = !Physics.Raycast(shiftedOrigin, hospitalDirection, hospitalDistance, layerMask);
+                    Debug.DrawRay(shiftedOrigin, hospitalDirection, UnityEngine.Color.red, 2f);
+                    Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
+                    if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // THE ISSUE: NOT GETTING TO THE ELSE BLOCK
+                    {
+                        agent.agentTypeID = farInfectedAgentID;
+                    }
+                    // else
+                    // {
+                        agent.SetDestination(hospitalTilePos);
+                    // }
+                }
+                /*
                 else
                 {
                     float minPathLength = float.MaxValue;
@@ -187,12 +217,15 @@ public class PersonController : MonoBehaviour
                     pathPending = agent.SetDestination(minPathLocation);
                     hasPathToHospital = false;
                 }
+                */
                 infectedSetPathTimer = infectedSetPathTime;
             }
+            /*
             if (hasPathToHospital)
             {
                 agent.Warp(tempAgent.transform.position);
             }
+            */
             infectedSetPathTimer -= Time.deltaTime;
             // Debug.Log("GOING THERE: " + pathPending);
             // Debug.Log("REMAINING: " + agent.remainingDistance);
@@ -201,7 +234,7 @@ public class PersonController : MonoBehaviour
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
-                GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
+                // GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
         }
@@ -243,13 +276,10 @@ public class PersonController : MonoBehaviour
         return pathLength;
     }
 
-    bool isOnHospitalTile(bool isAddingTileOffset)
+    bool isOnHospitalTile(float extraBorderWidth)
     {
         float halfTileSize = tileSize / 2;
-        if (isAddingTileOffset)
-        {
-            halfTileSize += navMeshSurfaceAgentRadius;
-        }
+        halfTileSize += extraBorderWidth;
         bool isInXRange = transform.position.x > -halfTileSize && transform.position.x < halfTileSize;
         bool isInZRange = transform.position.z > -halfTileSize && transform.position.z < halfTileSize;
         if (isInXRange && isInZRange)
@@ -277,7 +307,7 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> CheckIfOffHospitalTile()
     {
-        while (isOnHospitalTile(true))
+        while (isOnHospitalTile(navMeshSurfaceAgentRadius))
         {
             yield return Timing.WaitForOneFrame;
         }
@@ -287,7 +317,14 @@ public class PersonController : MonoBehaviour
     IEnumerator<float> InfectionProcess()
     {
         gameObject.tag = "Infected";
-        agent.agentTypeID = infectedAgentID;
+        if (isNearHospital)
+        {
+            agent.agentTypeID = infectedAgentID;
+        }
+        else
+        {
+            agent.agentTypeID = farInfectedAgentID;
+        }
         agent.acceleration = infectedAcceleration;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
@@ -311,11 +348,26 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(false))  // May remove Hospital immunity
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(0))  // May remove Hospital immunity
         {
             isInfected = true;
             isRecentlyInfected = true;
             // Debug.Log("PERSON TO PERSON");
+        } 
+        else if (other.CompareTag("NearHospital"))
+        {
+            isNearHospital = true;
+            if (agent.agentTypeID == farInfectedAgentID)
+            {
+                agent.agentTypeID = infectedAgentID;
+            }
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("NearHospital"))
+        {
+            isNearHospital = false;
         }
     }
 

@@ -42,6 +42,8 @@ public class PersonMouseController : MonoBehaviour
             }
             Debug.Log("Path distance: " + GetPathLength(hit.transform.position));
         }
+        Debug.Log("Remaining Distance: " + agent.remainingDistance);
+        // Debug.Log(agent.remainingDistance == Mathf.Infinity);
     }
     bool CalculateNewPath(Vector3 targetPos)
     {
