@@ -64,6 +64,7 @@ public class PersonController : MonoBehaviour
     public int hospitalPathMode = 2;
     Vector3[][] pathModeDestinations = new Vector3[3][];
     private NavMeshAgent tempAgent;
+    private float tempAgentYPos = 5.67f;
     private bool hasPathToHospital = false;
 
     private bool isNearHospital = false;
@@ -84,7 +85,7 @@ public class PersonController : MonoBehaviour
         infectionCylinderScript = GetComponentInChildren<InfectionCylinder>(true);
         hospitalTileScript = GameObject.Find("Hospital").GetComponent<HospitalTile>();
 
-        GeneratePathModeDestinations();
+        GeneratePathModeDestinations(true);
         tempAgent = GameObject.Find("Temp Pathing Agent").GetComponent<NavMeshAgent>();
     }
 
@@ -167,13 +168,13 @@ public class PersonController : MonoBehaviour
         {
             hasStartedHealing = false;
         }
-        if (isInfected)
+        if (isInfected && agent.agentTypeID != recentlyHealedAgentID)
         {
             bool pathPending = true;
-            bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;
-            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && notPriorityNorRecentlyHealed)
+            // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
+            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)
             {
-                agent.agentTypeID = infectedAgentID;
+                agent.agentTypeID = infectedAgentID;  // AWAY FROM HOSPITAL, if "shorter path" (4 sides of hospital NavMesh incosistency)
             }
             if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
             {
@@ -192,32 +193,28 @@ public class PersonController : MonoBehaviour
                     Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
                     if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // THE ISSUE: NOT GETTING TO THE ELSE BLOCK
                     {
-                        agent.agentTypeID = farInfectedAgentID;
+                        agent.agentTypeID = farInfectedAgentID;  // TO HOSPITAL
+                        // agent.SetDestination(hospitalTilePos);  // ENABLE
                     }
-                    // else
-                    // {
-                        agent.SetDestination(hospitalTilePos);
-                    // }
-                }
-                /*
-                else
-                {
-                    float minPathLength = float.MaxValue;
-                    Vector3 minPathLocation = hospitalTilePos;  // Defaults here if no complete paths
-                    foreach (Vector3 location in pathModeDestinations[hospitalPathMode])
+                    else
                     {
-                        float pathLength = GetPathLength(location, true);
-                        Debug.Log(location + ": " + pathLength);
-                        if (pathLength < minPathLength)
+                        // agent.SetDestination(hospitalTilePos);  // AWAY FROM HOSPITAL PATHING
+                        float minPathLength = float.MaxValue;
+                        Vector3 minPathLocation = hospitalTilePos;  // Defaults here if no complete paths
+                        foreach (Vector3 location in pathModeDestinations[hospitalPathMode])
                         {
-                            minPathLength = pathLength;
-                            minPathLocation = location;
+                            float pathLength = GetPathLength(location, true);
+                            Debug.Log(location + ": " + pathLength);
+                            if (pathLength < minPathLength)
+                            {
+                                minPathLength = pathLength;
+                                minPathLocation = location;
+                            }
                         }
+                        pathPending = agent.SetDestination(minPathLocation);
+                        // hasPathToHospital = false;
                     }
-                    pathPending = agent.SetDestination(minPathLocation);
-                    hasPathToHospital = false;
                 }
-                */
                 infectedSetPathTimer = infectedSetPathTime;
             }
             /*
@@ -243,9 +240,11 @@ public class PersonController : MonoBehaviour
     {
         if (usePriorityInfectedAgent)
         {
-            tempAgent.Warp(transform.position);
+            Vector3 warpPosition = new Vector3(transform.position.x, tempAgentYPos, transform.position.z);
+            tempAgent.Warp(warpPosition);  // If decided to not warp, tempAgent will stay at Hospital at all times
             // Debug.Log("Temp Location: " + tempAgent.transform.position);
-            tempAgent.CalculatePath(targetPos, navMeshPath);
+            Vector3 newTargetPos = new Vector3(targetPos.x, tempAgentYPos, targetPos.z);
+            tempAgent.CalculatePath(newTargetPos, navMeshPath);
         }
         else
         {
@@ -371,9 +370,17 @@ public class PersonController : MonoBehaviour
         }
     }
 
-    void GeneratePathModeDestinations()
+    void GeneratePathModeDestinations(bool isSubtractingHospitalWalls)
     {
-        float val1 = 6.5f;  // Distance from center of tile and through a wall of adjacent tile
+        float val1;
+        if (isSubtractingHospitalWalls)
+        {
+            val1 = 6.17f;  // Distance from center of Hospital to InfectedSpheroid's NavMesh without wall (minus 0.03 to collide with Hospital barriers)
+        }
+        else
+        {
+            val1 = 6.5f;  // Distance from center of tile and through a wall of adjacent tile
+        }
         float val2 = 3.5f;  // Distance from center of tile and touching wall on same tile
         pathModeDestinations[0] = new Vector3[]{};
         pathModeDestinations[1] = new Vector3[4];
