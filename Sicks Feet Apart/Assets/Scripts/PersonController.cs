@@ -65,7 +65,6 @@ public class PersonController : MonoBehaviour
     Vector3[][] pathModeDestinations = new Vector3[3][];
     private NavMeshAgent tempAgent;
     private float tempAgentYPos = 5.67f;
-    private bool hasPathToHospital = false;
 
     private bool isNearHospital = false;
     private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
@@ -172,11 +171,11 @@ public class PersonController : MonoBehaviour
         {
             bool pathPending = true;
             // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
-            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)
+            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)  // When path is a straight line to hospital and close enough
             {
-                agent.agentTypeID = infectedAgentID;  // AWAY FROM HOSPITAL, if "shorter path" (4 sides of hospital NavMesh incosistency)
+                agent.agentTypeID = infectedAgentID;
             }
-            if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
+            if (infectedSetPathTimer < 0)  // Changed NavMeshAgent acceleration to counteract path recalculation navigation pauses
             {
                 if (agent.agentTypeID == farInfectedAgentID)
                 {
@@ -191,14 +190,13 @@ public class PersonController : MonoBehaviour
                     bool hasLineOfSightWithHospital = !Physics.Raycast(shiftedOrigin, hospitalDirection, hospitalDistance, layerMask);
                     Debug.DrawRay(shiftedOrigin, hospitalDirection, UnityEngine.Color.red, 2f);
                     Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
-                    if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // THE ISSUE: NOT GETTING TO THE ELSE BLOCK
+                    if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // This if-block seems to never be run, but should when path to hospital found and agent type is infectedSpheroid
                     {
-                        agent.agentTypeID = farInfectedAgentID;  // TO HOSPITAL
-                        // agent.SetDestination(hospitalTilePos);  // ENABLE
+                        agent.agentTypeID = farInfectedAgentID;
+                        // agent.SetDestination(hospitalTilePos);  // Enable?
                     }
                     else
                     {
-                        // agent.SetDestination(hospitalTilePos);  // AWAY FROM HOSPITAL PATHING
                         float minPathLength = float.MaxValue;
                         Vector3 minPathLocation = hospitalTilePos;  // Defaults here if no complete paths
                         foreach (Vector3 location in pathModeDestinations[hospitalPathMode])
@@ -212,17 +210,10 @@ public class PersonController : MonoBehaviour
                             }
                         }
                         pathPending = agent.SetDestination(minPathLocation);
-                        // hasPathToHospital = false;
                     }
                 }
                 infectedSetPathTimer = infectedSetPathTime;
             }
-            /*
-            if (hasPathToHospital)
-            {
-                agent.Warp(tempAgent.transform.position);
-            }
-            */
             infectedSetPathTimer -= Time.deltaTime;
             // Debug.Log("GOING THERE: " + pathPending);
             // Debug.Log("REMAINING: " + agent.remainingDistance);
