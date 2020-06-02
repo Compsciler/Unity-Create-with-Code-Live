@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public bool isUsingGameOver = true;
     public float infectionSpreadRate = 3f;
 
-    internal Dictionary<GameObject, float> infectedPathDistances;
+    internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameActive)
         {
+            /*
             float minPathDistance = float.MaxValue;
             GameObject closestInfected = null;
             foreach (GameObject infected in infectedPathDistances.Keys)  // Remove dictionary if only used here
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour
                 // infectedPathDistances[infected] = infected.GetComponent<PersonController>().hospitalTileDistance;
             }
             // gameTimer += Time.deltaTime;
+            */
         }
     }
 

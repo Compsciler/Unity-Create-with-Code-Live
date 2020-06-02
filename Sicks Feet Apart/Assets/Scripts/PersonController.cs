@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
+using System.IO;
+// using System;
 // using NUnit.Framework.Internal;
 // using NUnit.Framework;
 // using NUnit.Framework.Internal;
@@ -30,6 +32,7 @@ public class PersonController : MonoBehaviour
     private int infectedAgentID = -334000983;
     private int recentlyHealedAgentID = 1479372276;
     private int priorityInfectedAgentID = -1923039037;
+    private int farInfectedAgentID = -902729914;
     // private float hospitalEnterPosSideMax = 4.85f;
 
     public bool startsInfected;
@@ -58,6 +61,15 @@ public class PersonController : MonoBehaviour
     private float infectedAcceleration = 400;
     // private CoroutineHandle handle;
 
+    public int hospitalPathMode = 2;
+    Vector3[][] pathModeDestinations = new Vector3[3][];
+    private NavMeshAgent tempAgent;
+    private float tempAgentYPos = 5.67f;
+
+    private bool isNearHospital = false;
+    private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
+    private float wallYPos = 1f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +83,9 @@ public class PersonController : MonoBehaviour
 
         infectionCylinderScript = GetComponentInChildren<InfectionCylinder>(true);
         hospitalTileScript = GameObject.Find("Hospital").GetComponent<HospitalTile>();
+
+        GeneratePathModeDestinations(true);
+        tempAgent = GameObject.Find("Temp Pathing Agent").GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
@@ -85,7 +100,7 @@ public class PersonController : MonoBehaviour
             float xPos = Random.Range(-xPosRange, xPosRange);
             float zPos = Random.Range(-zPosRange, zPosRange);
             Vector3 newLocation = new Vector3(xPos, yPos, zPos);
-            if (CalculateNewPath(newLocation))
+            if (CalculateNewPath(newLocation, false))
             {
                 agent.SetDestination(newLocation);
                 // Debug.Log("Path available: " + newLocation);
@@ -132,7 +147,7 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile(false) && !hasStartedHealing)
+        if (isOnHospitalTile(0) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
             heal();
@@ -147,16 +162,56 @@ public class PersonController : MonoBehaviour
             exitPos.z = -exitPos.z;
             agent.Warp(exitPos);
             */
-        } else if (!isOnHospitalTile(false))
+        }
+        else if (!isOnHospitalTile(0))
         {
             hasStartedHealing = false;
         }
-        if (isInfected)
+        if (isInfected && agent.agentTypeID != recentlyHealedAgentID)
         {
             bool pathPending = true;
-            if (infectedSetPathTimer < 0)  // May want to change NavMeshAgent acceleration as well
+            // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
+            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)  // When path is a straight line to hospital and close enough
             {
-                pathPending = agent.SetDestination(hospitalTilePos);
+                agent.agentTypeID = infectedAgentID;
+            }
+            if (infectedSetPathTimer < 0)  // Changed NavMeshAgent acceleration to counteract path recalculation navigation pauses
+            {
+                if (agent.agentTypeID == farInfectedAgentID)
+                {
+                    agent.SetDestination(hospitalTilePos);
+                }
+                else
+                {
+                    Vector3 shiftedOrigin = new Vector3(transform.position.x, wallYPos, transform.position.z);
+                    Vector3 hospitalDirection = hospitalTilePos - transform.position;
+                    float hospitalDistance = Vector3.Distance(transform.position, hospitalTilePos);
+                    int layerMask = 1 << 9;  // Ray cast only against colliders in Layer 9: Walls
+                    bool hasLineOfSightWithHospital = !Physics.Raycast(shiftedOrigin, hospitalDirection, hospitalDistance, layerMask);
+                    Debug.DrawRay(shiftedOrigin, hospitalDirection, UnityEngine.Color.red, 2f);
+                    Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
+                    if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // This if-block seems to never be run, but should when path to hospital found and agent type is infectedSpheroid
+                    {
+                        agent.agentTypeID = farInfectedAgentID;
+                        // agent.SetDestination(hospitalTilePos);  // Enable?
+                    }
+                    else
+                    {
+                        float minPathLength = float.MaxValue;
+                        Vector3 minPathLocation = hospitalTilePos;  // Defaults here if no complete paths
+                        foreach (Vector3 location in pathModeDestinations[hospitalPathMode])
+                        {
+                            float pathLength = GetPathLength(location, true);
+                            Debug.Log(location + ": " + pathLength);
+                            if (pathLength < minPathLength)
+                            {
+                                minPathLength = pathLength;
+                                minPathLocation = location;
+                            }
+                        }
+                        pathPending = agent.SetDestination(minPathLocation);
+                    }
+                }
                 infectedSetPathTimer = infectedSetPathTime;
             }
             infectedSetPathTimer -= Time.deltaTime;
@@ -167,14 +222,25 @@ public class PersonController : MonoBehaviour
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
-                GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
+                // GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
         }
     }
-    bool CalculateNewPath(Vector3 targetPos)
+    bool CalculateNewPath(Vector3 targetPos, bool usePriorityInfectedAgent)
     {
-        agent.CalculatePath(targetPos, navMeshPath);
+        if (usePriorityInfectedAgent)
+        {
+            Vector3 warpPosition = new Vector3(transform.position.x, tempAgentYPos, transform.position.z);
+            tempAgent.Warp(warpPosition);  // If decided to not warp, tempAgent will stay at Hospital at all times
+            // Debug.Log("Temp Location: " + tempAgent.transform.position);
+            Vector3 newTargetPos = new Vector3(targetPos.x, tempAgentYPos, targetPos.z);
+            tempAgent.CalculatePath(newTargetPos, navMeshPath);
+        }
+        else
+        {
+            agent.CalculatePath(targetPos, navMeshPath);
+        }
         // Debug.Log("New path calculated");
         if (navMeshPath.status != NavMeshPathStatus.PathComplete)
         {
@@ -183,13 +249,27 @@ public class PersonController : MonoBehaviour
         return true;
     }
 
-    bool isOnHospitalTile(bool isAddingTileOffset)
+    public float GetPathLength(Vector3 targetPos, bool usePriorityInfectedAgent)
+    {
+        float pathLength = 0;
+        if (CalculateNewPath(targetPos, usePriorityInfectedAgent))  // Resulting path stored in navMeshPath
+        {
+            for (int i = 1; i < navMeshPath.corners.Length; i++)
+            {
+                pathLength += Vector3.Distance(navMeshPath.corners[i - 1], navMeshPath.corners[i]);
+            }
+        }
+        else
+        {
+            return float.MaxValue;
+        }
+        return pathLength;
+    }
+
+    bool isOnHospitalTile(float extraBorderWidth)
     {
         float halfTileSize = tileSize / 2;
-        if (isAddingTileOffset)
-        {
-            halfTileSize += navMeshSurfaceAgentRadius;
-        }
+        halfTileSize += extraBorderWidth;
         bool isInXRange = transform.position.x > -halfTileSize && transform.position.x < halfTileSize;
         bool isInZRange = transform.position.z > -halfTileSize && transform.position.z < halfTileSize;
         if (isInXRange && isInZRange)
@@ -217,7 +297,7 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> CheckIfOffHospitalTile()
     {
-        while (isOnHospitalTile(true))
+        while (isOnHospitalTile(navMeshSurfaceAgentRadius))
         {
             yield return Timing.WaitForOneFrame;
         }
@@ -227,7 +307,14 @@ public class PersonController : MonoBehaviour
     IEnumerator<float> InfectionProcess()
     {
         gameObject.tag = "Infected";
-        agent.agentTypeID = infectedAgentID;
+        if (isNearHospital)
+        {
+            agent.agentTypeID = infectedAgentID;
+        }
+        else
+        {
+            agent.agentTypeID = farInfectedAgentID;
+        }
         agent.acceleration = infectedAcceleration;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
         for (int i = 0; i < infectedMaterials.Length; i++)
@@ -251,11 +338,82 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(false))  // May remove Hospital immunity
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(0))  // May remove Hospital immunity
         {
             isInfected = true;
             isRecentlyInfected = true;
             // Debug.Log("PERSON TO PERSON");
+        } 
+        else if (other.CompareTag("NearHospital"))
+        {
+            isNearHospital = true;
+            if (agent.agentTypeID == farInfectedAgentID)
+            {
+                agent.agentTypeID = infectedAgentID;
+            }
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("NearHospital"))
+        {
+            isNearHospital = false;
+        }
+    }
+
+    void GeneratePathModeDestinations(bool isSubtractingHospitalWalls)
+    {
+        float val1;
+        if (isSubtractingHospitalWalls)
+        {
+            val1 = 6.17f;  // Distance from center of Hospital to InfectedSpheroid's NavMesh without wall (minus 0.03 to collide with Hospital barriers)
+        }
+        else
+        {
+            val1 = 6.5f;  // Distance from center of tile and through a wall of adjacent tile
+        }
+        float val2 = 3.5f;  // Distance from center of tile and touching wall on same tile
+        pathModeDestinations[0] = new Vector3[]{};
+        pathModeDestinations[1] = new Vector3[4];
+        pathModeDestinations[2] = new Vector3[12];
+        for (int i = 0; i < 4; i++)
+        {
+            float newVal1 = val1;
+            if (i % 2 == 1)
+            {
+                newVal1 *= -1;
+            }
+            if (i < 2)
+            {
+                pathModeDestinations[1][i] = new Vector3(newVal1, yPos, 0);
+                pathModeDestinations[2][i] = new Vector3(newVal1, yPos, 0);
+            }
+            else
+            {
+                pathModeDestinations[1][i] = new Vector3(0, yPos, newVal1);
+                pathModeDestinations[2][i] = new Vector3(0, yPos, newVal1);
+            }
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            float newVal1 = val1;
+            float newVal2 = val2;
+            if (i % 2 == 1)
+            {
+                newVal1 *= -1;
+            }
+            if (i % 4 >= 2)
+            {
+                newVal2 *= -1;
+            }
+            if (i < 4)
+            {
+                pathModeDestinations[2][i + 4] = new Vector3(newVal1, yPos, newVal2);
+            }
+            else
+            {
+                pathModeDestinations[2][i + 4] = new Vector3(newVal2, yPos, newVal1);
+            }
         }
     }
 }
