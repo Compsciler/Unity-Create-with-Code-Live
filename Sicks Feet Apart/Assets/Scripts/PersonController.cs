@@ -64,7 +64,7 @@ public class PersonController : MonoBehaviour
     public int hospitalPathMode = 2;
     Vector3[][] pathModeDestinations = new Vector3[3][];
     private NavMeshAgent tempAgent;
-    private float tempAgentYPos = 5.67f;
+    private float tempAgentYPos = -4.41f;
 
     private bool isNearHospital = false;
     private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
@@ -167,7 +167,7 @@ public class PersonController : MonoBehaviour
         {
             hasStartedHealing = false;
         }
-        if (isInfected && agent.agentTypeID != recentlyHealedAgentID)
+        if (isInfected && agent.agentTypeID != recentlyHealedAgentID && GameManager.instance.isGameActive)  // isGameActive check should only appear once in Update()
         {
             bool pathPending = true;
             // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition

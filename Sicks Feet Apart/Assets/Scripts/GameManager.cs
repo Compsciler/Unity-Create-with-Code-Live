@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public float infectionSpreadRate = 3f;
 
     internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
+    public GameObject gameOverMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +51,8 @@ public class GameManager : MonoBehaviour
         if (isUsingGameOver)
         {
             isGameActive = false;
+            gameOverMenu.SetActive(true);
+            GameObject.Find("Spawn Manager").GetComponent<SpawnPeople>().UpdateGameOverScoreText();
             Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
             Debug.Log("Game Over!");
         }

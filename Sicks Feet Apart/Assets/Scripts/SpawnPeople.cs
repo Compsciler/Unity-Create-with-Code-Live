@@ -23,6 +23,7 @@ public class SpawnPeople : MonoBehaviour
     private int wave = 0;
 
     public TextMeshProUGUI waveText;
+    public TextMeshProUGUI gameOverScoreText;
 
     // Start is called before the first frame update
     void Start()
@@ -79,5 +80,10 @@ public class SpawnPeople : MonoBehaviour
     void UpdateWaveText()  // Include animation?
     {
         waveText.text = "Wave " + wave;
+    }
+
+    public void UpdateGameOverScoreText()
+    {
+        gameOverScoreText.text = "You reached Wave " + wave;
     }
 }
