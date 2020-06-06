@@ -56,7 +56,7 @@ public class SpawnPeople : MonoBehaviour
                 }
             }
             timer = repeatRate;
-            Debug.Log(Time.time);
+            // Debug.Log(Time.time);
         }
         if (GameManager.instance.isGameActive)
         {
@@ -67,14 +67,16 @@ public class SpawnPeople : MonoBehaviour
     void SpawnPerson(bool isInfected)
     {
         Vector3 spawnPos = spawnPosList[Random.Range(0, spawnPosList.Length)];
+        GameObject person;
         if (isInfected)
         {
-            Instantiate(infectedPerson, spawnPos, infectedPerson.transform.rotation);
+            person = Instantiate(infectedPerson, spawnPos, infectedPerson.transform.rotation);
         }
         else
         {
-            Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
+            person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
         }
+        person.name = "Person " + wave;
     }
 
     void UpdateWaveText()  // Include animation?

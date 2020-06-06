@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class ProgressBar : MonoBehaviour
+public class WaveProgressBar : MonoBehaviour
 {
     [SerializeField] float maxValue;
     [SerializeField] float currentValue;

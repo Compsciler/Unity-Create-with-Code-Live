@@ -72,4 +72,10 @@ public class GameManager : MonoBehaviour
             yield return Timing.WaitForSeconds(infectionSpreadRate);
         }
     }
+
+    public void ResetStaticVariables()
+    {
+        HospitalTile.isOccupied = false;
+        HealProgressBar.isNewlyOccupied = false;
+    }
 }

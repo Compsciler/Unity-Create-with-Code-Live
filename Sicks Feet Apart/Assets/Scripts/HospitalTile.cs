@@ -8,6 +8,7 @@ public class HospitalTile : MonoBehaviour
 {
     public float waitTime;
     internal static bool isOccupied = false;
+    [SerializeField] bool isOccupiedSerialized = false;
     public GameObject hospitalBarriers;
     // public GameObject[] barriers;
 
@@ -20,18 +21,18 @@ public class HospitalTile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        isOccupiedSerialized = isOccupied;
     }
 
     public IEnumerator<float> HospitalQueue()
     {
         // hospitalBarriers.SetActive(true);
-        isOccupied = true;
-        Debug.Log("OCCUPIED");
+        // isOccupied = true;  // Done in HospitalBarrier.cs
+        // Debug.Log("OCCUPIED");
         yield return Timing.WaitForSeconds(waitTime);
         // hospitalBarriers.SetActive(false);
-        Debug.Log("UNOCCUPIED");
-        isOccupied = false;
+        // Debug.Log("UNOCCUPIED");
+        // isOccupied = false;  // Done in PersonController.cs
     }
 
     /*

@@ -54,17 +54,27 @@ public class HospitalBarrier : MonoBehaviour
         {
             return;
         }
-        Debug.Log(agent.agentTypeID);
-        Debug.Log(HospitalTile.isOccupied);
-        Debug.Log("COLLISION");
+        // Debug.Log(agent.agentTypeID);
+        // Debug.Log(HospitalTile.isOccupied);
         if (agent.agentTypeID == infectedAgentID && !HospitalTile.isOccupied)  // agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied  // Change for different difficulty settings
         {
             agent.agentTypeID = priorityInfectedAgentID;
             agent.SetDestination(hospitalTilePos);
             // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);  // Need a NavMeshModifier Ignore
-            Debug.Log("IGNORED");
+            Debug.Log("OCCUPIED " + other.gameObject.name);
             HospitalTile.isOccupied = true;
+            HealProgressBar.isNewlyOccupied = true;
             // agent.SetDestination(new Vector3(0, 1.67f, 0));
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        NavMeshAgent agent = other.gameObject.GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            return;
+        }
+        Debug.Log("COLLISION BY " + other.gameObject.name);
     }
 }

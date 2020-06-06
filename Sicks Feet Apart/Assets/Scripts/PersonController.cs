@@ -75,7 +75,7 @@ public class PersonController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
-        Debug.Log(agent.agentTypeID);
+        // Debug.Log(agent.agentTypeID);
         // Debug.Log("ID: " + GetInstanceID());
 
         isInfected = startsInfected;
@@ -151,7 +151,7 @@ public class PersonController : MonoBehaviour
         {
             Vector3 exitPos = transform.position;
             heal();
-            Debug.Log("HEALING");
+            Debug.Log("HEALING " + gameObject.name);
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
             Timing.RunCoroutine(HealingProcess());
@@ -189,7 +189,7 @@ public class PersonController : MonoBehaviour
                     int layerMask = 1 << 9;  // Ray cast only against colliders in Layer 9: Walls
                     bool hasLineOfSightWithHospital = !Physics.Raycast(shiftedOrigin, hospitalDirection, hospitalDistance, layerMask);
                     Debug.DrawRay(shiftedOrigin, hospitalDirection, UnityEngine.Color.red, 2f);
-                    Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
+                    // Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
                     if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // This if-block seems to never be run, but should when path to hospital found and agent type is infectedSpheroid
                     {
                         agent.agentTypeID = farInfectedAgentID;
@@ -202,7 +202,7 @@ public class PersonController : MonoBehaviour
                         foreach (Vector3 location in pathModeDestinations[hospitalPathMode])
                         {
                             float pathLength = GetPathLength(location, true);
-                            Debug.Log(location + ": " + pathLength);
+                            // Debug.Log(location + ": " + pathLength);
                             if (pathLength < minPathLength)
                             {
                                 minPathLength = pathLength;
@@ -302,6 +302,8 @@ public class PersonController : MonoBehaviour
             yield return Timing.WaitForOneFrame;
         }
         agent.agentTypeID = healthyAgentID;
+        HospitalTile.isOccupied = false;
+        Debug.Log("UNOCCUPIED " + gameObject.name);
     }
 
     IEnumerator<float> InfectionProcess()
