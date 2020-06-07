@@ -23,7 +23,7 @@ public class RotateTile : MonoBehaviour
     void OnMouseDown()
     {
         // Debug.Log(gameObject.name);
-        if (GameManager.instance.isGameActive)
+        if (GameManager.instance.isGameActive && Time.timeScale == 1)
         {
             foreach (GameObject wall in adjacentWalls)
             {

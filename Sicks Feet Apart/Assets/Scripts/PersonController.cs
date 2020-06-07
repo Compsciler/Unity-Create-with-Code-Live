@@ -40,7 +40,7 @@ public class PersonController : MonoBehaviour
     private bool isRecentlyInfected;
 
     public float infectionDeathDuration = 40f;
-    public float healTime;
+    public float healTime;  // Value also exists in HealProgressBar.cs
 
     [Header("Materials")]
     public Material healthyMaterial;
@@ -70,6 +70,9 @@ public class PersonController : MonoBehaviour
     private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
     private float wallYPos = 1f;
 
+    // private bool isGameActivePreviousFrame = true;
+    private bool wasAgentStopped = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,8 +96,22 @@ public class PersonController : MonoBehaviour
     {
         if (!GameManager.instance.isGameActive)
         {
-            agent.isStopped = true;
+            if (agent.isStopped == true && GameManager.instance.isGameActivePreviousFrame)
+            {
+                wasAgentStopped = true;  // For later use with revives
+            }
+            agent.isStopped = true;  // Occasionally Person 1 and Person 2 (and maybe others as well) are not stopped with GameManager.instance.isGameActivePreviousFrame added in the largest if-block
+            // isGameActivePreviousFrame = false;
+            // Debug.Log(gameObject.name + " STOPPED");
         }
+        /*
+        if (GameManager.instance.isGameActive && !isGameActivePreviousFrame)
+        {
+            agent.isStopped = false;
+            isGameActivePreviousFrame = true;
+            Debug.Log("Here 2");
+        }
+        */
         if (agent.remainingDistance <= minDistanceRelocation && !isInfected)  // Returns 0 when reached destination or when blocked, as close as it can get
         {
             float xPos = Random.Range(-xPosRange, xPosRange);
@@ -147,10 +164,10 @@ public class PersonController : MonoBehaviour
             // bool hasPath = NavMesh.CalculatePath(transform.position, hit.transform.position, NavMesh.AllAreas, path);
             // How to have healthy people avoid going on top of hospital tile in Normal difficulty: https://www.youtube.com/watch?v=CHV1ymlw-P8
         }
-        if (isOnHospitalTile(0) && !hasStartedHealing)
+        if (IsOnHospitalTile(0) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
-            heal();
+            Heal();
             Debug.Log("HEALING " + gameObject.name);
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
@@ -163,15 +180,15 @@ public class PersonController : MonoBehaviour
             agent.Warp(exitPos);
             */
         }
-        else if (!isOnHospitalTile(0))
+        else if (!IsOnHospitalTile(0))
         {
             hasStartedHealing = false;
         }
-        if (isInfected && agent.agentTypeID != recentlyHealedAgentID && GameManager.instance.isGameActive)  // isGameActive check should only appear once in Update()
+        if (isInfected && agent.agentTypeID != recentlyHealedAgentID)
         {
             bool pathPending = true;
             // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
-            if (agent.remainingDistance != Mathf.Infinity && isOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)  // When path is a straight line to hospital and close enough
+            if (agent.remainingDistance != Mathf.Infinity && IsOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)  // When path is a straight line to hospital and close enough
             {
                 agent.agentTypeID = infectedAgentID;
             }
@@ -266,7 +283,7 @@ public class PersonController : MonoBehaviour
         return pathLength;
     }
 
-    bool isOnHospitalTile(float extraBorderWidth)
+    bool IsOnHospitalTile(float extraBorderWidth)
     {
         float halfTileSize = tileSize / 2;
         halfTileSize += extraBorderWidth;
@@ -279,7 +296,7 @@ public class PersonController : MonoBehaviour
         return false;
     }
 
-    void heal()
+    void Heal()
     {
         if (agent.agentTypeID == priorityInfectedAgentID || agent.agentTypeID == infectedAgentID)  // 2nd check probably unnecessary
         {
@@ -297,7 +314,7 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> CheckIfOffHospitalTile()
     {
-        while (isOnHospitalTile(navMeshSurfaceAgentRadius))
+        while (IsOnHospitalTile(navMeshSurfaceAgentRadius))
         {
             yield return Timing.WaitForOneFrame;
         }
@@ -340,7 +357,7 @@ public class PersonController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !isOnHospitalTile(0))  // May remove Hospital immunity
+        if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !IsOnHospitalTile(0))  // May remove Hospital immunity
         {
             isInfected = true;
             isRecentlyInfected = true;

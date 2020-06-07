@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class HealProgressBar : MonoBehaviour
 {
-    private float healTime = 10f;  // Another constant that should be written in a separate script
+    private float healTime = 8f;  // Another constant that should be written in a separate script
     private float healTimer = 0;
     public Image fill;
     // public Color fillColor;

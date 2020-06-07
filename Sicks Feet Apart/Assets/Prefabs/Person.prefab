@@ -261,7 +261,7 @@ MonoBehaviour:
   startsInfected: 1
   isInfected: 0
   infectionDeathDuration: 40
-  healTime: 10
+  healTime: 8
   healthyMaterial: {fileID: 2100000, guid: 427c6bad32585f446a3ba1a383f4df97, type: 2}
   infectedMaterials:
   - {fileID: 2100000, guid: 990dc65af02d1a74fb9f4b1074b10210, type: 2}
@@ -270,3 +270,4 @@ MonoBehaviour:
   - {fileID: 2100000, guid: fd1d4661970208e4280b42ff6d3a0ae1, type: 2}
   deadMaterial: {fileID: 2100000, guid: fae9d2e2cf5eb5e41b305e884ed9ef36, type: 2}
   infectedSetPathTime: 1
+  hospitalPathMode: 2

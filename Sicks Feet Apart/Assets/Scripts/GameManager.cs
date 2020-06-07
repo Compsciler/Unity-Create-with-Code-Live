@@ -7,7 +7,8 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     internal static GameManager instance;
-    [SerializeField] internal bool isGameActive = true;  // Change to false at initial menu
+    [SerializeField] internal bool isGameActive = true;  // Time.timeScale will be used to check for pausing  // Change to false during start countdown
+    internal bool isGameActivePreviousFrame = true;
     // private float gameTimer = 0;  // Could use Time.timeSinceLevelLoad with Time.timeScale instead for simple functionality
     public bool isUsingGameOver = true;
     public float infectionSpreadRate = 3f;
@@ -45,6 +46,14 @@ public class GameManager : MonoBehaviour
             */
         }
     }
+    void LateUpdate()
+    {
+        if (isGameActivePreviousFrame != isGameActive)
+        {
+            Debug.Log("isGameActive was set to false");
+        }
+        isGameActivePreviousFrame = isGameActive;  // isGameActive set to false in GameOver(), which happens from InfectionProcess() coroutine; hopefully coroutines always execute before LateUpdate()
+    }
 
     public void GameOver()
     {
@@ -77,5 +86,6 @@ public class GameManager : MonoBehaviour
     {
         HospitalTile.isOccupied = false;
         HealProgressBar.isNewlyOccupied = false;
+        Time.timeScale = 1;  // Resetting time scale here as well when restarting or quitting game
     }
 }

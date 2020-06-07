@@ -19,7 +19,7 @@ public class InfectionCylinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!GameManager.instance.isGameActive)
+        if (!GameManager.instance.isGameActive)  // Script disables
         {
             gameObject.SetActive(false);
         }
