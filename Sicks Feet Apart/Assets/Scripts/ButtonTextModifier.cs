@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ButtonEasterEgg : EventTrigger
+public class ButtonTextModifier : EventTrigger
 {
     // Start is called before the first frame update
     void Start()

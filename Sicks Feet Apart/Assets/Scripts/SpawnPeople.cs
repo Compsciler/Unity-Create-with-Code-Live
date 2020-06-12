@@ -22,8 +22,8 @@ public class SpawnPeople : MonoBehaviour
     internal bool isInfectedWave = false;
     private int wave = 0;
 
-    public TextMeshProUGUI waveText;
-    public TextMeshProUGUI gameOverScoreText;
+    public TMP_Text waveText;
+    public TMP_Text gameOverScoreText;
 
     // Start is called before the first frame update
     void Start()

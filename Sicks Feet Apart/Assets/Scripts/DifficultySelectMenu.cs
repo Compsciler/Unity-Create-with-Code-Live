@@ -7,11 +7,13 @@ using UnityEngine.SceneManagement;
 public class DifficultySelectMenu : MonoBehaviour
 {
     public GameObject[] difficultyButtons;
+    public GameObject descriptionTextsHolder;
+    private GameObject[] descriptionTexts;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        descriptionTexts = descriptionTextsHolder.GetChildren();
     }
 
     // Update is called once per frame
@@ -29,7 +31,7 @@ public class DifficultySelectMenu : MonoBehaviour
     {
         foreach (GameObject button in difficultyButtons)
         {
-            button.transform.Find("Description Text").gameObject.SetActive(false);
+            // button.transform.Find("Description Text").gameObject.SetActive(false);
             button.transform.Find("Pressed Button Image").gameObject.SetActive(false);
             try
             {
@@ -39,6 +41,10 @@ public class DifficultySelectMenu : MonoBehaviour
             {
                 
             }
+        }
+        foreach (GameObject descriptionText in descriptionTexts)
+        {
+            descriptionText.SetActive(false);
         }
     }
 }
