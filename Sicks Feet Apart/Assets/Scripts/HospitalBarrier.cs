@@ -63,7 +63,7 @@ public class HospitalBarrier : MonoBehaviour
             // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);  // Need a NavMeshModifier Ignore
             Debug.Log("OCCUPIED " + other.gameObject.name);
             HospitalTile.isOccupied = true;
-            HealProgressBar.isNewlyOccupied = true;
+            // HealProgressBar.isNewlyOccupied = true;  // Put in PersonController.cs
             // agent.SetDestination(new Vector3(0, 1.67f, 0));
         }
     }

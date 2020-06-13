@@ -66,12 +66,20 @@ public class PersonController : MonoBehaviour
     private NavMeshAgent tempAgent;
     private float tempAgentYPos = -4.41f;
 
-    private bool isNearHospital = false;
+    private bool isNearHospital = false;  // Unused
     private float farInfectedHospitalBorderWidth = 1.5f;  // Try 2f if range is too close
     private float wallYPos = 1f;
 
     // private bool isGameActivePreviousFrame = true;
     private bool wasAgentStopped = false;
+
+    public float priorityInfectedHospitalReachTime = 0.2f;
+    private float priorityInfectedHospitalReachTimer;
+
+    // public float speedThreshold = 1f;
+    private int defaultAvoidancePriority = 50;
+    private int highestAvoidancePriority = 25;
+    private int lowestAvoidancePriority = 75;
 
     // Start is called before the first frame update
     void Start()
@@ -89,6 +97,8 @@ public class PersonController : MonoBehaviour
 
         GeneratePathModeDestinations(true);
         tempAgent = GameObject.Find("Temp Pathing Agent").GetComponent<NavMeshAgent>();
+
+        priorityInfectedHospitalReachTimer = priorityInfectedHospitalReachTime;
     }
 
     // Update is called once per frame
@@ -169,6 +179,8 @@ public class PersonController : MonoBehaviour
             Vector3 exitPos = transform.position;
             Heal();
             Debug.Log("HEALING " + gameObject.name);
+            Timing.RunCoroutine(hospitalTileScript.HospitalQueue());  // Moved from outside if-block in Heal();
+            HealProgressBar.isNewlyOccupied = true;
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
             Timing.RunCoroutine(HealingProcess());
@@ -184,13 +196,21 @@ public class PersonController : MonoBehaviour
         {
             hasStartedHealing = false;
         }
-        if (isInfected && agent.agentTypeID != recentlyHealedAgentID)
+        if (isInfected && agent.agentTypeID != recentlyHealedAgentID && agent.agentTypeID != priorityInfectedAgentID)  // Moved priorityInfectedAgentID here
         {
             bool pathPending = true;
             // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
-            if (agent.remainingDistance != Mathf.Infinity && IsOnHospitalTile(farInfectedHospitalBorderWidth) && agent.agentTypeID != priorityInfectedAgentID)  // When path is a straight line to hospital and close enough
+            if (agent.remainingDistance != Mathf.Infinity && IsOnHospitalTile(farInfectedHospitalBorderWidth))  // When path is a straight line to hospital and close enough
             {
-                agent.agentTypeID = infectedAgentID;
+                if (agent.agentTypeID == farInfectedAgentID)
+                {
+                    agent.agentTypeID = infectedAgentID;
+                    agent.SetDestination(hospitalTilePos);
+                }
+                else
+                {
+                    agent.agentTypeID = infectedAgentID;  // Fixed v0.7 Alpha 1 Bug #1?
+                }
             }
             if (infectedSetPathTimer < 0)  // Changed NavMeshAgent acceleration to counteract path recalculation navigation pauses
             {
@@ -241,6 +261,17 @@ public class PersonController : MonoBehaviour
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
                 // GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
+            }
+        }
+        else if (agent.agentTypeID == priorityInfectedAgentID)
+        {
+            priorityInfectedHospitalReachTimer -= Time.deltaTime;
+            if (priorityInfectedHospitalReachTimer < 0)
+            {
+                agent.agentTypeID = infectedAgentID;
+                HospitalTile.isOccupied = false;
+                Debug.Log("UNOCCUPIED 2 BY " + gameObject.name);
+                priorityInfectedHospitalReachTimer = priorityInfectedHospitalReachTime;
             }
         }
     }
@@ -309,7 +340,6 @@ public class PersonController : MonoBehaviour
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
         }
-        Timing.RunCoroutine(hospitalTileScript.HospitalQueue());
     }
 
     IEnumerator<float> CheckIfOffHospitalTile()
@@ -362,8 +392,12 @@ public class PersonController : MonoBehaviour
             isInfected = true;
             isRecentlyInfected = true;
             // Debug.Log("PERSON TO PERSON");
-        } 
-        else if (other.CompareTag("NearHospital"))
+        }
+        else if (other.CompareTag("AvoidanceCylinder") && other.transform.parent.gameObject != gameObject && !isInfected)
+        {
+            agent.avoidancePriority = Random.Range(highestAvoidancePriority, lowestAvoidancePriority);
+        }
+        else if (other.CompareTag("NearHospital"))  // isNearHospital and "NearHospital" tag eems to be unused now
         {
             isNearHospital = true;
             if (agent.agentTypeID == farInfectedAgentID)
@@ -377,6 +411,10 @@ public class PersonController : MonoBehaviour
         if (other.CompareTag("NearHospital"))
         {
             isNearHospital = false;
+        }
+        else if (other.CompareTag("AvoidanceCylinder"))
+        {
+            agent.avoidancePriority = defaultAvoidancePriority;
         }
     }
 

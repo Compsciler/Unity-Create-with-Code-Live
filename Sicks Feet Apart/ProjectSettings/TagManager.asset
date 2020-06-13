@@ -8,6 +8,7 @@ TagManager:
   - InfectionCylinder
   - RotatableWall
   - NearHospital
+  - AvoidanceCylinder
   layers:
   - Default
   - TransparentFX
