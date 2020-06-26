@@ -10,6 +10,8 @@ public class DifficultySelectMenu : MonoBehaviour
     public GameObject descriptionTextsHolder;
     private GameObject[] descriptionTexts;
 
+    public AudioClip playButtonSound;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +26,8 @@ public class DifficultySelectMenu : MonoBehaviour
 
     public void PlayNormal()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
+        // Camera.main.GetComponent<AudioSource>().PlayOneShot(playButtonSound);
     }
 
     public void ResetMenu()

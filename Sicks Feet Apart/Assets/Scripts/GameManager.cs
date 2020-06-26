@@ -7,14 +7,20 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     internal static GameManager instance;
-    [SerializeField] internal bool isGameActive = true;  // Time.timeScale will be used to check for pausing  // Change to false during start countdown
+    [SerializeField] internal bool isGameActive = true;  // Time.timeScale will be used to check for pausing  // Change to false during start countdown?
     internal bool isGameActivePreviousFrame = true;
     // private float gameTimer = 0;  // Could use Time.timeSinceLevelLoad with Time.timeScale instead for simple functionality
     public bool isUsingGameOver = true;
     public float infectionSpreadRate = 3f;
+    internal bool hasGameStarted = false;
+    public float gameCountdownTime = 3f;
+    public GameObject spawnManager;
+    public GameObject countdownGameMask;
+    public GameObject[] disableAfterCountdown;
 
     internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
     public GameObject gameOverMenu;
+    public AudioClip countdownEndSound;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +28,8 @@ public class GameManager : MonoBehaviour
         instance = this;
         // Timing.RunCoroutine(InfectionSpread());
         infectedPathDistances = new Dictionary<GameObject, float>();
+        countdownGameMask.SetActive(true);
+        Timing.RunCoroutine(BeginAfterCountdown());
     }
 
     // Update is called once per frame
@@ -61,9 +69,21 @@ public class GameManager : MonoBehaviour
         {
             isGameActive = false;
             gameOverMenu.SetActive(true);
-            GameObject.Find("Spawn Manager").GetComponent<SpawnPeople>().UpdateGameOverScoreText();
+            spawnManager.GetComponent<SpawnPeople>().UpdateGameOverScoreText();
             Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
             Debug.Log("Game Over!");
+        }
+    }
+
+    IEnumerator<float> BeginAfterCountdown()
+    {
+        yield return Timing.WaitForSeconds(gameCountdownTime);
+        spawnManager.GetComponent<GenerateWalls>().BeginGeneration();
+        hasGameStarted = true;
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(countdownEndSound);
+        foreach (GameObject go in disableAfterCountdown)
+        {
+            go.SetActive(false);
         }
     }
 

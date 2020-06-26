@@ -16,6 +16,17 @@ public class GenerateWalls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void BeginGeneration()
+    {
         List<Vector3> tilePosList = new List<Vector3>();
 
         for (float x = -xTileRange; x <= xTileRange; x += tileSize)
@@ -30,7 +41,8 @@ public class GenerateWalls : MonoBehaviour
         }
 
         List<GameObject> walls = new List<GameObject>();
-        for (int i = 0; i < wallTotal; i++){
+        for (int i = 0; i < wallTotal; i++)
+        {
             Vector3 tilePos = tilePosList[Random.Range(0, tilePosList.Count)];
             GameObject wall = Instantiate(wallPrefab, tilePos, Quaternion.identity, wallsGO_Transform);
 
@@ -49,15 +61,9 @@ public class GenerateWalls : MonoBehaviour
             walls.Add(wall);
             continue;
 
-            REPEAT:
+        REPEAT:
             Destroy(wall);
             i--;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -35,7 +35,7 @@ public class SpawnPeople : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (timer <= 0)
+        if (timer < 0)
         {
             wave++;
             UpdateWaveText();
@@ -58,7 +58,7 @@ public class SpawnPeople : MonoBehaviour
             timer = repeatRate;
             // Debug.Log(Time.time);
         }
-        if (GameManager.instance.isGameActive)
+        if (GameManager.instance.isGameActive && GameManager.instance.hasGameStarted)
         {
             timer -= Time.deltaTime;
         }

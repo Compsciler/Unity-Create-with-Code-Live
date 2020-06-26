@@ -12,18 +12,23 @@ public class WaveProgressBar : MonoBehaviour
     public Color fillInfectedColor;
     private SpawnPeople spawnPeopleScript;
 
+    public GameObject spawnManager;
+
     // Start is called before the first frame update
     void Start()
     {
-        spawnPeopleScript = GameObject.Find("Spawn Manager").GetComponent<SpawnPeople>();
+        spawnPeopleScript = spawnManager.GetComponent<SpawnPeople>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        maxValue = spawnPeopleScript.repeatRate;
-        currentValue = maxValue - spawnPeopleScript.timer;
-        FillBar();
+        if (GameManager.instance.hasGameStarted)
+        {
+            maxValue = spawnPeopleScript.repeatRate;
+            currentValue = maxValue - spawnPeopleScript.timer;
+            FillBar();
+        }
     }
 
     void FillBar()
