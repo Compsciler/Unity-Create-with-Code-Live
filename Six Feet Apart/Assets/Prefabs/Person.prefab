@@ -273,6 +273,10 @@ MonoBehaviour:
   infectedSetPathTime: 1
   hospitalPathMode: 2
   priorityInfectedHospitalReachTime: 0.2
+  healSound: {fileID: 8300000, guid: 75327d1c134cf9f40ad4c15ca83dae57, type: 3}
+  newInfectionSound: {fileID: 8300000, guid: 7d1db80367819f44ebe863ac67c40926, type: 3}
+  healSoundVolume: 0.6
+  newInfectionSoundVolume: 0.8
 --- !u!1 &7040253466923861384
 GameObject:
   m_ObjectHideFlags: 0

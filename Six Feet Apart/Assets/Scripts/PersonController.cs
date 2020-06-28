@@ -81,6 +81,11 @@ public class PersonController : MonoBehaviour
     private int highestAvoidancePriority = 25;
     private int lowestAvoidancePriority = 75;
 
+    public AudioClip healSound;
+    public AudioClip newInfectionSound;
+    public float healSoundVolume;
+    public float newInfectionSoundVolume;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -339,6 +344,7 @@ public class PersonController : MonoBehaviour
             Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
+            AudioManager.instance.SFX_Source.PlayOneShot(healSound, healSoundVolume);
         }
     }
 
@@ -391,6 +397,7 @@ public class PersonController : MonoBehaviour
         {
             isInfected = true;
             isRecentlyInfected = true;
+            AudioManager.instance.SFX_Source.PlayOneShot(newInfectionSound, newInfectionSoundVolume);
             // Debug.Log("PERSON TO PERSON");
         }
         else if (other.CompareTag("AvoidanceCylinder") && other.transform.parent.gameObject != gameObject && !isInfected)

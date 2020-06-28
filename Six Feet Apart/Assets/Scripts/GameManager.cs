@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
     public GameObject gameOverMenu;
     public AudioClip countdownEndSound;
+    public float countdownEndSoundVolume;
+    public AudioClip gameOverSound;
+    public float gameOverSoundVolume;
 
     // Start is called before the first frame update
     void Start()
@@ -67,10 +70,15 @@ public class GameManager : MonoBehaviour
     {
         if (isUsingGameOver)
         {
+            // JUST BEFORE REVIVE SCREEN
             isGameActive = false;
+            Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
+
+            // GAME OVER SCREEN
             gameOverMenu.SetActive(true);
             spawnManager.GetComponent<SpawnPeople>().UpdateGameOverScoreText();
-            Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
+            AudioManager.instance.musicSource.Pause();
+            AudioManager.instance.SFX_Source.PlayOneShot(gameOverSound, gameOverSoundVolume);
             Debug.Log("Game Over!");
         }
     }
@@ -80,7 +88,8 @@ public class GameManager : MonoBehaviour
         yield return Timing.WaitForSeconds(gameCountdownTime);
         spawnManager.GetComponent<GenerateWalls>().BeginGeneration();
         hasGameStarted = true;
-        Camera.main.GetComponent<AudioSource>().PlayOneShot(countdownEndSound);
+        AudioManager.instance.SFX_Source.PlayOneShot(countdownEndSound, countdownEndSoundVolume);
+        AudioManager.instance.musicSource.enabled = true;
         foreach (GameObject go in disableAfterCountdown)
         {
             go.SetActive(false);

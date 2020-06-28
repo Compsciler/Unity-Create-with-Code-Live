@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GreatArcStudios;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ public class RotateTile : MonoBehaviour
 {
     private List<GameObject> adjacentWalls = new List<GameObject>();
     Camera mainCamera;
+    public AudioClip rotateSound;
+    public float rotateSoundVolume;
 
     // Start is called before the first frame update
     void Start()
@@ -25,9 +28,15 @@ public class RotateTile : MonoBehaviour
         // Debug.Log(gameObject.name);
         if (GameManager.instance.isGameActive && Time.timeScale == 1)
         {
+            bool hasWallRotated = false;
             foreach (GameObject wall in adjacentWalls)
             {
                 wall.transform.RotateAround(transform.position, Vector3.up, 90f);
+                hasWallRotated = true;
+            }
+            if (hasWallRotated)
+            {
+                AudioManager.instance.SFX_Source.PlayOneShot(rotateSound, rotateSoundVolume);
             }
         }
     }

@@ -382,6 +382,7 @@ namespace GreatArcStudios
             audioPanel.SetActive(false);
             TitleTexts.SetActive(true);
             mask.SetActive(true);
+            AudioManager.instance.musicSource.Pause();  //|
             if (modifyTimeScale)
             {
                 Time.timeScale = 0;
@@ -414,6 +415,7 @@ namespace GreatArcStudios
             audioPanel.SetActive(false);
             TitleTexts.SetActive(false);
             mask.SetActive(false);
+            AudioManager.instance.musicSource.UnPause();  //|
             for (int i = 0; i < otherUIElements.Length; i++)
             {
                 otherUIElements[i].gameObject.SetActive(true);

@@ -18,7 +18,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &2791842802259433844
 Transform:
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 22abd7dee64bb494fb313e742d596005, type: 2}
+  - {fileID: 2100000, guid: 154ccf13b349b1945ae30a17ff20a4da, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,3 +104,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fca3a2a90fd34948ad56e6e89288ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotateSound: {fileID: 8300000, guid: e57bcf815b18547a7a8b44a99e4d9c99, type: 3}
+  rotateSoundVolume: 1

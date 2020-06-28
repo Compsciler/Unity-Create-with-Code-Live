@@ -25,6 +25,10 @@ public class SpawnPeople : MonoBehaviour
     public TMP_Text waveText;
     public TMP_Text gameOverScoreText;
 
+    public AudioClip spawnSound;
+    public float spawnSoundVolume;
+    public bool isFirstSpawnSoundDisabled;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +49,10 @@ public class SpawnPeople : MonoBehaviour
             } else
             {
                 SpawnPerson(false);
+            }
+            if (!isFirstSpawnSoundDisabled || wave != 1)
+            {
+                AudioManager.instance.SFX_Source.PlayOneShot(spawnSound, spawnSoundVolume);
             }
             isInfectedWave = (wave % infectedWaveInterval == infectedWaveInterval - 1);
             if (wave % repeatRateDecreaseWaveInterval == 0)

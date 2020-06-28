@@ -12,8 +12,6 @@ public class DifficultySelectMenu : MonoBehaviour
     public GameObject descriptionTextsHolder;
     private GameObject[] descriptionTexts;
 
-    private AudioSource musicSource;
-    private AudioSource SFX_Source;
     public AudioClip playButtonSound;
     public GameObject fadingMask;
     public float fadeTime;
@@ -22,8 +20,6 @@ public class DifficultySelectMenu : MonoBehaviour
     void Start()
     {
         descriptionTexts = descriptionTextsHolder.GetChildren();
-        musicSource = Camera.main.GetComponents<AudioSource>()[0];
-        SFX_Source = Camera.main.GetComponents<AudioSource>()[1];
     }
 
     // Update is called once per frame
@@ -35,14 +31,14 @@ public class DifficultySelectMenu : MonoBehaviour
     public void PlayNormal()  // This will be changed to a generic play function later that has specific parameter to call coroutine
     {
         Timing.RunCoroutine(PlayNormalCoroutine());
-        musicSource.Stop();
+        AudioManager.instance.musicSource.Stop();
     }
 
     IEnumerator<float> PlayNormalCoroutine()
     {
         fadingMask.SetActive(true);
         CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());
-        SFX_Source.PlayOneShot(playButtonSound);
+        AudioManager.instance.SFX_Source.PlayOneShot(playButtonSound);
         yield return Timing.WaitUntilDone(fadeBackgroundCoroutine);
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
     }
