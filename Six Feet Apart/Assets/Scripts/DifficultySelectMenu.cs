@@ -63,7 +63,7 @@ public class DifficultySelectMenu : MonoBehaviour
             button.transform.Find("Pressed Button Image").gameObject.SetActive(false);
             try
             {
-                button.transform.Find("Play Button").gameObject.SetActive(false);
+                button.transform.Find("Start Button").gameObject.SetActive(false);
             }
             catch (NullReferenceException e)
             {

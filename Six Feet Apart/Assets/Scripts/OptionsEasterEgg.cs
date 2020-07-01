@@ -22,6 +22,7 @@ public class OptionsEasterEgg : MonoBehaviour
     private TMP_Text yearTextComponent;
     private TMP_Text backButtonTextComponent;
 
+    private string defaultInputText;
     public float backButtonHoldTime = 1f;
     private float backButtonHoldTimer;
 
@@ -41,6 +42,7 @@ public class OptionsEasterEgg : MonoBehaviour
         yearTextComponent = optionsMenuTransform.Find("Year Text").gameObject.GetComponent<TMP_Text>();
         backButtonTextComponent = optionsMenuTransform.Find("Back Button").GetComponentInChildren<TMP_Text>();
 
+        defaultInputText = inputFieldComponent.text;  // Should be 36 spaces followed by "an"
         backButtonHoldTimer = backButtonHoldTime;
     }
 
@@ -78,6 +80,11 @@ public class OptionsEasterEgg : MonoBehaviour
             else
             {
                 backButtonHoldTimer = backButtonHoldTime;
+            }
+
+            if (inputFieldText.Equals(""))
+            {
+                inputFieldComponent.text = defaultInputText;  // Resets input text if all deleted
             }
         }
     }
