@@ -57,8 +57,8 @@ public class PersonController : MonoBehaviour
 
     private bool hasStartedHealing = false;
 
-    private float healthyAcceleration = 15;
-    private float infectedAcceleration = 400;
+    private float healthyAcceleration = 15f;
+    private float infectedAcceleration = 400f;
     // private CoroutineHandle handle;
 
     public int hospitalPathMode = 2;
@@ -85,6 +85,11 @@ public class PersonController : MonoBehaviour
     public AudioClip newInfectionSound;
     public float healSoundVolume;
     public float newInfectionSoundVolume;
+
+    private bool areParticlesOn = true;
+    public ParticleSystem infectionParticles;
+    public ParticleSystem healParticles;
+    public float infectionParticleStartTime = 25f;
 
     // Start is called before the first frame update
     void Start()
@@ -264,6 +269,10 @@ public class PersonController : MonoBehaviour
             {
                 Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());
                 Timing.RunCoroutine(infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + GetInstanceID());
+                if (areParticlesOn)
+                {
+                    Timing.RunCoroutine(PlayInfectionParticles(), "PlayInfectionParticles " + GetInstanceID());
+                }
                 // GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
             }
@@ -345,6 +354,12 @@ public class PersonController : MonoBehaviour
             infectionCylinderScript.gameObject.SetActive(false);
             gameObject.GetComponent<Renderer>().material = healthyMaterial;
             AudioManager.instance.SFX_Source.PlayOneShot(healSound, healSoundVolume);
+            if (areParticlesOn)
+            {
+                Timing.KillCoroutines("PlayInfectionParticles " + GetInstanceID());
+                infectionParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                healParticles.Play();
+            }
         }
     }
 
@@ -385,10 +400,20 @@ public class PersonController : MonoBehaviour
         GameManager.instance.GameOver();
     }
 
+    IEnumerator<float> PlayInfectionParticles()
+    {
+        yield return Timing.WaitForSeconds(infectionParticleStartTime);
+        infectionParticles.Play();
+    }
+
     IEnumerator<float> HealingProcess()
     {
         yield return Timing.WaitForSeconds(healTime);
         isInfected = false;
+        if (areParticlesOn)
+        {
+            healParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
     }
 
     void OnTriggerEnter(Collider other)
