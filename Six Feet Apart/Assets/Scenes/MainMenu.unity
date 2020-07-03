@@ -12900,7 +12900,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Six Feet Apart v0.7.10
+  m_text: Six Feet Apart v0.8 Alpha 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 145bbd9f43cda6b47a883bded8221965, type: 2}
   m_sharedMaterial: {fileID: 21914024979671456, guid: 145bbd9f43cda6b47a883bded8221965,
@@ -12970,10 +12970,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1877158694}
-    characterCount: 22
+    characterCount: 27
     spriteCount: 0
-    spaceCount: 3
-    wordCount: 6
+    spaceCount: 5
+    wordCount: 7
     linkCount: 0
     lineCount: 1
     pageCount: 1
