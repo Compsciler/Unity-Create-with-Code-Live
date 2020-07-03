@@ -24,14 +24,14 @@ public class GameOverMenu : MonoBehaviour
     public void Restart()
     {
         Timing.KillCoroutines();
-        GameManager.instance.ResetStaticVariables();
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        // ResetStaticVariables() delegate in GameManager.cs on scene unload
     }
 
     public void GoToMainMenu()
     {
         Timing.KillCoroutines();
-        GameManager.instance.ResetStaticVariables();
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex - 1);
+        // ResetStaticVariables() delegate in GameManager.cs on scene unload
     }
 }

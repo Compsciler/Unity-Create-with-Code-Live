@@ -25,7 +25,6 @@ public class RotateTile : MonoBehaviour
 
     void OnMouseDown()
     {
-        // Debug.Log(gameObject.name);
         if (GameManager.instance.isGameActive && Time.timeScale == 1)
         {
             int numWallsRotated = 0;

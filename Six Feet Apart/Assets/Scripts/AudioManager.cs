@@ -26,6 +26,8 @@ public class AudioManager : MonoBehaviour
         SFX_Source = GetComponents<AudioSource>()[0];
         musicSource = GetComponents<AudioSource>()[1];
 
+        // Time.timeScale = 1;  // Moved back to GameManager.ResetStaticVariables()
+
         /*
         SFX_Source.mute = (PlayerPrefs.GetInt("IsSFX_Muted", 0) == 1);
         Debug.Log("SFX starts muted: " + SFX_Source.mute);
@@ -52,12 +54,10 @@ public class AudioManager : MonoBehaviour
         if (PlayerPrefs.GetInt("IsSFX_Muted") == 0)
         {
             PlayerPrefs.SetInt("IsSFX_Muted", 1);
-            Debug.Log("SFX Muted");
         }
         else
         {
             PlayerPrefs.SetInt("IsSFX_Muted", 0);
-            Debug.Log("SFX Unmuted");
         }
         DisplayCorrectSFX();
     }
@@ -67,12 +67,10 @@ public class AudioManager : MonoBehaviour
         if (PlayerPrefs.GetInt("IsMusicMuted") == 0)
         {
             PlayerPrefs.SetInt("IsMusicMuted", 1);
-            Debug.Log("Music Muted");
         }
         else
         {
             PlayerPrefs.SetInt("IsMusicMuted", 0);
-            Debug.Log("Music Unmuted");
         }
         DisplayCorrectMusic();
         if (PlayerPrefs.GetInt("IsMusicMuted") == 0 && unpauseOnUnmute)
@@ -102,7 +100,6 @@ public class AudioManager : MonoBehaviour
             musicSource.mute = true;  // Muting so don't have to check for all pausing and unpausing scenarios in GameScene
             musicSource.Pause();
             musicMuteButton.GetComponent<Image>().sprite = musicMutedSprite;
-            Debug.Log("HERE 1");
         }
         else
         {

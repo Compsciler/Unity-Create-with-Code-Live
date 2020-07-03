@@ -75,6 +75,6 @@ public class HospitalBarrier : MonoBehaviour
         {
             return;
         }
-        Debug.Log("COLLISION BY " + other.gameObject.name);
+        // Debug.Log("COLLISION BY " + other.gameObject.name);
     }
 }

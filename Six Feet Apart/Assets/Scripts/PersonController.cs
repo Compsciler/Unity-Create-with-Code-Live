@@ -1,13 +1,13 @@
 ﻿// using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 // using System.Numerics;
 using UnityEngine;
 using UnityEngine.AI;
 using MEC;
 using System.Threading;
 using System.IO;
+using UnityEditor;
 // using System;
 // using NUnit.Framework.Internal;
 // using NUnit.Framework;
@@ -91,13 +91,18 @@ public class PersonController : MonoBehaviour
     public ParticleSystem healParticles;
     public float infectionParticleStartTime = 25f;
 
+    private Color defaultBackgroundColor;
+    private Color dangerBackgroundColor = new Color32(150, 0, 24, 0);  // Carmine
+    private float backgroundFlashTime = 0.05f;
+
+    internal static int infectedPeopleTotal = 0;  // Person on Hospital tile healing does not count as infected
+    private int infectedPeopleBackgroundThreshold = 16;
+
     // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
-        // Debug.Log(agent.agentTypeID);
-        // Debug.Log("ID: " + GetInstanceID());
 
         isInfected = startsInfected;
         isRecentlyInfected = startsInfected;
@@ -109,6 +114,8 @@ public class PersonController : MonoBehaviour
         tempAgent = GameObject.Find("Temp Pathing Agent").GetComponent<NavMeshAgent>();
 
         priorityInfectedHospitalReachTimer = priorityInfectedHospitalReachTime;
+
+        defaultBackgroundColor = Camera.main.backgroundColor;
     }
 
     // Update is called once per frame
@@ -129,7 +136,6 @@ public class PersonController : MonoBehaviour
         {
             agent.isStopped = false;
             isGameActivePreviousFrame = true;
-            Debug.Log("Here 2");
         }
         */
         if (agent.remainingDistance <= minDistanceRelocation && !isInfected)  // Returns 0 when reached destination or when blocked, as close as it can get
@@ -189,7 +195,7 @@ public class PersonController : MonoBehaviour
             Vector3 exitPos = transform.position;
             Heal();
             Debug.Log("HEALING " + gameObject.name);
-            Timing.RunCoroutine(hospitalTileScript.HospitalQueue());  // Moved from outside if-block in Heal();
+            // Timing.RunCoroutine(hospitalTileScript.HospitalQueue());  // Moved from outside if-block in Heal();
             HealProgressBar.isNewlyOccupied = true;
             Timing.RunCoroutine(CheckIfOffHospitalTile());
             isRecentlyInfected = false;  // Just in case
@@ -275,6 +281,11 @@ public class PersonController : MonoBehaviour
                 }
                 // GameManager.instance.infectedPathDistances[gameObject] = hospitalTileDistance;
                 isRecentlyInfected = false;
+                infectedPeopleTotal++;
+                if (infectedPeopleTotal >= infectedPeopleBackgroundThreshold)
+                {
+                    Camera.main.backgroundColor = dangerBackgroundColor;
+                }
             }
         }
         else if (agent.agentTypeID == priorityInfectedAgentID)
@@ -345,6 +356,11 @@ public class PersonController : MonoBehaviour
     {
         if (agent.agentTypeID == priorityInfectedAgentID || agent.agentTypeID == infectedAgentID)  // 2nd check probably unnecessary
         {
+            infectedPeopleTotal--;
+            if (infectedPeopleTotal < infectedPeopleBackgroundThreshold)
+            {
+                Camera.main.backgroundColor = defaultBackgroundColor;
+            }
             gameObject.tag = "Untagged";
             agent.agentTypeID = recentlyHealedAgentID;
             agent.acceleration = healthyAcceleration;
@@ -416,6 +432,13 @@ public class PersonController : MonoBehaviour
         }
     }
 
+    IEnumerator<float> BackgroundFlash()
+    {
+        Camera.main.backgroundColor = dangerBackgroundColor;
+        yield return Timing.WaitForSeconds(backgroundFlashTime);
+        Camera.main.backgroundColor = defaultBackgroundColor;
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (!isInfected && other.CompareTag("InfectionCylinder") && other.transform.parent.gameObject != gameObject && !IsOnHospitalTile(0))  // May remove Hospital immunity
@@ -423,6 +446,7 @@ public class PersonController : MonoBehaviour
             isInfected = true;
             isRecentlyInfected = true;
             AudioManager.instance.SFX_Source.PlayOneShot(newInfectionSound, newInfectionSoundVolume);
+            // Timing.RunCoroutine(BackgroundFlash());
             // Debug.Log("PERSON TO PERSON");
         }
         else if (other.CompareTag("AvoidanceCylinder") && other.transform.parent.gameObject != gameObject && !isInfected)

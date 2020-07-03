@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MEC;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -33,6 +34,9 @@ public class GameManager : MonoBehaviour
         infectedPathDistances = new Dictionary<GameObject, float>();
         countdownGameMask.SetActive(true);
         Timing.RunCoroutine(BeginAfterCountdown());
+
+        // SceneManager.sceneUnloaded -= OnSceneUnloaded;  // Why can't the delegate be reset here?
+        SceneManager.sceneUnloaded += OnSceneUnloaded;  // Adding OnSceneUnloaded() to delegate call when scene unloaded
     }
 
     // Update is called once per frame
@@ -115,6 +119,14 @@ public class GameManager : MonoBehaviour
     {
         HospitalTile.isOccupied = false;
         HealProgressBar.isNewlyOccupied = false;
-        Time.timeScale = 1;  // Resetting time scale here as well when restarting or quitting game
+        PersonController.infectedPeopleTotal = 0;
+        Time.timeScale = 1;  // Resetting time scale when restarting or quitting game
+        Debug.Log("Static variables reset!");
+    }
+
+    public void OnSceneUnloaded(Scene currentScene)
+    {
+        ResetStaticVariables();
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;  // Resets delegate
     }
 }

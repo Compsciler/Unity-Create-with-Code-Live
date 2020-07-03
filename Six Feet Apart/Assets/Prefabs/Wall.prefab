@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 4195490445557766272}
   - component: {fileID: 4195490445557766303}
   - component: {fileID: 208590056629777232}
-  - component: {fileID: 4195490445557766300}
   m_Layer: 9
   m_Name: Wall
   m_TagString: RotatableWall
@@ -126,15 +125,3 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 0
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
---- !u!114 &4195490445557766300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4195490445557766273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dbd743e3d403694a895325c635a294f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

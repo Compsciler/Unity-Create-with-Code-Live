@@ -4,6 +4,9 @@ using UnityEngine;
 /// <summary>
 ///  Copyright (c) 2016 Eric Zhu 
 /// </summary>
+
+//| My (Roger's) modifcations start with this signature
+
 namespace GreatArcStudios
 {
     [System.Serializable]
@@ -166,7 +169,7 @@ namespace GreatArcStudios
                 }
                 catch
                 {
-                    Debug.Log("Cannot read terain heightmap LOD because the terrain was not assigned.");
+                    // Debug.Log("Cannot read terain heightmap LOD because the terrain was not assigned.");  //| Commented out
                 }
             }
             catch (FileNotFoundException)

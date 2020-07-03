@@ -25,7 +25,7 @@ public class InfectionCylinder : MonoBehaviour
         }
     }
 
-    public IEnumerator<float> ExpandRadius()  // Runs once
+    public IEnumerator<float> ExpandRadius()  // Runs once, unused
     {
         Vector3 startScale = new Vector3(minRadius, transform.localScale.y, minRadius);
         Vector3 endScale = new Vector3(maxRadius, transform.localScale.y, maxRadius);
@@ -33,7 +33,6 @@ public class InfectionCylinder : MonoBehaviour
         float timer = 0;
         while (timer < scalingDuration)
         {
-            Debug.Log(transform.localScale);
             transform.localScale = Vector3.Lerp(startScale, endScale, timer / scalingDuration);
             timer += Time.deltaTime;
             yield return Timing.WaitForOneFrame;
