@@ -29,6 +29,8 @@ public class OptionsEasterEgg : MonoBehaviour
     public GameObject[] enableOnEasterEgg;
     public GameObject[] disableOnEasterEgg;
 
+    private TouchScreenKeyboard keyboard;
+
     private string linkUrl = "https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/social-distancing.html";
 
     // Start is called before the first frame update
@@ -87,6 +89,17 @@ public class OptionsEasterEgg : MonoBehaviour
                 inputFieldComponent.text = defaultInputText;  // Resets input text if all deleted
             }
         }
+        /*
+        if (!TouchScreenKeyboard.visible && keyboard != null)
+        {
+            if (keyboard.done)
+            {
+                string x = keyboard.text;
+                TMP_Text t = GetComponentInChildren<TMP_Text>();
+                t.text = "Bonjour " + x;
+            }
+        }
+        */
     }
 
     public void ShowValues()
@@ -97,6 +110,11 @@ public class OptionsEasterEgg : MonoBehaviour
         Debug.Log("An: " + isShowingAn);
         Debug.Log("Easter: " + isShowingEaster);
         // Debug.Log("Egg: " + isShowingEgg);
+    }
+
+    public void OpenKeyboard()
+    {
+        keyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
     }
 
     public void OpenLink()
