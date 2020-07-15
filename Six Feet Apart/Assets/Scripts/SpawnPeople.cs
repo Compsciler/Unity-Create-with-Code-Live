@@ -96,4 +96,9 @@ public class SpawnPeople : MonoBehaviour
     {
         gameOverScoreText.text = "You reached Wave " + wave;
     }
+
+    public int CalculateScore()
+    {
+        return wave;  // Different for Breakneck Mode
+    }
 }

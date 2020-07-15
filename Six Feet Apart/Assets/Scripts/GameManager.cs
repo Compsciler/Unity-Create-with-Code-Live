@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     public AudioClip gameOverSound;
     public float gameOverSoundVolume;
 
+    internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
+
     // Start is called before the first frame update
     void Start()
     {
@@ -84,6 +86,9 @@ public class GameManager : MonoBehaviour
             AudioManager.instance.musicSource.Pause();
             AudioManager.instance.SFX_Source.PlayOneShot(gameOverSound, gameOverSoundVolume);
             Debug.Log("Game Over!");
+
+            int newScore = spawnManager.GetComponent<SpawnPeople>().CalculateScore();
+            HighScoreLogger.instance.UpdateHighScore(newScore);
         }
     }
 
