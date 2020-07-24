@@ -9,7 +9,7 @@ public class GenerateWalls : MonoBehaviour
     public float tileSize = 10f;
 
     [Range(0, 100)]
-    public int wallTotal;  // 40 + 64 - 4 = 100 is maximum wall total
+    public int wallTotal = 40;  // 40 + 64 - 4 = 100 is maximum wall total
     public GameObject wallPrefab;
     public Transform wallsGO_Transform;
 

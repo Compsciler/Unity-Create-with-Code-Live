@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class SpawnPeople : MonoBehaviour
 {
     public GameObject healthyPerson;
+    public GameObject healthyUnboundPerson;
     public GameObject infectedPerson;
     public Vector3[] spawnPosList;  // Note: Unsymmetrical with 1.0 radius bake with +1.0 on one side and +1.33 on other
 
@@ -82,7 +83,14 @@ public class SpawnPeople : MonoBehaviour
         }
         else
         {
-            person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
+            if (GameManager.instance.canHealthyHeal)
+            {
+                person = Instantiate(healthyUnboundPerson, spawnPos, healthyUnboundPerson.transform.rotation);
+            }
+            else
+            {
+                person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
+            }
         }
         person.name = "Person " + wave;
     }

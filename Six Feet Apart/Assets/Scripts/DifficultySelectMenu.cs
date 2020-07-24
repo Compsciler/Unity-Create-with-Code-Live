@@ -42,15 +42,15 @@ public class DifficultySelectMenu : MonoBehaviour
         
     }
 
-    public void PlayNormal()  // This will be changed to a generic play function later that has specific parameter to call coroutine
+    public void Play(int gameMode)  // This will be changed to a generic play function later that has specific parameter to call coroutine
     {
-        Timing.RunCoroutine(PlayNormalCoroutine());
+        Timing.RunCoroutine(PlayCoroutine());
         AudioManager.instance.musicSource.Stop();
 
-        HighScoreLogger.instance.gameMode = 0;
+        HighScoreLogger.instance.gameMode = gameMode;
     }
 
-    IEnumerator<float> PlayNormalCoroutine()
+    IEnumerator<float> PlayCoroutine()
     {
         fadingMask.SetActive(true);
         CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());
@@ -81,7 +81,7 @@ public class DifficultySelectMenu : MonoBehaviour
             {
                 button.transform.Find("Start Button").gameObject.SetActive(false);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 
             }
@@ -113,6 +113,14 @@ public class DifficultySelectMenu : MonoBehaviour
             if (currentUnlockReqsMet)
             {
                 difficultyButton.transform.Find("Lock Icon").gameObject.SetActive(false);
+                try
+                {
+                    difficultyButton.transform.Find("Start Button").GetComponent<Button>().interactable = true;
+                }
+                catch (NullReferenceException)
+                {
+
+                }
                 if (i >= 1 && i < highScores.Length + 1)  // To not try to access scores of Tutorial and Custom Mode
                 {
                     int highScore = highScores[i - 1];

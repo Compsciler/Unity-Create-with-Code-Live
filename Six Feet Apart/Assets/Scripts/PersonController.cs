@@ -28,16 +28,13 @@ public class PersonController : MonoBehaviour
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
     private float navMeshSurfaceAgentRadius = 1f;
 
-    private int healthyAgentID = -1372625422;  // Make these in a Constants script? (recentlyHealedAgentID is used in HospitalBarrier.cs)
-    private int infectedAgentID = -334000983;
-    private int recentlyHealedAgentID = 1479372276;
-    private int priorityInfectedAgentID = -1923039037;
-    private int farInfectedAgentID = -902729914;
     // private float hospitalEnterPosSideMax = 4.85f;
 
+    // I should remember to use enums in my next project...
     public bool startsInfected;
     [SerializeField] bool isInfected;
     private bool isRecentlyInfected;
+    private bool isHealing = false;  // Needed only when canHealthyHeal is true
 
     public float infectionDeathDuration = 40f;
     public float healTime;  // Value also exists in HealProgressBar.cs
@@ -56,6 +53,7 @@ public class PersonController : MonoBehaviour
     private float infectedSetPathTimer = -1f;
 
     private bool hasStartedHealing = false;
+    internal bool hasRecentlyHealed = false;  // Needed only when canHealthyHeal is true
 
     private float healthyAcceleration = 15f;
     private float infectedAcceleration = 400f;
@@ -73,8 +71,8 @@ public class PersonController : MonoBehaviour
     // private bool isGameActivePreviousFrame = true;
     private bool wasAgentStopped = false;
 
-    public float priorityInfectedHospitalReachTime = 0.2f;
-    private float priorityInfectedHospitalReachTimer;
+    public float priorityHospitalReachTime = 0.2f;
+    private float priorityHospitalReachTimer;
 
     // public float speedThreshold = 1f;
     private int defaultAvoidancePriority = 50;
@@ -98,6 +96,9 @@ public class PersonController : MonoBehaviour
     internal static int infectedPeopleTotal = 0;  // Person on Hospital tile healing does not count as infected
     private int infectedPeopleBackgroundThreshold = 16;
 
+    private float changeBackToHealthyUnboundAgentTime = 5f;
+    private bool mustStayHealthyBoundAgent = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -113,7 +114,7 @@ public class PersonController : MonoBehaviour
         GeneratePathModeDestinations(true);
         tempAgent = GameObject.Find("Temp Pathing Agent").GetComponent<NavMeshAgent>();
 
-        priorityInfectedHospitalReachTimer = priorityInfectedHospitalReachTime;
+        priorityHospitalReachTimer = priorityHospitalReachTime;
 
         defaultBackgroundColor = Camera.main.backgroundColor;
     }
@@ -138,15 +139,26 @@ public class PersonController : MonoBehaviour
             isGameActivePreviousFrame = true;
         }
         */
-        if (agent.remainingDistance <= minDistanceRelocation && !isInfected)  // Returns 0 when reached destination or when blocked, as close as it can get
+        if (agent.remainingDistance <= minDistanceRelocation && !isInfected && !isHealing)  // Returns 0 when reached destination or when blocked, as close as it can get
         {
+            if (GameManager.instance.canHealthyHeal)  // Bad solution, but it should work
+            {
+                if (HealProgressBar.isNewlyOccupied || mustStayHealthyBoundAgent)
+                {
+                    agent.agentTypeID = Constants.healthyAgentID;
+                }
+                else
+                {
+                    agent.agentTypeID = Constants.healthyUnboundAgentID;
+                }
+            }
             float xPos = Random.Range(-xPosRange, xPosRange);
             float zPos = Random.Range(-zPosRange, zPosRange);
-            Vector3 newLocation = new Vector3(xPos, yPos, zPos);
-            if (CalculateNewPath(newLocation, false))
+            Vector3 newPos = new Vector3(xPos, yPos, zPos);
+            if (CalculateNewPath(newPos, false))
             {
-                agent.SetDestination(newLocation);
-                // Debug.Log("Path available: " + newLocation);
+                agent.SetDestination(newPos);
+                // Debug.Log("Path available: " + newPos);
             }
             else
             {
@@ -193,14 +205,20 @@ public class PersonController : MonoBehaviour
         if (IsOnHospitalTile(0) && !hasStartedHealing)
         {
             Vector3 exitPos = transform.position;
+            HealProgressBar.isNewlyOccupied = true;
+            HealProgressBar.isOccupiedByInfectedPerson = isInfected;
             Heal();
             Debug.Log("HEALING " + gameObject.name);
             // Timing.RunCoroutine(hospitalTileScript.HospitalQueue());  // Moved from outside if-block in Heal();
-            HealProgressBar.isNewlyOccupied = true;
             Timing.RunCoroutine(CheckIfOffHospitalTile());
+            isHealing = true;
             isRecentlyInfected = false;  // Just in case
-            Timing.RunCoroutine(HealingProcess());
+            Timing.RunCoroutine(HealingProcess());  // Only show bar when previously infected? INSIDE?
             hasStartedHealing = true;
+            if (GameManager.instance.canHealthyHeal)
+            {
+                hasRecentlyHealed = true;
+            }
             // Debug.Log("AFTER COROUTINE");
             /*
             exitPos.x = -exitPos.x;
@@ -212,25 +230,25 @@ public class PersonController : MonoBehaviour
         {
             hasStartedHealing = false;
         }
-        if (isInfected && agent.agentTypeID != recentlyHealedAgentID && agent.agentTypeID != priorityInfectedAgentID)  // Moved priorityInfectedAgentID here
+        if (isInfected && agent.agentTypeID != Constants.recentlyHealedAgentID && agent.agentTypeID != Constants.priorityInfectedAgentID)  // Moved priorityInfectedAgentID here
         {
             bool pathPending = true;
             // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
             if (agent.remainingDistance != Mathf.Infinity && IsOnHospitalTile(farInfectedHospitalBorderWidth))  // When path is a straight line to hospital and close enough
             {
-                if (agent.agentTypeID == farInfectedAgentID)
+                if (agent.agentTypeID == Constants.farInfectedAgentID)
                 {
-                    agent.agentTypeID = infectedAgentID;
+                    agent.agentTypeID = Constants.infectedAgentID;
                     agent.SetDestination(hospitalTilePos);
                 }
                 else
                 {
-                    agent.agentTypeID = infectedAgentID;  // Fixed v0.7 Alpha 1 Bug #1?
+                    agent.agentTypeID = Constants.infectedAgentID;  // Fixed v0.7 Alpha 1 Bug #1?
                 }
             }
             if (infectedSetPathTimer < 0)  // Changed NavMeshAgent acceleration to counteract path recalculation navigation pauses
             {
-                if (agent.agentTypeID == farInfectedAgentID)
+                if (agent.agentTypeID == Constants.farInfectedAgentID)
                 {
                     agent.SetDestination(hospitalTilePos);
                 }
@@ -245,7 +263,7 @@ public class PersonController : MonoBehaviour
                     // Debug.Log("Line of sight with Hospital: " + hasLineOfSightWithHospital);
                     if (CalculateNewPath(hospitalTilePos, true) && !hasLineOfSightWithHospital)  // This if-block seems to never be run, but should when path to hospital found and agent type is infectedSpheroid
                     {
-                        agent.agentTypeID = farInfectedAgentID;
+                        agent.agentTypeID = Constants.farInfectedAgentID;
                         // agent.SetDestination(hospitalTilePos);  // Enable?
                     }
                     else
@@ -288,15 +306,22 @@ public class PersonController : MonoBehaviour
                 }
             }
         }
-        else if (agent.agentTypeID == priorityInfectedAgentID)
+        else if (agent.agentTypeID == Constants.priorityHealthyAgentID || agent.agentTypeID == Constants.priorityInfectedAgentID)
         {
-            priorityInfectedHospitalReachTimer -= Time.deltaTime;
-            if (priorityInfectedHospitalReachTimer < 0)
+            priorityHospitalReachTimer -= Time.deltaTime;
+            if (priorityHospitalReachTimer < 0)
             {
-                agent.agentTypeID = infectedAgentID;
+                if (agent.agentTypeID == Constants.priorityHealthyAgentID)
+                {
+                    agent.agentTypeID = Constants.healthyUnboundAgentID;
+                }
+                else
+                {
+                    agent.agentTypeID = Constants.infectedAgentID;
+                }
                 HospitalTile.isOccupied = false;
                 Debug.Log("UNOCCUPIED 2 BY " + gameObject.name);
-                priorityInfectedHospitalReachTimer = priorityInfectedHospitalReachTime;
+                priorityHospitalReachTimer = priorityHospitalReachTime;
             }
         }
     }
@@ -339,7 +364,7 @@ public class PersonController : MonoBehaviour
         return pathLength;
     }
 
-    bool IsOnHospitalTile(float extraBorderWidth)
+    public bool IsOnHospitalTile(float extraBorderWidth)
     {
         float halfTileSize = tileSize / 2;
         halfTileSize += extraBorderWidth;
@@ -354,7 +379,7 @@ public class PersonController : MonoBehaviour
 
     void Heal()
     {
-        if (agent.agentTypeID == priorityInfectedAgentID || agent.agentTypeID == infectedAgentID)  // 2nd check probably unnecessary
+        if (agent.agentTypeID == Constants.priorityInfectedAgentID || agent.agentTypeID == Constants.infectedAgentID)  // 2nd check probably unnecessary
         {
             infectedPeopleTotal--;
             if (infectedPeopleTotal < infectedPeopleBackgroundThreshold)
@@ -362,13 +387,12 @@ public class PersonController : MonoBehaviour
                 Camera.main.backgroundColor = defaultBackgroundColor;
             }
             gameObject.tag = "Untagged";
-            agent.agentTypeID = recentlyHealedAgentID;
+            
             agent.acceleration = healthyAcceleration;
-            agent.SetDestination(hospitalTilePos);
             Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Works fine without GetInstanceID()?
             Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             infectionCylinderScript.gameObject.SetActive(false);
-            gameObject.GetComponent<Renderer>().material = healthyMaterial;
+            gameObject.GetComponent<Renderer>().material = healthyMaterial;  // OUTSIDE (0.8.2)
             AudioManager.instance.SFX_Source.PlayOneShot(healSound, healSoundVolume);
             if (areParticlesOn)
             {
@@ -377,6 +401,8 @@ public class PersonController : MonoBehaviour
                 healParticles.Play();
             }
         }
+        agent.agentTypeID = Constants.recentlyHealedAgentID;  // INSIDE?
+        agent.SetDestination(hospitalTilePos);
     }
 
     IEnumerator<float> CheckIfOffHospitalTile()
@@ -385,7 +411,12 @@ public class PersonController : MonoBehaviour
         {
             yield return Timing.WaitForOneFrame;
         }
-        agent.agentTypeID = healthyAgentID;
+        agent.agentTypeID = Constants.healthyAgentID;  // If canHealthyHeal is true, then healed will change to healthyUnboundAgentID after some time
+        if (GameManager.instance.canHealthyHeal)
+        {
+            mustStayHealthyBoundAgent = true;
+            Timing.RunCoroutine(ChangeBackToHealthyUnboundAgent());
+        }
         HospitalTile.isOccupied = false;
         Debug.Log("UNOCCUPIED " + gameObject.name);
     }
@@ -395,11 +426,11 @@ public class PersonController : MonoBehaviour
         gameObject.tag = "Infected";
         if (isNearHospital)
         {
-            agent.agentTypeID = infectedAgentID;
+            agent.agentTypeID = Constants.infectedAgentID;
         }
         else
         {
-            agent.agentTypeID = farInfectedAgentID;
+            agent.agentTypeID = Constants.farInfectedAgentID;
         }
         agent.acceleration = infectedAcceleration;
         float individualStageTime = infectionDeathDuration / infectedMaterials.Length;
@@ -426,10 +457,19 @@ public class PersonController : MonoBehaviour
     {
         yield return Timing.WaitForSeconds(healTime);
         isInfected = false;
+        isHealing = false;
         if (areParticlesOn)
         {
             healParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
+    }
+
+    IEnumerator<float> ChangeBackToHealthyUnboundAgent()
+    {
+        yield return Timing.WaitForSeconds(changeBackToHealthyUnboundAgentTime);
+        mustStayHealthyBoundAgent = false;
+        // agent.agentTypeID = Constants.healthyUnboundAgentID;
+        hasRecentlyHealed = false;
     }
 
     IEnumerator<float> BackgroundFlash()
@@ -456,9 +496,9 @@ public class PersonController : MonoBehaviour
         else if (other.CompareTag("NearHospital"))  // isNearHospital and "NearHospital" tag eems to be unused now
         {
             isNearHospital = true;
-            if (agent.agentTypeID == farInfectedAgentID)
+            if (agent.agentTypeID == Constants.farInfectedAgentID)
             {
-                agent.agentTypeID = infectedAgentID;
+                agent.agentTypeID = Constants.infectedAgentID;
             }
         }
     }

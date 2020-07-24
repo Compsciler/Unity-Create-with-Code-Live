@@ -5,11 +5,8 @@ using UnityEngine.AI;
 
 public class HospitalBarrier : MonoBehaviour
 {
-    private int infectedAgentID = -334000983;
-    private int recentlyHealedAgentID = 1479372276;
-    private int priorityInfectedAgentID = -1923039037;
-
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
+    public float warpMaxDistance = 6.17f;
 
     // Start is called before the first frame update
     void Start()
@@ -56,16 +53,57 @@ public class HospitalBarrier : MonoBehaviour
         }
         // Debug.Log(agent.agentTypeID);
         // Debug.Log(HospitalTile.isOccupied);
-        if (agent.agentTypeID == infectedAgentID && !HospitalTile.isOccupied)  // agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied  // Change for different difficulty settings
+        if (GameManager.instance.canHealthyHeal)
         {
-            agent.agentTypeID = priorityInfectedAgentID;
-            agent.SetDestination(hospitalTilePos);
-            // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);  // Need a NavMeshModifier Ignore
-            Debug.Log("OCCUPIED " + other.gameObject.name);
-            HospitalTile.isOccupied = true;
-            // HealProgressBar.isNewlyOccupied = true;  // Put in PersonController.cs
-            // agent.SetDestination(new Vector3(0, 1.67f, 0));
+            if ((agent.agentTypeID == Constants.healthyUnboundAgentID || agent.agentTypeID == Constants.infectedAgentID) && !HospitalTile.isOccupied)
+            {
+                if (agent.agentTypeID == Constants.healthyUnboundAgentID)
+                {
+                    agent.agentTypeID = Constants.priorityHealthyAgentID;
+                }
+                else
+                {
+                    agent.agentTypeID = Constants.priorityInfectedAgentID;
+                }
+                agent.SetDestination(hospitalTilePos);
+                Debug.Log("OCCUPIED " + other.gameObject.name);
+                HospitalTile.isOccupied = true;
+            }
+            else if (agent.agentTypeID == Constants.healthyUnboundAgentID && HospitalTile.isOccupied && !agent.gameObject.GetComponent<PersonController>().hasRecentlyHealed)
+            {
+                agent.Warp(GetWarpPos(agent.transform.position));
+            }
         }
+        else
+        {
+            if (agent.agentTypeID == Constants.infectedAgentID && !HospitalTile.isOccupied)  // agent.agentTypeID == recentlyHealedAgentID && !HospitalTile.isOccupied  // Change for different difficulty settings
+            {
+                agent.agentTypeID = Constants.priorityInfectedAgentID;
+                agent.SetDestination(hospitalTilePos);
+                // Physics.IgnoreCollision(GetComponent<BoxCollider>(), other, true);  // Need a NavMeshModifier Ignore
+                Debug.Log("OCCUPIED " + other.gameObject.name);
+                HospitalTile.isOccupied = true;
+                // HealProgressBar.isNewlyOccupied = true;  // Put in PersonController.cs
+                // agent.SetDestination(new Vector3(0, 1.67f, 0));
+            }
+        }
+    }
+
+    Vector3 GetWarpPos(Vector3 oldPos)
+    {
+        if (Mathf.Abs(oldPos.x) > Mathf.Abs(oldPos.z))
+        {
+            if (oldPos.x > 0)
+            {
+                return new Vector3(warpMaxDistance, oldPos.y, oldPos.z);
+            }
+            return new Vector3(-warpMaxDistance, oldPos.y, oldPos.z);
+        }
+        if (oldPos.z > 0)
+        {
+            return new Vector3(oldPos.x, oldPos.y, warpMaxDistance);
+        }
+        return new Vector3(oldPos.x, oldPos.y, -warpMaxDistance);
     }
 
     void OnTriggerEnter(Collider other)

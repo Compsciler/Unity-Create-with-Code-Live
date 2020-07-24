@@ -4,6 +4,7 @@ using UnityEngine;
 using MEC;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,12 +27,26 @@ public class GameManager : MonoBehaviour
     public AudioClip gameOverSound;
     public float gameOverSoundVolume;
 
-    internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
+    // internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
+    private int defaultGameMode = 1;
+
+    [Header("Game Settings")]
+    [SerializeField] internal bool canHealthyHeal = false;
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+
+        try  // When starting game in GameScene scene
+        {
+            ApplyGameModeSettings(HighScoreLogger.instance.gameMode);
+        }
+        catch (NullReferenceException)
+        {
+            ApplyGameModeSettings(defaultGameMode);
+        }
+
         // Timing.RunCoroutine(InfectionSpread());
         infectedPathDistances = new Dictionary<GameObject, float>();
         countdownGameMask.SetActive(true);
@@ -120,10 +135,24 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void ApplyGameModeSettings(int gameMode)
+    {
+        switch (gameMode)
+        {
+            case 0:
+                break;
+            case 1:
+                canHealthyHeal = true;
+                spawnManager.GetComponent<GenerateWalls>().wallTotal = 36;
+                break;
+        }
+    }
+    
     public void ResetStaticVariables()
     {
         HospitalTile.isOccupied = false;
         HealProgressBar.isNewlyOccupied = false;
+        HealProgressBar.isOccupiedByInfectedPerson = true;
         PersonController.infectedPeopleTotal = 0;
         Time.timeScale = 1;  // Resetting time scale when restarting or quitting game
         Debug.Log("Static variables reset!");

@@ -5,7 +5,7 @@ using UnityEngine;
 public class HighScoreLogger : MonoBehaviour
 {
     internal static HighScoreLogger instance;
-    internal int gameMode;
+    [SerializeField] internal int gameMode = -1;
 
     internal string[] highScoreStrings = {"NormalHighScore", "DifficultHighScore", "ExtremeHighScore", "QuickHighScore", "BreakneckHighScore"};
     
