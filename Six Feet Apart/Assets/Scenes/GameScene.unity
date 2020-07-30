@@ -2028,7 +2028,10 @@ MonoBehaviour:
   countdownEndSoundVolume: 0.5
   gameOverSound: {fileID: 8300000, guid: 621021c5c1681d14f93532a2ad5e8148, type: 3}
   gameOverSoundVolume: 0.8
+  infectionDeathDuration: 40
   canHealthyHeal: 0
+  areSymptomsDelayed: 0
+  symptomDelayTime: 15
 --- !u!4 &285431277
 Transform:
   m_ObjectHideFlags: 0
@@ -2483,6 +2486,7 @@ MonoBehaviour:
   fill: {fileID: 1565092658}
   fillHealthyColor: {r: 0, g: 1, b: 1, a: 1}
   fillInfectedColor: {r: 1, g: 0, b: 0, a: 1}
+  fillUnknownColor: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 1}
   spawnManager: {fileID: 840663043}
 --- !u!1 &403152121
 GameObject:
@@ -3424,6 +3428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fill: {fileID: 1202206747}
+  fillColorOnInfectedHealing: {r: 0.84705883, g: 0.16862746, b: 0.16862746, a: 1}
+  fillColorOnHealthyHealing: {r: 1, g: 0.627451, b: 0.627451, a: 1}
 --- !u!1 &534341133
 GameObject:
   m_ObjectHideFlags: 0
@@ -17498,6 +17504,9 @@ MonoBehaviour:
   repeatRateDecreaseWaveInterval: 5
   repeatRateDecrease: 2
   minimumRepeatRate: 5
+  areWavesRandom: 0
+  infectedWavesPerGroup: 2
+  randomWaveGroupSize: 10
   waveText: {fileID: 640464217}
   gameOverScoreText: {fileID: 1965020087}
   spawnSound: {fileID: 8300000, guid: 0712635f06f89e9439277d9c0f036b8d, type: 3}

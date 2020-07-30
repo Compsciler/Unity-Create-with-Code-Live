@@ -7,5 +7,5 @@
     internal static int farInfectedAgentID = -902729914;
 
     internal static int healthyUnboundAgentID = 658490984;
-    internal static int priorityHealthyAgentID = 65107623;
+    internal static int priorityHealthyAgentID = 65107623;  // Basically unused
 }

@@ -13,7 +13,7 @@ public class InfectionCylinder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -52,6 +52,14 @@ public class InfectionCylinder : MonoBehaviour
             yield return Timing.WaitForOneFrame;
             float sineTime = Mathf.Sin(Time.timeSinceLevelLoad * Mathf.PI * 2);
             transform.localScale = Vector3.LerpUnclamped(midScale, maxScale, sineTime);
+        }
+    }
+
+    void OnEnable()
+    {
+        if (GameManager.instance.areSymptomsDelayed)
+        {
+            GetComponent<MeshRenderer>().enabled = false;
         }
     }
 }

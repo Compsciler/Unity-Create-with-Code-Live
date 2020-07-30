@@ -10,6 +10,7 @@ public class WaveProgressBar : MonoBehaviour
     public Image fill;
     public Color fillHealthyColor;
     public Color fillInfectedColor;
+    public Color fillUnknownColor;
     private SpawnPeople spawnPeopleScript;
 
     public GameObject spawnManager;
@@ -35,12 +36,20 @@ public class WaveProgressBar : MonoBehaviour
     {
         float fillAmount = currentValue / maxValue;
         mask.fillAmount = fillAmount;
-        if (spawnPeopleScript.isInfectedWave)
+        if (GameManager.instance.areSymptomsDelayed)
         {
-            fill.color = fillInfectedColor;
-        } else
+            fill.color = fillUnknownColor;
+        }
+        else
         {
-            fill.color = fillHealthyColor;
+            if (spawnPeopleScript.isInfectedWave)
+            {
+                fill.color = fillInfectedColor;
+            }
+            else
+            {
+                fill.color = fillHealthyColor;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MEC;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -7,6 +8,8 @@ public class HospitalBarrier : MonoBehaviour
 {
     private Vector3 hospitalTilePos = new Vector3(0, 1.67f, 0);
     public float warpMaxDistance = 6.17f;
+
+    private float unoccupyHospitalTime = 2f;
 
     // Start is called before the first frame update
     void Start()
@@ -87,6 +90,7 @@ public class HospitalBarrier : MonoBehaviour
                 // agent.SetDestination(new Vector3(0, 1.67f, 0));
             }
         }
+        UnoccupyHospital(agent.gameObject);
     }
 
     Vector3 GetWarpPos(Vector3 oldPos)
@@ -114,5 +118,15 @@ public class HospitalBarrier : MonoBehaviour
             return;
         }
         // Debug.Log("COLLISION BY " + other.gameObject.name);
+    }
+
+    IEnumerator<float> UnoccupyHospital(GameObject priorityPerson)  // Should rarely be called
+    {
+        yield return Timing.WaitForSeconds(unoccupyHospitalTime);
+        if (!priorityPerson.GetComponent<PersonController>().isHealing)
+        {
+            HospitalTile.isOccupied = false;
+            Debug.Log("UNOCCUPIED 3 BY " + priorityPerson.name);
+        }
     }
 }

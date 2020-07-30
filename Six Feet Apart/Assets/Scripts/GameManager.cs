@@ -28,10 +28,13 @@ public class GameManager : MonoBehaviour
     public float gameOverSoundVolume;
 
     // internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
-    private int defaultGameMode = 1;
+    private int defaultGameMode = 2;
 
     [Header("Game Settings")]
+    [SerializeField] internal float infectionDeathDuration = 40f;
     [SerializeField] internal bool canHealthyHeal = false;
+    [SerializeField] internal bool areSymptomsDelayed = false;
+    [SerializeField] internal float symptomDelayTime = 15f;  // No effect if areSymptomsDelayed is false
 
     // Start is called before the first frame update
     void Start()
@@ -143,7 +146,14 @@ public class GameManager : MonoBehaviour
                 break;
             case 1:
                 canHealthyHeal = true;
-                spawnManager.GetComponent<GenerateWalls>().wallTotal = 36;
+                spawnManager.GetComponent<GenerateWalls>().wallTotal = 36;  // 35?
+                break;
+            case 2:
+                infectionDeathDuration = 35f;  // [15, 35] or [10, 40]?
+                canHealthyHeal = true;
+                areSymptomsDelayed = true;
+                spawnManager.GetComponent<GenerateWalls>().wallTotal = 32;  // 35?
+                spawnManager.GetComponent<SpawnPeople>().areWavesRandom = true;
                 break;
         }
     }

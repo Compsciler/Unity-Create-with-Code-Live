@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ExtensionMethods
@@ -13,5 +15,10 @@ public static class ExtensionMethods
             children[i] = go.transform.GetChild(i).gameObject;
         }
         return children;
+    }
+
+    public static string ListToString<T>(List<T> list)
+    {
+        return string.Join(", ", list.Select(p => p.ToString()).ToArray());
     }
 }

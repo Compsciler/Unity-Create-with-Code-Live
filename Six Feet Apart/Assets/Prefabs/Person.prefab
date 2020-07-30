@@ -272,9 +272,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: abbe1480799f18248927b46f7e00c29c, type: 2}
   - {fileID: 2100000, guid: fd1d4661970208e4280b42ff6d3a0ae1, type: 2}
   deadMaterial: {fileID: 2100000, guid: fae9d2e2cf5eb5e41b305e884ed9ef36, type: 2}
+  unknownMaterial: {fileID: 2100000, guid: b49c22575ff2ff14b9e7fffd5277df95, type: 2}
   infectedSetPathTime: 1
   hospitalPathMode: 2
-  priorityInfectedHospitalReachTime: 0.2
+  priorityHospitalReachTime: 0.2
   healSound: {fileID: 8300000, guid: 75327d1c134cf9f40ad4c15ca83dae57, type: 3}
   newInfectionSound: {fileID: 8300000, guid: 7d1db80367819f44ebe863ac67c40926, type: 3}
   healSoundVolume: 0.6
