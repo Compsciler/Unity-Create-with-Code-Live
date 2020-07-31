@@ -18,7 +18,7 @@ public class DifficultySelectMenu : MonoBehaviour
     public float fadeTime;
 
     // https://stackoverflow.com/questions/5849548/is-this-array-initialization-incorrect
-    private int[][,] gameModeUnlockReqs = new int[][,]{
+    internal static int[][,] gameModeUnlockReqs = new int[][,]{
         new int[,] {{}},
         new int[,] {{}},
         new int[,] {{0, 30}},
@@ -33,6 +33,11 @@ public class DifficultySelectMenu : MonoBehaviour
     {
         descriptionTexts = descriptionTextsHolder.GetChildren();
 
+        // SetUpUnlocksAndScores();
+    }
+
+    void OnEnable()
+    {
         SetUpUnlocksAndScores();
     }
 
@@ -56,7 +61,7 @@ public class DifficultySelectMenu : MonoBehaviour
         CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());
         AudioManager.instance.SFX_Source.PlayOneShot(playButtonSound);
         yield return Timing.WaitUntilDone(fadeBackgroundCoroutine);
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadSceneAsync(Constants.gameSceneBuildIndex);
     }
 
     IEnumerator<float> FadeBackground()
@@ -110,7 +115,7 @@ public class DifficultySelectMenu : MonoBehaviour
                     currentUnlockReqsMet = false;
                 }
             }
-            if (currentUnlockReqsMet)
+            if (currentUnlockReqsMet || PlayerPrefs.GetInt("AreAllGameModesUnlocked", 0) == 1)
             {
                 difficultyButton.transform.Find("Lock Icon").gameObject.SetActive(false);
                 try

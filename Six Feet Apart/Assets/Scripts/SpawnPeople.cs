@@ -33,6 +33,7 @@ public class SpawnPeople : MonoBehaviour
 
     public TMP_Text waveText;
     public TMP_Text gameOverScoreText;
+    public TMP_Text unlockedModeText;
 
     public AudioClip spawnSound;
     public float spawnSoundVolume;
@@ -146,11 +147,71 @@ public class SpawnPeople : MonoBehaviour
 
     public void UpdateGameOverScoreText()
     {
+        // gameOverScoreText.text = "Your score is " + CalculateScore();
         gameOverScoreText.text = "You reached Wave " + wave;
     }
 
     public int CalculateScore()
     {
-        return wave;  // Different for Breakneck Mode
+        return wave;  // Different for Breakneck Mode?
+    }
+
+    public void UpdateUnlockedModeText(int prevHighScore)
+    {
+        //string debugString = "(" + prevHighScore + ")";
+        int[] highScores = HighScoreLogger.instance.GetHighScores();
+
+        List<int> unlockedModes = new List<int>();
+        for (int i = 0; i < DifficultySelectMenu.gameModeUnlockReqs.Length; i++)
+        {
+            int[,] currentUnlockReqs = DifficultySelectMenu.gameModeUnlockReqs[i];
+            bool currentUnlockReqsMet = true;
+            bool requiresCurrentModeAndScore = false;
+            // debugString += " <" + i + ">";
+            for (int j = 0; j < currentUnlockReqs.Length / 2; j++)  // Foreach loop doesn't work somehow, probably because C# Length property returns total number of integers in array
+            {
+                // int newScore = wave;
+                int minScoreReq = currentUnlockReqs[j, 1];
+                // debugString += "[" + j + "]";
+                if (currentUnlockReqs[j, 0] == HighScoreLogger.instance.gameMode)
+                {
+                    int newScore = wave;
+                    if (newScore >= minScoreReq && prevHighScore < minScoreReq)
+                    {
+                        requiresCurrentModeAndScore = true;
+                    }
+                    // debugString += "A: " + minScoreReq + ", " + requiresCurrentModeAndScore;
+                }
+                else
+                {
+                    int highScore = highScores[currentUnlockReqs[j, 0]];
+                    if (highScore < minScoreReq)
+                    {
+                        currentUnlockReqsMet = false;
+                    }
+                    // debugString += "B: " + minScoreReq + ", " + currentUnlockReqsMet;
+                }
+            }
+            if (currentUnlockReqsMet && requiresCurrentModeAndScore)
+            {
+                unlockedModes.Add(i);
+                // debugString += "|" + i;
+            }
+        }
+        if (unlockedModes.Count > 0)
+        {
+            // debugString += "====" + ExtensionMethods.ListToString(unlockedModes) + "====";
+            unlockedModeText.gameObject.SetActive(true);
+            if (unlockedModes.Count == 1)
+            {
+                string unlockedModeName = HighScoreLogger.instance.highScoreStrings[unlockedModes[0] - 1].Replace("HighScore", "");
+                unlockedModeText.text = "You have unlocked " + unlockedModeName + " Mode!";
+            }
+            else
+            {
+                unlockedModeText.text = "You have unlocked " + unlockedModes.Count + " game modes!";
+            }
+        }
+        // Debug.Log(debugString);
     }
 }

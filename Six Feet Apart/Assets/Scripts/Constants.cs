@@ -1,5 +1,8 @@
 ﻿internal static class Constants  // Used for constants needed in multiple scripts
 {
+    internal static int mainMenuBuildIndex = 0;
+    internal static int gameSceneBuildIndex = 1;
+
     internal static int healthyAgentID = -1372625422;
     internal static int infectedAgentID = -334000983;
     internal static int recentlyHealedAgentID = 1479372276;

@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Game Over!");
 
             int newScore = spawnManager.GetComponent<SpawnPeople>().CalculateScore();
-            HighScoreLogger.instance.UpdateHighScore(newScore);
+            HighScoreLogger.instance.UpdateHighScore(newScore, false);
         }
     }
 
@@ -154,6 +154,10 @@ public class GameManager : MonoBehaviour
                 areSymptomsDelayed = true;
                 spawnManager.GetComponent<GenerateWalls>().wallTotal = 32;  // 35?
                 spawnManager.GetComponent<SpawnPeople>().areWavesRandom = true;
+                break;
+            case 3:
+                spawnManager.GetComponent<SpawnPeople>().startRepeatRate = 15f;
+                spawnManager.GetComponent<SpawnPeople>().repeatRateDecrease = 1f;
                 break;
         }
     }
