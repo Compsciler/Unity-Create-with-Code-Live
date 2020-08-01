@@ -21,16 +21,25 @@ public class SpawnPeople : MonoBehaviour
     public float repeatRateDecrease = 2f;
     public float minimumRepeatRate = 5f;
     // This would produce 0s, 25x4, 23x5, 21x5, 19x5, ... , 9x5, 7x5, 5x5, 5x5...
+
+    [Space(10)]
     public bool areWavesRandom = false;
     public int infectedWavesPerGroup = 2;
     public int randomWaveGroupSize = 10;
     private List<int> randomInfectedWaves = new List<int>();
 
+    [Space(10)]
+    public bool areSpawningMultiple = false;
+    public int[,] multipleSpawnWaves = new int[2, 2]{{3, 0}, {2, 1}};
+    private int multipleSpawnWaveIndex = 0;
+    
     internal float timer;
     internal float repeatRate;
     internal bool isInfectedWave = false;
     private int wave = 0;
+    private int peopleTotal = 0;
 
+    [Space(10)]
     public TMP_Text waveText;
     public TMP_Text gameOverScoreText;
     public TMP_Text unlockedModeText;
@@ -58,24 +67,35 @@ public class SpawnPeople : MonoBehaviour
         {
             wave++;
             UpdateWaveText();
-            if (isInfectedWave)
+            if (areSpawningMultiple)
             {
-                SpawnPerson(true);
-            } else
+                SpawnMultiplePeople(multipleSpawnWaves[multipleSpawnWaveIndex, 0], multipleSpawnWaves[multipleSpawnWaveIndex, 1]);
+                multipleSpawnWaveIndex++;
+                multipleSpawnWaveIndex %= multipleSpawnWaves.GetLength(0);
+                isInfectedWave = (multipleSpawnWaves[multipleSpawnWaveIndex, 1] > 0);
+            }
+            else
             {
-                SpawnPerson(false);
+                if (isInfectedWave)
+                {
+                    SpawnPerson(true);
+                }
+                else
+                {
+                    SpawnPerson(false);
+                }
+                if (areWavesRandom)  // Put at the end to make it easier for WaveProgressBar.cs
+                {
+                    UpdateRandomIsInfectedWave();
+                }
+                else
+                {
+                    isInfectedWave = (wave % infectedWaveInterval == infectedWaveInterval - 1);
+                }
             }
             if (!isFirstSpawnSoundDisabled || wave != 1)
             {
                 AudioManager.instance.SFX_Source.PlayOneShot(spawnSound, spawnSoundVolume);
-            }
-            if (areWavesRandom)  // Put at the end to make it easier for WaveProgressBar.cs
-            {
-                UpdateRandomIsInfectedWave();
-            }
-            else
-            {
-                isInfectedWave = (wave % infectedWaveInterval == infectedWaveInterval - 1);
             }
             if (wave % repeatRateDecreaseWaveInterval == 0)
             {
@@ -96,7 +116,12 @@ public class SpawnPeople : MonoBehaviour
 
     void SpawnPerson(bool isInfected)
     {
-        Vector3 spawnPos = spawnPosList[Random.Range(0, spawnPosList.Length)];
+        SpawnPerson(isInfected, Random.Range(0, spawnPosList.Length));
+    }
+
+    void SpawnPerson(bool isInfected, int spawnPosIndex)
+    {
+        Vector3 spawnPos = spawnPosList[spawnPosIndex];
         GameObject person;
         if (isInfected)
         {
@@ -113,20 +138,15 @@ public class SpawnPeople : MonoBehaviour
                 person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
             }
         }
-        person.name = "Person " + wave;
+        peopleTotal++;
+        person.name = "Person " + peopleTotal;
     }
+
     void RandomizeInfectedWaves()
     {
         List<int> nextWaveGroup = Enumerable.Range(wave + 1, randomWaveGroupSize).ToList();
         // Debug.Log(ExtensionMethods.ListToString(nextWaveGroup));
-        for (int i = 0; i < infectedWavesPerGroup; i++)
-        {
-            int randomIndex = Random.Range(0, nextWaveGroup.Count);
-            randomInfectedWaves.Add(nextWaveGroup[randomIndex]);
-            nextWaveGroup.RemoveAt(randomIndex);
-        }
-        randomInfectedWaves.Sort();
-        // Debug.Log(ExtensionMethods.ListToString(randomInfectedWaves));
+        randomInfectedWaves = ExtensionMethods.SelectRandomItems(nextWaveGroup, infectedWavesPerGroup);
     }
     void UpdateRandomIsInfectedWave()
     {
@@ -140,6 +160,25 @@ public class SpawnPeople : MonoBehaviour
             randomInfectedWaves.RemoveAt(0);
         }
     }
+
+    void SpawnMultiplePeople(int peopleToSpawn, int infectedPeopleToSpawn)  // Spawning at unique positions
+    {
+        List<int> possibleSpawnPosIndices = Enumerable.Range(0, spawnPosList.Length).ToList();
+        List<int> spawnPosIndices = ExtensionMethods.SelectRandomItems(possibleSpawnPosIndices, peopleToSpawn);
+        List<int> infectedSpawnPosIndices = ExtensionMethods.SelectRandomItems(spawnPosIndices, infectedPeopleToSpawn);
+        foreach (int i in spawnPosIndices)
+        {
+            if (infectedSpawnPosIndices.Contains(i))
+            {
+                SpawnPerson(true, i);
+            }
+            else
+            {
+                SpawnPerson(false, i);
+            }
+        }
+    }
+
     void UpdateWaveText()  // Include animation?
     {
         waveText.text = "Wave " + wave;

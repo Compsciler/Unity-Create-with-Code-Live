@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public float gameOverSoundVolume;
 
     // internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
-    private int defaultGameMode = 2;
+    private int defaultGameMode = 0;
 
     [Header("Game Settings")]
     [SerializeField] internal float infectionDeathDuration = 40f;
@@ -158,6 +158,10 @@ public class GameManager : MonoBehaviour
             case 3:
                 spawnManager.GetComponent<SpawnPeople>().startRepeatRate = 15f;
                 spawnManager.GetComponent<SpawnPeople>().repeatRateDecrease = 1f;
+                break;
+            case 4:
+                spawnManager.GetComponent<SpawnPeople>().areSpawningMultiple = true;
+                spawnManager.GetComponent<SpawnPeople>().repeatRateDecreaseWaveInterval = 2;
                 break;
         }
     }
