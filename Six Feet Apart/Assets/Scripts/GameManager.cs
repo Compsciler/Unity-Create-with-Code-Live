@@ -163,6 +163,9 @@ public class GameManager : MonoBehaviour
                 spawnManager.GetComponent<SpawnPeople>().areSpawningMultiple = true;
                 spawnManager.GetComponent<SpawnPeople>().repeatRateDecreaseWaveInterval = 2;
                 break;
+            case 5:
+                spawnManager.GetComponent<SpawnPeople>().spawnPosListIndex = 1;
+                break;
         }
     }
     

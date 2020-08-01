@@ -8,7 +8,7 @@ public class HighScoreLogger : MonoBehaviour
     internal static HighScoreLogger instance;
     [SerializeField] internal int gameMode = -1;
 
-    internal string[] highScoreStrings = {"NormalHighScore", "DifficultHighScore", "ExtremeHighScore", "QuickHighScore", "BreakneckHighScore"};
+    internal string[] highScoreStrings = {"NormalHighScore", "DifficultHighScore", "ExtremeHighScore", "QuickHighScore", "BreakneckHighScore", "ObliqueHighScore", "HolesomeHighScore"};
 
     // Start is called before the first frame update
     void Start()

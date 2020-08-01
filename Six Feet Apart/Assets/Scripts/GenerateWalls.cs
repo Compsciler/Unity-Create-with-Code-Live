@@ -13,10 +13,38 @@ public class GenerateWalls : MonoBehaviour
     public GameObject wallPrefab;
     public Transform wallsGO_Transform;
 
+    private bool canSpawnOnEdgeMidpoints = false;
+    private bool canSpawnOnCorners = true;
+
+    public GameObject[] tileTypeGroups;
+    private bool[] movableTileGroupsEnables = {false, true};
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        switch (gameObject.GetComponent<SpawnPeople>().spawnPosListIndex)
+        {
+            case 0:
+                break;
+            case 1:
+                canSpawnOnEdgeMidpoints = true;
+                canSpawnOnCorners = false;
+                movableTileGroupsEnables = new bool[]{true, false};
+                break;
+        }
+        for (int i = 0; i < movableTileGroupsEnables.Length; i++)
+        {
+            if (movableTileGroupsEnables[i])
+            {
+                tileTypeGroups[i * 2 + 1].SetActive(true);
+                tileTypeGroups[i * 2].SetActive(false);
+            }
+            else
+            {
+                tileTypeGroups[i * 2].SetActive(true);
+                tileTypeGroups[i * 2 + 1].SetActive(false);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -33,7 +61,9 @@ public class GenerateWalls : MonoBehaviour
         {
             for (float z = -zTileRange; z <= zTileRange; z += tileSize)
             {
-                if (!((Mathf.Abs(x) == 0 && Mathf.Abs(z) == zTileRange) || (Mathf.Abs(x) == xTileRange && Mathf.Abs(z) == 0)))
+                bool isOnEdgeMidpoint = ((Mathf.Abs(x) == 0 && Mathf.Abs(z) == zTileRange) || (Mathf.Abs(x) == xTileRange && Mathf.Abs(z) == 0));
+                bool isOnCorner = (Mathf.Abs(x) == xTileRange && Mathf.Abs(z) == zTileRange);
+                if ((canSpawnOnEdgeMidpoints || !isOnEdgeMidpoint) && (canSpawnOnCorners || !isOnCorner))
                 {
                     tilePosList.Add(new Vector3(x, wallPrefab.transform.position.y, z));
                 }

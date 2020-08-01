@@ -12,8 +12,13 @@ public class SpawnPeople : MonoBehaviour
     public GameObject healthyPerson;
     public GameObject healthyUnboundPerson;
     public GameObject infectedPerson;
-    public Vector3[] spawnPosList;  // Note: Unsymmetrical with 1.0 radius bake with +1.0 on one side and +1.33 on other
+    public Vector3[] spawnPosList0;  // Note: Unsymmetrical with 1.0 radius bake with +1.0 on one side and +1.33 on other
+    public Vector3[] spawnPosList1;
+    public int spawnPosListIndex = 0;
+    private Vector3[][] spawnPosLists;
+    private Vector3[] spawnPosList;
 
+    [Space(10)]
     public int infectedWaveInterval = 5;
     public float startDelay = 0f;
     public float startRepeatRate = 25f;
@@ -58,6 +63,9 @@ public class SpawnPeople : MonoBehaviour
         {
             UpdateRandomIsInfectedWave();
         }
+
+        spawnPosLists = new Vector3[][]{spawnPosList0, spawnPosList1};
+        spawnPosList = (Vector3[])spawnPosLists[spawnPosListIndex].Clone();
     }
 
     // Update is called once per frame
