@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2791842802259433846}
   - component: {fileID: 2791842802259433841}
   - component: {fileID: 2791842802259433845}
+  - component: {fileID: 2743886798783684561}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -106,3 +107,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotateSound: {fileID: 8300000, guid: e57bcf815b18547a7a8b44a99e4d9c99, type: 3}
   rotateSoundVolume: 1
+--- !u!208 &2743886798783684561
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2791842802259433840}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 4, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: -2, z: 0}
+  m_TimeToStationary: 0.5

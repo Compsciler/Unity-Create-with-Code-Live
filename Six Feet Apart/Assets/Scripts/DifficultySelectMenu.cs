@@ -26,8 +26,8 @@ public class DifficultySelectMenu : MonoBehaviour
         new int[,] {{0, 30}},
         new int[,] {{3, 35}},
         new int[,] {{0, 30}},
-        new int[,] {{5, 35}},
-        new int[,] {{2, 40}, {4, 20}}
+        new int[,] {{5, 25}},  // Changed from 35
+        new int[,] {{2, 40}, {4, 20}, {6, 40}}
     };
 
     // Start is called before the first frame update

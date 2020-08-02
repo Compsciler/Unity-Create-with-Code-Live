@@ -3653,7 +3653,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Difficult Mode:\n\u2022 Normal Mode, except...\n\n\u2022 36 Walls\n\u2022
+  m_text: "Difficult Mode:\n\u2022 36 Walls\n\u2022 Normal wave progression\n\u2022
     Hospital open to all\n[Unlocked after scoring 30 in Normal Mode]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5825,9 +5825,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Breakneck
-
-'
+  m_text: Oblique
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6725,9 +6723,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Oblique Mode (Work In Progress):\n\u2022 40 Walls\n\u2022 25-second waves
-    to start, decreases by 2 seconds every fifth wave\n\u2022 People now spawn in
-    the corners\n[Unlocked after scoring 30 in Normal Mode]"
+  m_text: "Oblique Mode:\n\u2022 40 Walls\n\u2022 Normal wave progression\n\u2022
+    People now spawn in the corners\n[Unlocked after scoring 30 in Normal Mode]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8397,8 +8394,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Holesome Mode (Work In Progress):\n\u2022 \n[Unlocked after scoring 35
-    in Oblique Mode]"
+  m_text: "Holesome Mode:\n\u2022 35 Walls\n\u2022 Normal wave progression\n\u2022
+    4 tiles removed from the cement ground\n[Unlocked after scoring 35 in Oblique
+    Mode]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -16129,7 +16127,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 778813100}
-        m_MethodName: 
+        m_MethodName: SetActive
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18300,7 +18298,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Six Feet Apart v0.8.5
+  m_text: Six Feet Apart v0.8.6
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 145bbd9f43cda6b47a883bded8221965, type: 2}
   m_sharedMaterial: {fileID: 21914024979671456, guid: 145bbd9f43cda6b47a883bded8221965,
@@ -20477,9 +20475,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Extreme Mode:\n\u2022 Difficult Mode, except...\n\n\u2022 32 Walls\n\u2022
-    Randomized waves (2 infected waves every 10 waves)\n\u2022 Infected don't show
-    symptoms for a while\n[Unlocked after scoring 35 in Difficult Mode]\n"
+  m_text: "Extreme Mode:\n\u2022 32 Walls\n\u2022 Randomized waves (2 infected waves
+    every 10 waves) with normal wave time intervals\n\u2022 Hospital open to all\n\u2022
+    Infected don't show symptoms for a while\n[Unlocked after scoring 35 in Difficult
+    Mode]\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -21343,9 +21342,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Breakneck
-
-'
+  m_text: Holesome
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

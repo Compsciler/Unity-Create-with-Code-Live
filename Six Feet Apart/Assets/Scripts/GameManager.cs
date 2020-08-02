@@ -166,6 +166,10 @@ public class GameManager : MonoBehaviour
             case 5:
                 spawnManager.GetComponent<SpawnPeople>().spawnPosListIndex = 1;
                 break;
+            case 6:
+                spawnManager.GetComponent<GenerateWalls>().wallTotal = 35;
+                spawnManager.GetComponent<TileDisabler>().tileSetEnables = new bool[]{false, true};
+                break;
         }
     }
     
