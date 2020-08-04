@@ -14,6 +14,7 @@ public class SpawnPeople : MonoBehaviour
     public GameObject infectedPerson;
     public Vector3[] spawnPosList0;  // Note: Unsymmetrical with 1.0 radius bake with +1.0 on one side and +1.33 on other
     public Vector3[] spawnPosList1;
+    private Vector3[] spawnPosList2;  // spawnPosList0 and spawnPosList1 combined
     public int spawnPosListIndex = 0;
     private Vector3[][] spawnPosLists;
     private Vector3[] spawnPosList;
@@ -38,6 +39,9 @@ public class SpawnPeople : MonoBehaviour
     public int[,] multipleSpawnWaves = new int[2, 2]{{3, 0}, {2, 1}};
     private int multipleSpawnWaveIndex = 0;
     
+    [Space(10)]
+    public int[] multipleRandomSpawnWaves = {2, 1, 1, 1, 2, 1, 1, 1};  // Changed from {4, 3, 2, 1}  // Maximum 1 infected person per wave
+
     internal float timer;
     internal float repeatRate;
     internal bool isInfectedWave = false;
@@ -64,7 +68,8 @@ public class SpawnPeople : MonoBehaviour
             UpdateRandomIsInfectedWave();
         }
 
-        spawnPosLists = new Vector3[][]{spawnPosList0, spawnPosList1};
+        spawnPosList2 = spawnPosList0.Concat(spawnPosList1).ToArray(); 
+        spawnPosLists = new Vector3[][]{spawnPosList0, spawnPosList1, spawnPosList2};
         spawnPosList = (Vector3[])spawnPosLists[spawnPosListIndex].Clone();
     }
 
@@ -77,10 +82,21 @@ public class SpawnPeople : MonoBehaviour
             UpdateWaveText();
             if (areSpawningMultiple)
             {
-                SpawnMultiplePeople(multipleSpawnWaves[multipleSpawnWaveIndex, 0], multipleSpawnWaves[multipleSpawnWaveIndex, 1]);
-                multipleSpawnWaveIndex++;
-                multipleSpawnWaveIndex %= multipleSpawnWaves.GetLength(0);
-                isInfectedWave = (multipleSpawnWaves[multipleSpawnWaveIndex, 1] > 0);
+                if (areWavesRandom)
+                {
+                    int infectedPeopleInWave = (isInfectedWave) ? 1 : 0;
+                    SpawnMultiplePeople(multipleRandomSpawnWaves[multipleSpawnWaveIndex], infectedPeopleInWave);
+                    multipleSpawnWaveIndex++;
+                    multipleSpawnWaveIndex %= multipleRandomSpawnWaves.Length;
+                    UpdateRandomIsInfectedWave();
+                }
+                else
+                {
+                    SpawnMultiplePeople(multipleSpawnWaves[multipleSpawnWaveIndex, 0], multipleSpawnWaves[multipleSpawnWaveIndex, 1]);
+                    multipleSpawnWaveIndex++;
+                    multipleSpawnWaveIndex %= multipleSpawnWaves.GetLength(0);
+                    isInfectedWave = (multipleSpawnWaves[multipleSpawnWaveIndex, 1] > 0);
+                }
             }
             else
             {

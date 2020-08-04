@@ -13,11 +13,11 @@ public class GenerateWalls : MonoBehaviour
     public GameObject wallPrefab;
     public Transform wallsGO_Transform;
 
-    private bool canSpawnOnEdgeMidpoints = false;
-    private bool canSpawnOnCorners = true;
+    private bool canSpawnOnEdgeMidpoints = true;
+    private bool canSpawnOnCorners = false;
 
     public GameObject[] tileTypeGroups;
-    private bool[] movableTileGroupsEnables = {false, true};
+    private bool[] movableTileGroupsEnables;
 
     // Start is called before the first frame update
     void Start()
@@ -27,22 +27,27 @@ public class GenerateWalls : MonoBehaviour
             case 0:
                 break;
             case 1:
+                canSpawnOnEdgeMidpoints = false;
+                canSpawnOnCorners = true;
+                break;
+            case 2:
                 canSpawnOnEdgeMidpoints = true;
-                canSpawnOnCorners = false;
-                movableTileGroupsEnables = new bool[]{true, false};
+                canSpawnOnCorners = true;
                 break;
         }
+        movableTileGroupsEnables = new bool[] {canSpawnOnEdgeMidpoints, canSpawnOnCorners};
+
         for (int i = 0; i < movableTileGroupsEnables.Length; i++)
         {
             if (movableTileGroupsEnables[i])
             {
-                tileTypeGroups[i * 2 + 1].SetActive(true);
-                tileTypeGroups[i * 2].SetActive(false);
+                tileTypeGroups[i * 2].SetActive(true);
+                tileTypeGroups[i * 2 + 1].SetActive(false);
             }
             else
             {
-                tileTypeGroups[i * 2].SetActive(true);
-                tileTypeGroups[i * 2 + 1].SetActive(false);
+                tileTypeGroups[i * 2 + 1].SetActive(true);
+                tileTypeGroups[i * 2].SetActive(false);
             }
         }
     }
@@ -63,7 +68,7 @@ public class GenerateWalls : MonoBehaviour
             {
                 bool isOnEdgeMidpoint = ((Mathf.Abs(x) == 0 && Mathf.Abs(z) == zTileRange) || (Mathf.Abs(x) == xTileRange && Mathf.Abs(z) == 0));
                 bool isOnCorner = (Mathf.Abs(x) == xTileRange && Mathf.Abs(z) == zTileRange);
-                if ((canSpawnOnEdgeMidpoints || !isOnEdgeMidpoint) && (canSpawnOnCorners || !isOnCorner))
+                if ((!canSpawnOnEdgeMidpoints || !isOnEdgeMidpoint) && (!canSpawnOnCorners || !isOnCorner))
                 {
                     tilePosList.Add(new Vector3(x, wallPrefab.transform.position.y, z));
                 }

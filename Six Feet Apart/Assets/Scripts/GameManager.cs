@@ -9,6 +9,7 @@ using System;
 public class GameManager : MonoBehaviour
 {
     internal static GameManager instance;
+    private Camera mainCamera;
     [SerializeField] internal bool isGameActive = true;  // Time.timeScale will be used to check for pausing  // Change to false during start countdown?
     internal bool isGameActivePreviousFrame = true;
     // private float gameTimer = 0;  // Could use Time.timeSinceLevelLoad with Time.timeScale instead for simple functionality
@@ -20,6 +21,10 @@ public class GameManager : MonoBehaviour
     public GameObject countdownGameMask;
     public GameObject[] disableAfterCountdown;
 
+    private GenerateWalls generateWallsScript;
+    private SpawnPeople spawnPeopleScript;
+    private TileDisabler tileDisablerScript;
+
     internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
     public GameObject gameOverMenu;
     public AudioClip countdownEndSound;
@@ -27,19 +32,25 @@ public class GameManager : MonoBehaviour
     public AudioClip gameOverSound;
     public float gameOverSoundVolume;
 
-    // internal static int gameMode;  // Probably shouldn't make this static, but this is just for accessing from MainMenu scene
     private int defaultGameMode = 0;
 
-    [Header("Game Settings")]
+    [Header("Additional Game Settings")]
     [SerializeField] internal float infectionDeathDuration = 40f;
     [SerializeField] internal bool canHealthyHeal = false;
     [SerializeField] internal bool areSymptomsDelayed = false;
     [SerializeField] internal float symptomDelayTime = 15f;  // No effect if areSymptomsDelayed is false
+    [SerializeField] internal bool isChangingBackgroundColor = true;
+    public Color[] backgroundColors;
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+
+        mainCamera = Camera.main;
+        generateWallsScript = spawnManager.GetComponent<GenerateWalls>();
+        spawnPeopleScript = spawnManager.GetComponent<SpawnPeople>();
+        tileDisablerScript = spawnManager.GetComponent<TileDisabler>();
 
         try  // When starting game in GameScene scene
         {
@@ -100,12 +111,12 @@ public class GameManager : MonoBehaviour
 
             // GAME OVER SCREEN
             gameOverMenu.SetActive(true);
-            spawnManager.GetComponent<SpawnPeople>().UpdateGameOverScoreText();
+            spawnPeopleScript.UpdateGameOverScoreText();
             AudioManager.instance.musicSource.Pause();
             AudioManager.instance.SFX_Source.PlayOneShot(gameOverSound, gameOverSoundVolume);
             Debug.Log("Game Over!");
 
-            int newScore = spawnManager.GetComponent<SpawnPeople>().CalculateScore();
+            int newScore = spawnPeopleScript.CalculateScore();
             HighScoreLogger.instance.UpdateHighScore(newScore, false);
         }
     }
@@ -113,7 +124,7 @@ public class GameManager : MonoBehaviour
     IEnumerator<float> BeginAfterCountdown()
     {
         yield return Timing.WaitForSeconds(gameCountdownTime);
-        spawnManager.GetComponent<GenerateWalls>().BeginGeneration();
+        generateWallsScript.BeginGeneration();
         hasGameStarted = true;
         AudioManager.instance.SFX_Source.PlayOneShot(countdownEndSound, countdownEndSoundVolume);
         AudioManager.instance.musicSource.enabled = true;
@@ -146,30 +157,49 @@ public class GameManager : MonoBehaviour
                 break;
             case 1:
                 canHealthyHeal = true;
-                spawnManager.GetComponent<GenerateWalls>().wallTotal = 36;  // 35?
+                generateWallsScript.wallTotal = 35;
                 break;
             case 2:
                 infectionDeathDuration = 35f;  // [15, 35] or [10, 40]?
                 canHealthyHeal = true;
                 areSymptomsDelayed = true;
-                spawnManager.GetComponent<GenerateWalls>().wallTotal = 32;  // 35?
-                spawnManager.GetComponent<SpawnPeople>().areWavesRandom = true;
+                generateWallsScript.wallTotal = 35;  // 32?
+                spawnPeopleScript.areWavesRandom = true;
                 break;
             case 3:
-                spawnManager.GetComponent<SpawnPeople>().startRepeatRate = 15f;
-                spawnManager.GetComponent<SpawnPeople>().repeatRateDecrease = 1f;
+                spawnPeopleScript.startRepeatRate = 15f;
+                spawnPeopleScript.repeatRateDecrease = 1f;
                 break;
             case 4:
-                spawnManager.GetComponent<SpawnPeople>().areSpawningMultiple = true;
-                spawnManager.GetComponent<SpawnPeople>().repeatRateDecreaseWaveInterval = 2;
+                spawnPeopleScript.areSpawningMultiple = true;
+                spawnPeopleScript.repeatRateDecreaseWaveInterval = 2;
                 break;
             case 5:
-                spawnManager.GetComponent<SpawnPeople>().spawnPosListIndex = 1;
+                spawnPeopleScript.spawnPosListIndex = 1;
                 break;
             case 6:
-                spawnManager.GetComponent<GenerateWalls>().wallTotal = 35;
-                spawnManager.GetComponent<TileDisabler>().tileSetEnables = new bool[]{false, true};
+                generateWallsScript.wallTotal = 35;
+                tileDisablerScript.tileSetEnables = new bool[]{false, true};
                 break;
+            case 7:
+                infectionDeathDuration = 35f;
+                canHealthyHeal = true;
+                // areSymptomsDelayed = true;
+                spawnPeopleScript.spawnPosListIndex = 2;
+                // tileDisablerScript.tileSetEnables = new bool[] {true, false};
+                generateWallsScript.wallTotal = 40;
+
+                spawnPeopleScript.startRepeatRate = 25f;
+                spawnPeopleScript.repeatRateDecreaseWaveInterval = 4;
+                // spawnPeopleScript.areWavesRandom = true;
+                spawnPeopleScript.randomWaveGroupSize = 8;
+                spawnPeopleScript.areSpawningMultiple = true;
+                spawnPeopleScript.multipleSpawnWaves = new int[4, 2]{{1, 0}, {1, 0}, {1, 0}, {2, 1}};
+                break;
+        }
+        if (isChangingBackgroundColor)
+        {
+            mainCamera.backgroundColor = backgroundColors[gameMode];
         }
     }
     

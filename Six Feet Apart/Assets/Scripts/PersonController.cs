@@ -16,6 +16,7 @@ using UnityEditor;
 public class PersonController : MonoBehaviour
 {
     public Camera cam;
+    private Camera mainCamera;
 
     private NavMeshAgent agent;
     private NavMeshPath navMeshPath;
@@ -107,6 +108,7 @@ public class PersonController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mainCamera = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         navMeshPath = new NavMeshPath();
         meshRenderer = GetComponent<MeshRenderer>();
@@ -123,7 +125,7 @@ public class PersonController : MonoBehaviour
 
         priorityHospitalReachTimer = priorityHospitalReachTime;
 
-        defaultBackgroundColor = Camera.main.backgroundColor;
+        defaultBackgroundColor = mainCamera.backgroundColor;
 
         if (GameManager.instance.areSymptomsDelayed)
         {
@@ -336,7 +338,7 @@ public class PersonController : MonoBehaviour
                 infectedPeopleTotal++;
                 if (infectedPeopleTotal >= infectedPeopleBackgroundThreshold)
                 {
-                    Camera.main.backgroundColor = dangerBackgroundColor;
+                    mainCamera.backgroundColor = dangerBackgroundColor;
                 }
             }
         }
@@ -418,7 +420,7 @@ public class PersonController : MonoBehaviour
             infectedPeopleTotal--;
             if (infectedPeopleTotal < infectedPeopleBackgroundThreshold)
             {
-                Camera.main.backgroundColor = defaultBackgroundColor;
+                mainCamera.backgroundColor = defaultBackgroundColor;
             }
             gameObject.tag = "Untagged";
             
@@ -528,9 +530,9 @@ public class PersonController : MonoBehaviour
 
     IEnumerator<float> BackgroundFlash()
     {
-        Camera.main.backgroundColor = dangerBackgroundColor;
+        mainCamera.backgroundColor = dangerBackgroundColor;
         yield return Timing.WaitForSeconds(backgroundFlashTime);
-        Camera.main.backgroundColor = defaultBackgroundColor;
+        mainCamera.backgroundColor = defaultBackgroundColor;
     }
 
     void OnTriggerEnter(Collider other)

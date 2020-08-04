@@ -18,6 +18,7 @@ public class DifficultySelectMenu : MonoBehaviour
     public float fadeTime;
 
     // https://stackoverflow.com/questions/5849548/is-this-array-initialization-incorrect
+    /*
     internal static int[][,] gameModeUnlockReqs = new int[][,]{
         new int[,] {{}},
         new int[,] {{}},
@@ -27,7 +28,20 @@ public class DifficultySelectMenu : MonoBehaviour
         new int[,] {{3, 35}},
         new int[,] {{0, 30}},
         new int[,] {{5, 25}},  // Changed from 35
-        new int[,] {{2, 40}, {4, 20}, {6, 40}}
+        new int[,] {{2, 30}, {4, 20}, {6, 40}}  // Changed from {2, 40} to {2, 20}
+    };
+    */
+    // EASIER
+    internal static int[][,] gameModeUnlockReqs = new int[][,]{
+        new int[,] {{}},
+        new int[,] {{}},
+        new int[,] {{0, 25}},
+        new int[,] {{1, 30}},
+        new int[,] {{0, 25}},
+        new int[,] {{3, 30}},
+        new int[,] {{0, 25}},
+        new int[,] {{5, 30}},
+        new int[,] {{2, 30}, {4, 20}, {6, 35}}  // Changed from {2, 40} to {2, 20}
     };
 
     // Start is called before the first frame update

@@ -2222,6 +2222,16 @@ MonoBehaviour:
   canHealthyHeal: 0
   areSymptomsDelayed: 0
   symptomDelayTime: 15
+  isChangingBackgroundColor: 1
+  backgroundColors:
+  - {r: 0.67499995, g: 0.9, b: 0.67499995, a: 0}
+  - {r: 0.9, g: 0.9, b: 0.67499995, a: 0}
+  - {r: 0.9, g: 0.67499995, b: 0.67499995, a: 0}
+  - {r: 0.67499995, g: 0.9, b: 0.9, a: 0}
+  - {r: 0.9, g: 0.78794116, b: 0.67499995, a: 0}
+  - {r: 0.67499995, g: 0.67499995, b: 0.9, a: 0}
+  - {r: 0.84441173, g: 0.67499995, b: 0.9, a: 0}
+  - {r: 0.4, g: 0.4, b: 0.4, a: 0}
 --- !u!4 &285431277
 Transform:
   m_ObjectHideFlags: 0
@@ -17708,6 +17718,7 @@ MonoBehaviour:
   infectedWavesPerGroup: 2
   randomWaveGroupSize: 10
   areSpawningMultiple: 0
+  multipleRandomSpawnWaves: 0200000001000000010000000100000002000000010000000100000001000000
   waveText: {fileID: 640464217}
   gameOverScoreText: {fileID: 1965020087}
   unlockedModeText: {fileID: 666729367}
