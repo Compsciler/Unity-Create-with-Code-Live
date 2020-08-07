@@ -20,8 +20,9 @@ public class LogoAnimation : MonoBehaviour
     public Sprite[] logoImages;
     public GameObject textGO;
 
-    // public GameObject mainMenu;
     public GameObject logoScreen;
+
+    private BeforeMainMenuLoaded beforeMainMenuLoadedScript;
 
     // Current animation time: 1.2 + 7 * (0.35 + 0.05) + 2
 
@@ -29,10 +30,11 @@ public class LogoAnimation : MonoBehaviour
     void Start()
     {
         svgImage = svgImageGO.GetComponent<SVGImage>();
+        beforeMainMenuLoadedScript = GameObject.Find("Background").GetComponent<BeforeMainMenuLoaded>();
 
+        Timing.RunCoroutine(ImmediatelyPauseMusic());
         if (isShowingLogoScreen)
         {
-            Timing.RunCoroutine(ImmediatelyPauseMusic());
             gameObject.SetActive(false);
             logoScreen.SetActive(true);
             Timing.RunCoroutine(AnimationProcess());
@@ -41,6 +43,7 @@ public class LogoAnimation : MonoBehaviour
         {
             // logoScreen.SetActive(false);
             // gameObject.SetActive(true);
+            beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
         }
     }
 
@@ -83,8 +86,8 @@ public class LogoAnimation : MonoBehaviour
 
         yield return Timing.WaitForSeconds(endDelay);
         logoScreen.SetActive(false);
-        gameObject.SetActive(true);
-        AudioManager.instance.musicSource.Play();
+        beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
+        // gameObject.SetActive(true);
     }
 
     IEnumerator<float> ImmediatelyPauseMusic()
