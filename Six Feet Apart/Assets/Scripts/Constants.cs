@@ -12,5 +12,5 @@
     internal static int healthyUnboundAgentID = 658490984;
     internal static int priorityHealthyAgentID = 65107623;  // Basically unused
 
-    internal static float connectionTimeoutTime = 10f;
+    internal static int connectionTimeoutTime = 10;
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,14 +24,31 @@ public class HighScoreLogger : MonoBehaviour
         
     }
 
-    public int[] GetHighScores()
+    public int[] GetHighScores(bool isIncludingOverallHighScore)
     {
-        int[] highScores = new int[highScoreStrings.Length];
-        for (int i = 0; i < highScores.Length; i++)
+        int[] highScores;
+        if (isIncludingOverallHighScore)
+        {
+            highScores = new int[highScoreStrings.Length + 1];
+        }
+        else
+        {
+            highScores = new int[highScoreStrings.Length];
+        }
+        for (int i = 0; i < highScoreStrings.Length; i++)
         {
             highScores[i] = PlayerPrefs.GetInt(highScoreStrings[i], 0);
         }
+        if (isIncludingOverallHighScore)
+        {
+            highScores[highScores.Length - 1] = GetOverallHighScore();
+        }
         return highScores;
+    }
+
+    public int GetOverallHighScore()
+    {
+        return GetHighScores(false).Sum();
     }
 
     public void UpdateHighScore(int newScore, bool isUpdatingToNewScore)

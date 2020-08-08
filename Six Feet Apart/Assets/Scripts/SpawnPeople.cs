@@ -222,7 +222,7 @@ public class SpawnPeople : MonoBehaviour
     public void UpdateUnlockedModeText(int prevHighScore)
     {
         //string debugString = "(" + prevHighScore + ")";
-        int[] highScores = HighScoreLogger.instance.GetHighScores();
+        int[] highScores = HighScoreLogger.instance.GetHighScores(false);
 
         List<int> unlockedModes = new List<int>();
         for (int i = 0; i < DifficultySelectMenu.gameModeUnlockReqs.Length; i++)

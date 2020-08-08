@@ -115,7 +115,7 @@ public class DifficultySelectMenu : MonoBehaviour
 
     private void SetUpUnlocksAndScores()
     {
-        int[] highScores = HighScoreLogger.instance.GetHighScores();
+        int[] highScores = HighScoreLogger.instance.GetHighScores(false);
 
         for (int i = 0; i < gameModeUnlockReqs.Length; i++)
         {

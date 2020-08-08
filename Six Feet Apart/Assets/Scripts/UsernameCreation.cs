@@ -128,9 +128,10 @@ public class UsernameCreation : MonoBehaviour
     IEnumerator CheckIfUsernameIsUnique()
     {
         UnityWebRequest request = UnityWebRequest.Get(webURL + publicCode + "/pipe-get/" + inputUsername.ToLower());  // Gets "score" for inputUsername if inputUsername exists
-        StartCoroutine(ConnectionTimeout(checkIfUsernameIsUniqueIEnumerator));
+        request.timeout = Constants.connectionTimeoutTime;
+        // StartCoroutine(ConnectionTimeout(checkIfUsernameIsUniqueIEnumerator));
         yield return request.SendWebRequest();
-        StopCoroutine(ConnectionTimeout(checkIfUsernameIsUniqueIEnumerator));
+        // StopCoroutine(ConnectionTimeout(checkIfUsernameIsUniqueIEnumerator));
 
         errorText.text = request.error;
         reqMetArr[0] = (string.IsNullOrEmpty(request.downloadHandler.text));

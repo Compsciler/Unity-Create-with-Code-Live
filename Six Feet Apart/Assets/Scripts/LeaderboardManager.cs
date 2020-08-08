@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 // Source: https://www.youtube.com/watch?v=KZuqEyxYZCc&t=616s
 
@@ -34,9 +36,22 @@ public class LeaderboardManager : MonoBehaviour
 									};
 	const string webURL = "http://dreamlo.com/lb/";
 
-	public HighScore[] onlineHighScores;
-
 	internal static string username;
+
+	private HighScore[][] allOnlineHighScores;  // Change to 2D array to hold a struct for each game mode
+	public GameObject[] leaderboards;
+	public GameObject titleText;
+	public TMP_Text messageTextComponent;
+	public GameObject scrollView;
+	public Button uploadScoresButtonComponent;
+
+	private int maxScores = 100;
+	private int finishedLeaderboardUpdates = 0;
+
+	private bool isFinishedDisplayingLeaderboards = false;
+	private int finishedLeaderboardDownloads = 0;
+	private int currentlyDisplayedLeaderboard = 8;
+	private string[] leaderboardStrings = {"Normal Mode", "Difficult Mode", "Extreme Mode", "Quick Mode", "Breakneck Mode", "Oblique Mode", "Holesome Mode", "Ultimate Mode", "Overall"};
 
     void Awake()
     {
@@ -46,70 +61,230 @@ public class LeaderboardManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		AddNewHighScore("Sebastian", 50);
-		AddNewHighScore("Mary", 85);
-		AddNewHighScore("Bob", 92);
-
-		DownloadHighScores();
+		allOnlineHighScores = new HighScore[publicCodes.Length][];
 	}
 
-	public void AddNewHighScore(string username, int score)
-	{
-		StartCoroutine(UploadNewHighScore(username, score));
-	}
-
-	IEnumerator UploadNewHighScore(string username, int score)
-	{
-		// Post?
-		UnityWebRequest www = UnityWebRequest.Get(webURL + privateCodes[0] + "/add/" + UnityWebRequest.EscapeURL(username) + "/" + score);
-		www.SendWebRequest();
-		yield return www;
-
-		if (string.IsNullOrEmpty(www.error))
+    void OnEnable()
+    {
+        if (!isFinishedDisplayingLeaderboards)
         {
-			Debug.Log("Upload Successful");
+			finishedLeaderboardDownloads = 0;
+			messageTextComponent.text = "";
+			StartCoroutine(DownloadAllHighScores(maxScores));
+		}
+    }
+
+    IEnumerator UploadAllHighScores()  // Doesn't update equal high scores
+    {
+		messageTextComponent.text = "Uploading high scores to database...";
+		uploadScoresButtonComponent.interactable = false;
+
+		finishedLeaderboardUpdates = 0;
+
+		int[] myOnlineHighScores = new int[publicCodes.Length];  // Includes overall high score
+		for (int i = 0; i < myOnlineHighScores.Length; i++)
+        {
+			UnityWebRequest request = UnityWebRequest.Get(webURL + publicCodes[i] + "/pipe-get/" + username);
+			request.timeout = Constants.connectionTimeoutTime;
+			yield return request.SendWebRequest();
+
+			if (string.IsNullOrEmpty(request.error))
+			{
+				string requestText = request.downloadHandler.text;
+				if (string.IsNullOrEmpty(requestText))
+                {
+					myOnlineHighScores[i] = 0;
+                }
+                else
+                {
+					string[] entryInfo = requestText.Split(new char[] {'|'});
+					myOnlineHighScores[i] = int.Parse(entryInfo[1]);
+				}
+			}
+			else
+			{
+				// errorText.gameObject.SetActive(true);
+				// errorText.text = "Error uploading username! Restart app and try again.";
+				StopCoroutine(UploadAllHighScores());
+			}
+		}
+		int[] myLocalHighScores = HighScoreLogger.instance.GetHighScores(true);
+
+		for (int i = 0; i < myOnlineHighScores.Length - 1; i++)
+        {
+			if (myLocalHighScores[i] > myOnlineHighScores[i])
+            {
+				StartCoroutine(UploadGameModeHighScore(i, myLocalHighScores[i]));
+            }
+            else
+            {
+				finishedLeaderboardUpdates++;
+            }
+        }
+		int overallHighScoreIndex = myOnlineHighScores.Length - 1;
+		if (myLocalHighScores[overallHighScoreIndex] > myOnlineHighScores[overallHighScoreIndex])
+        {
+			StartCoroutine(UploadOverallHighScore(myLocalHighScores[overallHighScoreIndex]));
+        }
+        else
+        {
+			finishedLeaderboardUpdates++;
+		}
+		yield return new WaitUntil(() => finishedLeaderboardUpdates == myOnlineHighScores.Length);
+		messageTextComponent.text = "Upload successful!";
+		isFinishedDisplayingLeaderboards = false;
+		OnEnable();
+	}
+
+	public void UploadAllHighScoresStartCoroutine()
+    {
+		StartCoroutine(UploadAllHighScores());
+    }
+
+	/*
+	public void UploadNewHighScores(int gameModeHighScore)
+	{
+		StartCoroutine(UploadGameModeHighScore(gameModeHighScore));
+		StartCoroutine(UploadOverallHighScore());
+	}
+	*/
+
+	IEnumerator UploadGameModeHighScore(int score)
+	{
+		UploadGameModeHighScore(HighScoreLogger.instance.gameMode, score);
+		yield return null;
+	}
+
+	IEnumerator UploadGameModeHighScore(int gameMode, int score)
+    {
+		UnityWebRequest request = UnityWebRequest.Get(webURL + privateCodes[gameMode] + "/add/" + UnityWebRequest.EscapeURL(username) + "/" + score);
+		request.timeout = Constants.connectionTimeoutTime;
+		yield return request.SendWebRequest();
+
+		string gameModeHighScoreString = HighScoreLogger.instance.highScoreStrings[gameMode];
+		if (string.IsNullOrEmpty(request.error))
+		{
+			finishedLeaderboardUpdates++;
+			Debug.Log("Upload Successful with " + gameModeHighScoreString);
 		}
 		else
 		{
-			Debug.Log("Error uploading: " + www.error);
+			messageTextComponent.text = "<color=#FF4040>Check your internet connection and try again.</color>";
+			StopCoroutine(UploadAllHighScores());
+			uploadScoresButtonComponent.interactable = true;
+			Debug.Log("Error uploading " + gameModeHighScoreString + ": " + request.error);
 		}
 	}
 
-	public void DownloadHighScores()
-	{
-		StartCoroutine("DownloadHighscoresFromDatabase");
+	IEnumerator UploadOverallHighScore()
+    {
+		StartCoroutine(UploadOverallHighScore(HighScoreLogger.instance.GetOverallHighScore()));
+		yield return null;
 	}
 
-	IEnumerator DownloadHighScoresFromDatabase()
-	{
-		UnityWebRequest www = UnityWebRequest.Get(webURL + publicCodes[0] + "/pipe/");
-		yield return www;
+	IEnumerator UploadOverallHighScore(int score)
+    {
+		UnityWebRequest request = UnityWebRequest.Get(webURL + privateCodes[privateCodes.Length - 1] + "/add/" + UnityWebRequest.EscapeURL(username) + "/" + score);
+		request.timeout = Constants.connectionTimeoutTime;
+		yield return request.SendWebRequest();
 
-		if (string.IsNullOrEmpty(www.error))
-        {
-			FormatHighScores(www.downloadHandler.text);
+		if (string.IsNullOrEmpty(request.error))
+		{
+			finishedLeaderboardUpdates++;
+			Debug.Log("Upload Successful with OverallHighScore");
 		}
 		else
 		{
-			Debug.Log("Error Downloading: " + www.error);
+			messageTextComponent.text = "<color=#FF4040>Check your internet connection and try again.</color>";
+			StopCoroutine(UploadAllHighScores());
+			uploadScoresButtonComponent.interactable = true;
+			Debug.Log("Error uploading OverallHighScore" + ": " + request.error);
 		}
 	}
 
-	void FormatHighScores(string textStream)
+	IEnumerator DownloadAllHighScores(int maxScores)
+    {
+		messageTextComponent.text = "Retrieving scores from database...";
+
+		for (int i = 0; i < publicCodes.Length; i++)
+        {
+			StartCoroutine(DownloadHighScores(i, maxScores));
+			yield return null;
+		}
+		yield return new WaitUntil(() => finishedLeaderboardDownloads == publicCodes.Length);
+		DisplayHighScores();
+		isFinishedDisplayingLeaderboards = true;
+		messageTextComponent.text = "Request successful!";
+	}
+
+	IEnumerator DownloadHighScores(int leaderboardNum, int maxScores)
+	{
+		UnityWebRequest request = UnityWebRequest.Get(webURL + publicCodes[leaderboardNum] + "/pipe/" + maxScores);
+		request.timeout = Constants.connectionTimeoutTime;
+		yield return request.SendWebRequest();
+
+		if (string.IsNullOrEmpty(request.error))
+        {
+			finishedLeaderboardDownloads++;
+			FormatHighScores(leaderboardNum, request.downloadHandler.text);
+		}
+		else
+		{
+			messageTextComponent.text = "<color=#FF4040>Check your internet connection and re-enter the menu.</color>";
+			StopCoroutine(DownloadAllHighScores(maxScores));
+			Debug.Log("Error Downloading: " + request.error);
+		}
+	}
+
+	/*
+	public void DownloadHighScoresStartCoroutine(int leaderboardNum, int maxScores)
+	{
+		StartCoroutine(DownloadHighScores(leaderboardNum, maxScores));
+	}
+	*/
+
+	void FormatHighScores(int leaderboardNum, string textStream)
 	{
 		string[] entries = textStream.Split(new char[] {'\n'}, System.StringSplitOptions.RemoveEmptyEntries);
-		onlineHighScores = new HighScore[entries.Length];
+		HighScore[] currentOnlineHighScores = new HighScore[entries.Length];
 
 		for (int i = 0; i < entries.Length; i++)
 		{
 			string[] entryInfo = entries[i].Split(new char[] {'|'});
 			string username = entryInfo[0];
 			int score = int.Parse(entryInfo[1]);
-			onlineHighScores[i] = new HighScore(username, score);
-			Debug.Log(onlineHighScores[i].username + ": " + onlineHighScores[i].score);
+			currentOnlineHighScores[i] = new HighScore(username, score);
+			Debug.Log(leaderboardNum + " | " + currentOnlineHighScores[i].username + ": " + currentOnlineHighScores[i].score);
 		}
+		allOnlineHighScores[leaderboardNum] = currentOnlineHighScores;
 	}
 
+	void DisplayHighScores()
+    {
+		for (int i = 0; i < publicCodes.Length; i++)
+        {
+			TMP_Text mainText = leaderboards[i].GetComponent<TMP_Text>();
+			TMP_Text scoreText = mainText.transform.Find("Score Text").GetComponent<TMP_Text>();
+			mainText.text = "";
+			scoreText.text = "";
+			for (int j = 0; j < allOnlineHighScores[i].Length; j++)
+            {
+				mainText.text += "\n" + (j + 1) + ")\t" + allOnlineHighScores[i][j].username;
+				scoreText.text += "\n" + allOnlineHighScores[i][j].score;
+			}
+        }
+    }
+
+	public void ChangeLeaderboard(bool isChangingForward)
+    {
+		leaderboards[currentlyDisplayedLeaderboard].SetActive(false);
+		currentlyDisplayedLeaderboard += (isChangingForward) ? 1 : -1;
+		currentlyDisplayedLeaderboard = (currentlyDisplayedLeaderboard + leaderboards.Length) % leaderboards.Length;
+		leaderboards[currentlyDisplayedLeaderboard].SetActive(true);
+
+		titleText.GetComponent<TMP_Text>().text = leaderboardStrings[currentlyDisplayedLeaderboard];
+		scrollView.GetComponent<ScrollRect>().content = leaderboards[currentlyDisplayedLeaderboard].GetComponent<RectTransform>();
+	}
 }
 
 public struct HighScore

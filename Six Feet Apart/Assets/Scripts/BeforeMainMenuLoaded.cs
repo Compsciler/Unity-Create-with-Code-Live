@@ -28,6 +28,7 @@ public class BeforeMainMenuLoaded : MonoBehaviour
             }
             else
             {
+                LeaderboardManager.username = PlayerPrefs.GetString("Username");
                 mainMenu.SetActive(true);
                 AudioManager.instance.musicSource.Play();
             }
