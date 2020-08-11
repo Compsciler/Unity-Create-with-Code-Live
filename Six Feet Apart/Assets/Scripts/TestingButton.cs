@@ -34,6 +34,14 @@ public class TestingButton : MonoBehaviour
         // Debug.Log("Remaining Distance: " + person.GetComponent<NavMeshAgent>().remainingDistance);
 
         // Debug.Log(PersonController.infectedPeopleTotal);
-        GameManager.instance.ResetStaticVariables();
+        // GameManager.instance.ResetStaticVariables();
+        if (Time.timeScale > 1)
+        {
+            Time.timeScale = 1;
+        }
+        else
+        {
+            Time.timeScale = 10;
+        }
     }
 }

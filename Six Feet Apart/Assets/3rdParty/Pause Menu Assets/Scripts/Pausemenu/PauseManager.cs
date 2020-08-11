@@ -20,6 +20,7 @@ namespace GreatArcStudios
     {
         public Button pauseButton;  //| Added
         public GameObject graphyFPS_Info;  //| Added
+        internal static bool isPaused = false;  //| Added
         /// <summary>
         /// This is the main panel holder, which holds the main panel and should be called "main panel"
         /// </summary> 
@@ -383,8 +384,10 @@ namespace GreatArcStudios
             TitleTexts.SetActive(true);
             mask.SetActive(true);
             AudioManager.instance.musicSource.Pause();  //|
+            isPaused = true;  //|
             if (modifyTimeScale)
             {
+                timeScale = Time.timeScale;  //|
                 Time.timeScale = 0;
             }
             else
@@ -416,6 +419,7 @@ namespace GreatArcStudios
             TitleTexts.SetActive(false);
             mask.SetActive(false);
             AudioManager.instance.musicSource.UnPause();  //|
+            isPaused = false;  //|
             for (int i = 0; i < otherUIElements.Length; i++)
             {
                 otherUIElements[i].gameObject.SetActive(true);

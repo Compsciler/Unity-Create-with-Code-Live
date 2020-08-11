@@ -10,6 +10,8 @@ public class RotateTile : MonoBehaviour
     public AudioClip rotateSound;
     public float rotateSoundVolume;
 
+    internal static int tileClicksRemainingToTriggerDialogue;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,7 +27,7 @@ public class RotateTile : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (GameManager.instance.isGameActive && Time.timeScale == 1)
+        if (GameManager.instance.isGameActive && !PauseManager.isPaused && (!GameManager.instance.isTutorial || gameObject == DialogueManager.instance.currentTileToClick))
         {
             int numWallsRotated = 0;
             foreach (GameObject wall in adjacentWalls)
@@ -36,6 +38,10 @@ public class RotateTile : MonoBehaviour
             if (numWallsRotated >= 1 && numWallsRotated <= 3)
             {
                 AudioManager.instance.SFX_Source.PlayOneShot(rotateSound, rotateSoundVolume);
+            }
+            if (GameManager.instance.isTutorial)
+            {
+                tileClicksRemainingToTriggerDialogue--;
             }
         }
     }

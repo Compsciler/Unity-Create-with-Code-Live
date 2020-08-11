@@ -5,6 +5,9 @@ using MEC;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.UIWidgets.material;
+using GreatArcStudios;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +23,8 @@ public class GameManager : MonoBehaviour
     public GameObject spawnManager;
     public GameObject countdownGameMask;
     public GameObject[] disableAfterCountdown;
+    public GameObject dialogueManager;
+    public GameObject dialoguePanel;
 
     private GenerateWalls generateWallsScript;
     private SpawnPeople spawnPeopleScript;
@@ -27,12 +32,14 @@ public class GameManager : MonoBehaviour
 
     internal Dictionary<GameObject, float> infectedPathDistances;  // Disabled for now
     public GameObject gameOverMenu;
+    public TMP_Text gameOverText;
+    public TMP_Text scoreText;
     public AudioClip countdownEndSound;
     public float countdownEndSoundVolume;
     public AudioClip gameOverSound;
     public float gameOverSoundVolume;
 
-    private int defaultGameMode = 0;
+    private int defaultGameMode = -1;
 
     [Header("Additional Game Settings")]
     [SerializeField] internal float infectionDeathDuration = 40f;
@@ -41,6 +48,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] internal float symptomDelayTime = 15f;  // No effect if areSymptomsDelayed is false
     [SerializeField] internal bool isChangingBackgroundColor = true;
     public Color[] backgroundColors;
+    [SerializeField] internal bool isTutorial = false;
 
     // Start is called before the first frame update
     void Start()
@@ -103,7 +111,17 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if (isUsingGameOver)
+        if (isTutorial)
+        {
+            isGameActive = false;
+            Timing.KillCoroutines();
+
+            gameOverText.text = "TUTORIAL\nCOMPLETE";
+            scoreText.text = "";
+            gameOverMenu.SetActive(true);
+            Debug.Log("Tutorial Complete!");
+        }
+        else if (isUsingGameOver)
         {
             // JUST BEFORE REVIVE SCREEN
             isGameActive = false;
@@ -126,11 +144,20 @@ public class GameManager : MonoBehaviour
         yield return Timing.WaitForSeconds(gameCountdownTime);
         generateWallsScript.BeginGeneration();
         hasGameStarted = true;
-        AudioManager.instance.SFX_Source.PlayOneShot(countdownEndSound, countdownEndSoundVolume);
-        AudioManager.instance.musicSource.enabled = true;
+        if (!isTutorial)
+        {
+            AudioManager.instance.SFX_Source.PlayOneShot(countdownEndSound, countdownEndSoundVolume);
+            AudioManager.instance.musicSource.enabled = true;
+        }
         foreach (GameObject go in disableAfterCountdown)
         {
             go.SetActive(false);
+        }
+        if (isTutorial)
+        {
+            dialogueManager.SetActive(true);
+            dialoguePanel.SetActive(true);
+            StartCoroutine(dialoguePanel.GetComponent<DialogueTrigger>().TriggerDialogue());
         }
     }
 
@@ -196,8 +223,15 @@ public class GameManager : MonoBehaviour
                 spawnPeopleScript.areSpawningMultiple = true;
                 spawnPeopleScript.multipleSpawnWaves = new int[4, 2]{{1, 0}, {1, 0}, {1, 0}, {2, 1}};
                 break;
+            case -1:
+                isTutorial = true;
+                spawnPeopleScript.startDelay = 28f;
+                spawnPeopleScript.startRepeatRate = 33.5f;
+                spawnPeopleScript.isFirstSpawnSoundDisabled = false;
+                gameCountdownTime = 0;
+                break;
         }
-        if (isChangingBackgroundColor)
+        if (isChangingBackgroundColor && gameMode >= 0)
         {
             mainCamera.backgroundColor = backgroundColors[gameMode];
         }
@@ -209,6 +243,7 @@ public class GameManager : MonoBehaviour
         HealProgressBar.isNewlyOccupied = false;
         HealProgressBar.isOccupiedByInfectedPerson = true;
         PersonController.infectedPeopleTotal = 0;
+        PauseManager.isPaused = false;
         Time.timeScale = 1;  // Resetting time scale when restarting or quitting game
         Debug.Log("Static variables reset!");
     }

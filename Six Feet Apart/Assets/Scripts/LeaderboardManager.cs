@@ -40,13 +40,16 @@ public class LeaderboardManager : MonoBehaviour
 
 	private HighScore[][] allOnlineHighScores;  // Change to 2D array to hold a struct for each game mode
 	public GameObject[] leaderboards;
-	public GameObject titleText;
-	public TMP_Text messageTextComponent;
+	public TMP_Text titleText;
+	public TMP_Text messageText;
 	public GameObject scrollView;
 	public Button uploadScoresButtonComponent;
+	public TMP_Text myUsernameText;
+	public TMP_Text myLocalScoreText;
 
 	private int maxScores = 100;
 	private int finishedLeaderboardUpdates = 0;
+	private int[] myLocalHighScores;
 
 	private bool isFinishedDisplayingLeaderboards = false;
 	private int finishedLeaderboardDownloads = 0;
@@ -62,6 +65,9 @@ public class LeaderboardManager : MonoBehaviour
     void Start()
     {
 		allOnlineHighScores = new HighScore[publicCodes.Length][];
+		myLocalHighScores = HighScoreLogger.instance.GetHighScores(true);
+		myUsernameText.text = "Username: " + username;
+		DisplayLocalHighScore();
 	}
 
     void OnEnable()
@@ -69,14 +75,14 @@ public class LeaderboardManager : MonoBehaviour
         if (!isFinishedDisplayingLeaderboards)
         {
 			finishedLeaderboardDownloads = 0;
-			messageTextComponent.text = "";
+			messageText.text = "";
 			StartCoroutine(DownloadAllHighScores(maxScores));
 		}
     }
 
     IEnumerator UploadAllHighScores()  // Doesn't update equal high scores
     {
-		messageTextComponent.text = "Uploading high scores to database...";
+		messageText.text = "Uploading high scores to database...";
 		uploadScoresButtonComponent.interactable = false;
 
 		finishedLeaderboardUpdates = 0;
@@ -108,7 +114,6 @@ public class LeaderboardManager : MonoBehaviour
 				StopCoroutine(UploadAllHighScores());
 			}
 		}
-		int[] myLocalHighScores = HighScoreLogger.instance.GetHighScores(true);
 
 		for (int i = 0; i < myOnlineHighScores.Length - 1; i++)
         {
@@ -131,7 +136,7 @@ public class LeaderboardManager : MonoBehaviour
 			finishedLeaderboardUpdates++;
 		}
 		yield return new WaitUntil(() => finishedLeaderboardUpdates == myOnlineHighScores.Length);
-		messageTextComponent.text = "Upload successful!";
+		messageText.text = "Upload successful!";
 		isFinishedDisplayingLeaderboards = false;
 		OnEnable();
 	}
@@ -169,7 +174,7 @@ public class LeaderboardManager : MonoBehaviour
 		}
 		else
 		{
-			messageTextComponent.text = "<color=#FF4040>Check your internet connection and try again.</color>";
+			messageText.text = "<color=#FF4040>Check your internet connection and try again.</color>";
 			StopCoroutine(UploadAllHighScores());
 			uploadScoresButtonComponent.interactable = true;
 			Debug.Log("Error uploading " + gameModeHighScoreString + ": " + request.error);
@@ -195,7 +200,7 @@ public class LeaderboardManager : MonoBehaviour
 		}
 		else
 		{
-			messageTextComponent.text = "<color=#FF4040>Check your internet connection and try again.</color>";
+			messageText.text = "<color=#FF4040>Check your internet connection and try again.</color>";
 			StopCoroutine(UploadAllHighScores());
 			uploadScoresButtonComponent.interactable = true;
 			Debug.Log("Error uploading OverallHighScore" + ": " + request.error);
@@ -204,7 +209,7 @@ public class LeaderboardManager : MonoBehaviour
 
 	IEnumerator DownloadAllHighScores(int maxScores)
     {
-		messageTextComponent.text = "Retrieving scores from database...";
+		messageText.text = "Retrieving scores from database...";
 
 		for (int i = 0; i < publicCodes.Length; i++)
         {
@@ -214,7 +219,7 @@ public class LeaderboardManager : MonoBehaviour
 		yield return new WaitUntil(() => finishedLeaderboardDownloads == publicCodes.Length);
 		DisplayHighScores();
 		isFinishedDisplayingLeaderboards = true;
-		messageTextComponent.text = "Request successful!";
+		messageText.text = "Request successful!";
 	}
 
 	IEnumerator DownloadHighScores(int leaderboardNum, int maxScores)
@@ -230,7 +235,7 @@ public class LeaderboardManager : MonoBehaviour
 		}
 		else
 		{
-			messageTextComponent.text = "<color=#FF4040>Check your internet connection and re-enter the menu.</color>";
+			messageText.text = "<color=#FF4040>Check your internet connection and re-enter the menu.</color>";
 			StopCoroutine(DownloadAllHighScores(maxScores));
 			Debug.Log("Error Downloading: " + request.error);
 		}
@@ -282,9 +287,15 @@ public class LeaderboardManager : MonoBehaviour
 		currentlyDisplayedLeaderboard = (currentlyDisplayedLeaderboard + leaderboards.Length) % leaderboards.Length;
 		leaderboards[currentlyDisplayedLeaderboard].SetActive(true);
 
-		titleText.GetComponent<TMP_Text>().text = leaderboardStrings[currentlyDisplayedLeaderboard];
+		titleText.text = leaderboardStrings[currentlyDisplayedLeaderboard];
 		scrollView.GetComponent<ScrollRect>().content = leaderboards[currentlyDisplayedLeaderboard].GetComponent<RectTransform>();
+		DisplayLocalHighScore();
 	}
+
+	void DisplayLocalHighScore()
+    {
+		myLocalScoreText.text = "Score: " + myLocalHighScores[currentlyDisplayedLeaderboard];
+    }
 }
 
 public struct HighScore

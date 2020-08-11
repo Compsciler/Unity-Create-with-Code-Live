@@ -36,11 +36,16 @@ public class SpawnPeople : MonoBehaviour
 
     [Space(10)]
     public bool areSpawningMultiple = false;
-    public int[,] multipleSpawnWaves = new int[2, 2]{{3, 0}, {2, 1}};
+    public int[,] multipleSpawnWaves = new int[2, 2] {{3, 0}, {2, 1}};
     private int multipleSpawnWaveIndex = 0;
     
     [Space(10)]
     public int[] multipleRandomSpawnWaves = {2, 1, 1, 1, 2, 1, 1, 1};  // Changed from {4, 3, 2, 1}  // Maximum 1 infected person per wave
+
+    [Space(10)]
+    public int[,] tutorialSpawnWaves = new int[2, 2] {{0, 1}, {1, 0}};
+    private int tutorialSpawnWaveIndex = 0;
+    private bool isFinishedSpawning = false;
 
     internal float timer;
     internal float repeatRate;
@@ -80,7 +85,20 @@ public class SpawnPeople : MonoBehaviour
         {
             wave++;
             UpdateWaveText();
-            if (areSpawningMultiple)
+            if (GameManager.instance.isTutorial)
+            {
+                SpawnPerson(isInfectedWave, tutorialSpawnWaves[tutorialSpawnWaveIndex, 1]);
+                tutorialSpawnWaveIndex++;
+                if (tutorialSpawnWaveIndex == tutorialSpawnWaves.GetLength(0))
+                {
+                    isFinishedSpawning = true;
+                }
+                else
+                {
+                    isInfectedWave = (tutorialSpawnWaves[tutorialSpawnWaveIndex, 0] == 1) ? true : false;
+                }
+            }
+            else if (areSpawningMultiple)
             {
                 if (areWavesRandom)
                 {
@@ -132,7 +150,7 @@ public class SpawnPeople : MonoBehaviour
             timer = repeatRate;
             // Debug.Log(Time.time);
         }
-        if (GameManager.instance.isGameActive && GameManager.instance.hasGameStarted)
+        if (GameManager.instance.isGameActive && GameManager.instance.hasGameStarted && !isFinishedSpawning)
         {
             timer -= Time.deltaTime;
         }

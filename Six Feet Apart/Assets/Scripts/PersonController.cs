@@ -105,6 +105,12 @@ public class PersonController : MonoBehaviour
     private float changeBackToHealthyUnboundAgentTime = 5f;
     private bool mustStayHealthyBoundAgent = false;
 
+    private bool arePathDestinationsSet = false;
+    public Vector3[] pathDestinations1;
+    public Vector3[] pathDestinations2;
+    private Vector3[] pathDestinations;
+    private int pathDestinationIndex = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -144,6 +150,19 @@ public class PersonController : MonoBehaviour
         }
 
         infectionParticleStartTime = infectionDeathDuration * infectionParticleStartTimeRatio;
+        arePathDestinationsSet = GameManager.instance.isTutorial;
+        if (arePathDestinationsSet)
+        {
+            switch (gameObject.name.Replace("Person ", ""))
+            {
+                case "1":
+                    pathDestinations = pathDestinations1;
+                    break;
+                case "2":
+                    pathDestinations = pathDestinations2;
+                    break;
+            }
+        }
     }
 
     // Update is called once per frame
@@ -167,7 +186,20 @@ public class PersonController : MonoBehaviour
             isGameActivePreviousFrame = true;
         }
         */
-        if (agent.remainingDistance <= minDistanceRelocation && (!isInfected || isInfectedWithoutSymptoms) && !isHealing)  // Returns 0 when reached destination or when blocked, as close as it can get
+        if (arePathDestinationsSet)
+        {
+            if (agent.remainingDistance <= minDistanceRelocation && pathDestinationIndex < pathDestinations.Length)
+            {
+                // Debug.Log(pathDestinationIndex);
+                agent.SetDestination(pathDestinations[pathDestinationIndex]);
+                pathDestinationIndex++;
+            }
+            else if (pathDestinationIndex >= pathDestinations.Length)
+            {
+                arePathDestinationsSet = false;
+            }
+        }
+        if (agent.remainingDistance <= minDistanceRelocation && (!isInfected || isInfectedWithoutSymptoms) && !isHealing && !arePathDestinationsSet)  // Returns 0 when reached destination or when blocked, as close as it can get
         {
             if (GameManager.instance.canHealthyHeal)  // Bad solution, but it should work
             {
@@ -260,7 +292,7 @@ public class PersonController : MonoBehaviour
         }
         if (isInfected && agent.agentTypeID != Constants.recentlyHealedAgentID && agent.agentTypeID != Constants.priorityInfectedAgentID)  // Moved priorityInfectedAgentID here
         {
-            if (!isInfectedWithoutSymptoms)
+            if (!isInfectedWithoutSymptoms && !arePathDestinationsSet)
             {
                 bool pathPending = true;
                 // bool notPriorityNorRecentlyHealed = agent.agentTypeID != priorityInfectedAgentID && agent.agentTypeID != recentlyHealedAgentID;  // Put recentlyHealed check in main if-condition
@@ -468,7 +500,7 @@ public class PersonController : MonoBehaviour
     IEnumerator<float> InfectionProcess()
     {
         // gameObject.tag = "Infected";  // Unused anyway
-        if (isNearHospital)
+        if (isNearHospital || arePathDestinationsSet)
         {
             agent.agentTypeID = Constants.infectedAgentID;
         }

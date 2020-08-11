@@ -17,6 +17,8 @@ public class DifficultySelectMenu : MonoBehaviour
     public GameObject fadingMask;
     public float fadeTime;
 
+    public GameObject[] enableOnFirstTimePlaying;
+
     // https://stackoverflow.com/questions/5849548/is-this-array-initialization-incorrect
     /*
     internal static int[][,] gameModeUnlockReqs = new int[][,]{
@@ -49,7 +51,14 @@ public class DifficultySelectMenu : MonoBehaviour
     {
         descriptionTexts = descriptionTextsHolder.GetChildren();
 
-        // SetUpUnlocksAndScores();
+        if (PlayerPrefs.GetInt("IsFirstTimePlaying", 1) == 1)
+        {
+            foreach (GameObject go in enableOnFirstTimePlaying)
+            {
+                go.SetActive(true);
+            }
+            PlayerPrefs.SetInt("IsFirstTimePlaying", 0);
+        }
     }
 
     void OnEnable()
