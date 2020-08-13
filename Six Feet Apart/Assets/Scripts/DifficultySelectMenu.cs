@@ -16,6 +16,7 @@ public class DifficultySelectMenu : MonoBehaviour
     public AudioClip playButtonSound;
     public GameObject fadingMask;
     public float fadeTime;
+    public GameObject[] enableAfterFading;
 
     public GameObject[] enableOnFirstTimePlaying;
 
@@ -86,6 +87,10 @@ public class DifficultySelectMenu : MonoBehaviour
         CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());
         AudioManager.instance.SFX_Source.PlayOneShot(playButtonSound);
         yield return Timing.WaitUntilDone(fadeBackgroundCoroutine);
+        foreach (GameObject go in enableAfterFading)
+        {
+            go.SetActive(true);
+        }
         SceneManager.LoadSceneAsync(Constants.gameSceneBuildIndex);
     }
 
