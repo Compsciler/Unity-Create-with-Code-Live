@@ -18,6 +18,7 @@ public class SpawnPeople : MonoBehaviour
     public int spawnPosListIndex = 0;
     private Vector3[][] spawnPosLists;
     private Vector3[] spawnPosList;
+    public Transform peopleGO_Transform;
 
     [Space(10)]
     public int infectedWaveInterval = 5;
@@ -167,17 +168,17 @@ public class SpawnPeople : MonoBehaviour
         GameObject person;
         if (isInfected)
         {
-            person = Instantiate(infectedPerson, spawnPos, infectedPerson.transform.rotation);
+            person = Instantiate(infectedPerson, spawnPos, infectedPerson.transform.rotation, peopleGO_Transform);
         }
         else
         {
             if (GameManager.instance.canHealthyHeal)
             {
-                person = Instantiate(healthyUnboundPerson, spawnPos, healthyUnboundPerson.transform.rotation);
+                person = Instantiate(healthyUnboundPerson, spawnPos, healthyUnboundPerson.transform.rotation, peopleGO_Transform);
             }
             else
             {
-                person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation);
+                person = Instantiate(healthyPerson, spawnPos, healthyPerson.transform.rotation, peopleGO_Transform);
             }
         }
         peopleTotal++;

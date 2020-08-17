@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using MEC;
 
 // Source: https://www.youtube.com/watch?v=_nRzoTzeyxU&t
 public class DialogueManager : MonoBehaviour
@@ -59,7 +60,7 @@ public class DialogueManager : MonoBehaviour
 		if (sentences.Count == 0)
 		{
 			EndDialogue();
-			GameManager.instance.GameOver();
+			Timing.RunCoroutine(GameManager.instance.GameOver(), "GameOver");  // Tag not necessary
 			return;
 		}
 

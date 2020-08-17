@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.ads": "2.0.8",
+    "com.unity.ads": "3.4.9",
     "com.unity.analytics": "3.2.3",
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.connect.share": "1.0.10-preview",

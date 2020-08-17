@@ -75,13 +75,13 @@ public class DifficultySelectMenu : MonoBehaviour
 
     public void Play(int gameMode)  // This will be changed to a generic play function later that has specific parameter to call coroutine
     {
-        Timing.RunCoroutine(PlayCoroutine());
+        Timing.RunCoroutine(PlayStartCoroutine());
         AudioManager.instance.musicSource.Stop();
 
         HighScoreLogger.instance.gameMode = gameMode;
     }
 
-    IEnumerator<float> PlayCoroutine()
+    IEnumerator<float> PlayStartCoroutine()
     {
         fadingMask.SetActive(true);
         CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());

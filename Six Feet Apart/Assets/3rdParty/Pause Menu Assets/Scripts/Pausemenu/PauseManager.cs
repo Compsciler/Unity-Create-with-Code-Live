@@ -477,10 +477,12 @@ namespace GreatArcStudios
         /// </summary>
         public void Update()
         {
+            /*
             if (!GameManager.instance.isGameActive && pauseButton.interactable == true)  //| Added
             {
                 pauseButton.interactable = false;
             }
+            */
 
             readUseSimpleTerrain = useSimpleTerrain;
             useSimpleTerrain = readUseSimpleTerrain;

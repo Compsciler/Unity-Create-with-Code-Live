@@ -41,7 +41,7 @@ public class PersonController : MonoBehaviour
     public float infectionDeathDuration = 40f;
     public float healTime;  // Value also exists in HealProgressBar.cs
 
-    private MeshRenderer meshRenderer;
+    internal MeshRenderer meshRenderer;
 
     [Header("Materials")]
     public Material healthyMaterial;
@@ -49,7 +49,7 @@ public class PersonController : MonoBehaviour
     public Material deadMaterial;
     public Material unknownMaterial;
 
-    private InfectionCylinder infectionCylinderScript;
+    internal InfectionCylinder infectionCylinderScript;
     private HospitalTile hospitalTileScript;
 
     internal float hospitalTileDistance;
@@ -89,7 +89,6 @@ public class PersonController : MonoBehaviour
     public float healSoundVolume;
     public float newInfectionSoundVolume;
 
-    private bool areParticlesOn = true;
     public ParticleSystem infectionParticles;
     public ParticleSystem healParticles;
     private float infectionParticleStartTime;
@@ -171,13 +170,18 @@ public class PersonController : MonoBehaviour
         isInfectedWithoutSymptoms = (isInfected && (agent.agentTypeID == Constants.healthyAgentID || agent.agentTypeID == Constants.healthyUnboundAgentID || agent.agentTypeID == Constants.priorityHealthyAgentID));
         if (!GameManager.instance.isGameActive)
         {
-            if (agent.isStopped == true && GameManager.instance.isGameActivePreviousFrame)
+            if (GameManager.instance.isGameActivePreviousFrame)
             {
                 wasAgentStopped = true;  // For later use with revives
             }
             agent.isStopped = true;  // Occasionally Person 1 and Person 2 (and maybe others as well) are not stopped with GameManager.instance.isGameActivePreviousFrame added in the largest if-block
             // isGameActivePreviousFrame = false;
             // Debug.Log(gameObject.name + " STOPPED");
+        }
+        else if (wasAgentStopped)
+        {
+            agent.isStopped = false;
+            wasAgentStopped = false;
         }
         /*
         if (GameManager.instance.isGameActive && !isGameActivePreviousFrame)
@@ -352,9 +356,9 @@ public class PersonController : MonoBehaviour
                 // Debug.Log("REMAINING: " + agent.remainingDistance);
                 hospitalTileDistance = agent.remainingDistance;
             }
-            if (isRecentlyInfected)  // 0.8.2
+            if (isRecentlyInfected)
             {
-                gameObject.tag = "Infected";
+                gameObject.tag = "Infected";  // Used only for finding truly infected people after watching ad
                 if (GameManager.instance.areSymptomsDelayed)
                 {
                     Timing.RunCoroutine(DelaySymptoms(), "DelaySymptoms " + GetInstanceID());
@@ -457,7 +461,8 @@ public class PersonController : MonoBehaviour
             gameObject.tag = "Untagged";
             
             agent.acceleration = healthyAcceleration;
-            Timing.KillCoroutines("InfectionProcess " + GetInstanceID());  // Works fine without GetInstanceID()?
+            int infectionProcessCoroutinesKilled = Timing.KillCoroutines("InfectionProcess " + GetInstanceID());
+            Debug.Log("Killed on heal: " + infectionProcessCoroutinesKilled);
             Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
             if (GameManager.instance.areSymptomsDelayed)
             {
@@ -466,7 +471,7 @@ public class PersonController : MonoBehaviour
             infectionCylinderScript.gameObject.SetActive(false);
             meshRenderer.material = healthyMaterial;  // OUTSIDE (0.8.2)
             AudioManager.instance.SFX_Source.PlayOneShot(healSound, healSoundVolume);
-            if (areParticlesOn)
+            if (GameManager.instance.areParticlesOn)
             {
                 Timing.KillCoroutines("PlayInfectionParticles " + GetInstanceID());
                 infectionParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -497,9 +502,9 @@ public class PersonController : MonoBehaviour
         Debug.Log("UNOCCUPIED " + gameObject.name);
     }
 
-    IEnumerator<float> InfectionProcess()
+    public IEnumerator<float> InfectionProcess()
     {
-        // gameObject.tag = "Infected";  // Unused anyway
+        gameObject.tag = "Infected";
         if (isNearHospital || arePathDestinationsSet)
         {
             agent.agentTypeID = Constants.infectedAgentID;
@@ -509,7 +514,7 @@ public class PersonController : MonoBehaviour
             agent.agentTypeID = Constants.farInfectedAgentID;
         }
         agent.acceleration = infectedAcceleration;
-        if (areParticlesOn)
+        if (GameManager.instance.areParticlesOn)
         {
             Timing.RunCoroutine(PlayInfectionParticles(), "PlayInfectionParticles " + GetInstanceID());
         }
@@ -522,10 +527,10 @@ public class PersonController : MonoBehaviour
         }
         // Timing.StopCoroutine(SetDestinationAsHospitalContinuously());
         meshRenderer.material = deadMaterial;
-        Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
-        infectionCylinderScript.gameObject.SetActive(false);
+        // Timing.KillCoroutines("SinusoidalRadius " + GetInstanceID());
+        // infectionCylinderScript.gameObject.SetActive(false);
         agent.isStopped = true;
-        GameManager.instance.GameOver();
+        Timing.RunCoroutine(GameManager.instance.GameOver(), "GameOver");
     }
 
     IEnumerator<float> PlayInfectionParticles()
@@ -539,7 +544,7 @@ public class PersonController : MonoBehaviour
         yield return Timing.WaitForSeconds(healTime);
         isInfected = false;
         isHealing = false;
-        if (areParticlesOn)
+        if (GameManager.instance.areParticlesOn)
         {
             healParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
@@ -553,7 +558,7 @@ public class PersonController : MonoBehaviour
         hasRecentlyHealed = false;
     }
 
-    IEnumerator<float> DelaySymptoms()
+    public IEnumerator<float> DelaySymptoms()
     {
         yield return Timing.WaitForSeconds(GameManager.instance.symptomDelayTime);
         Timing.RunCoroutine(InfectionProcess(), "InfectionProcess " + GetInstanceID());

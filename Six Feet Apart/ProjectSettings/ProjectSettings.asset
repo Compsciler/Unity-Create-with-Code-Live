@@ -741,10 +741,10 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 6
-  cloudProjectId: 
+  cloudProjectId: 1684f9cb-6489-4f7f-aa83-7500fe19af64
   framebufferDepthMemorylessMode: 0
-  projectName: 
-  organizationId: 
+  projectName: Six Feet Apart
+  organizationId: rogerwang2520
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0

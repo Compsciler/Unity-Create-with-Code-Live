@@ -52,6 +52,5 @@ public class HealProgressBar : MonoBehaviour
     {
         float fillAmount = healTimer / healTime;
         fill.fillAmount = fillAmount;
-        
     }
 }

@@ -8,6 +8,8 @@ using System;
 using Unity.UIWidgets.material;
 using GreatArcStudios;
 using TMPro;
+using UnityEditorInternal;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,8 +25,12 @@ public class GameManager : MonoBehaviour
     public GameObject spawnManager;
     public GameObject countdownGameMask;
     public GameObject[] disableAfterCountdown;
+    public GameObject pauseButton;
     public GameObject dialogueManager;
     public GameObject dialoguePanel;
+    public GameObject adMenu;
+    public GameObject peopleGO;
+    public bool isResettingDelayedSymptoms;
 
     private GenerateWalls generateWallsScript;
     private SpawnPeople spawnPeopleScript;
@@ -38,8 +44,12 @@ public class GameManager : MonoBehaviour
     public float countdownEndSoundVolume;
     public AudioClip gameOverSound;
     public float gameOverSoundVolume;
+    public GameObject fadingMask;
+    public float fadeInTime;
+    public float minTransparency;
+    public float maxTransparency;
 
-    private int defaultGameMode = -1;
+    private int defaultGameMode = 0;
 
     [Header("Additional Game Settings")]
     [SerializeField] internal float infectionDeathDuration = 40f;
@@ -48,6 +58,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] internal float symptomDelayTime = 15f;  // No effect if areSymptomsDelayed is false
     [SerializeField] internal bool isChangingBackgroundColor = true;
     public Color[] backgroundColors;
+    [SerializeField] internal bool areParticlesOn = true;
     [SerializeField] internal bool isTutorial = false;
 
     // Start is called before the first frame update
@@ -109,23 +120,43 @@ public class GameManager : MonoBehaviour
         isGameActivePreviousFrame = isGameActive;  // isGameActive set to false in GameOver(), which happens from InfectionProcess() coroutine; hopefully coroutines always execute before LateUpdate()
     }
 
-    public void GameOver()
+    public IEnumerator<float> GameOver()
     {
+        isGameActive = false;
         if (isTutorial)
         {
-            isGameActive = false;
             Timing.KillCoroutines();
 
             gameOverText.text = "TUTORIAL\nCOMPLETE";
             scoreText.text = "";
             gameOverMenu.SetActive(true);
             Debug.Log("Tutorial Complete!");
+            yield return Timing.WaitForOneFrame;
         }
         else if (isUsingGameOver)
         {
             // JUST BEFORE REVIVE SCREEN
-            isGameActive = false;
             Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
+            Timing.ResumeCoroutines("GameOver");
+            pauseButton.GetComponent<Button>().interactable = false;
+
+            yield return Timing.WaitUntilDone(Timing.RunCoroutine(FadeObjectsBehindMenu()));
+
+            if (AdManager.instance.adsWatchedTotal < AdManager.instance.maxAdsWatchedPerGame)
+            {
+                adMenu.SetActive(true);
+                yield return Timing.WaitUntilDone(Timing.RunCoroutine(AdManager.instance.InfiniteWaitToBreakFrom().CancelWith(adMenu)));
+                Debug.Log("FINISHED");
+                if (AdManager.instance.isAdCompleted)
+                {
+                    ResetInfectionTimers();
+                    isGameActive = true;  // FIRST?
+                    fadingMask.SetActive(false);
+                    pauseButton.GetComponent<Button>().interactable = true;
+                    Debug.Log("YIELD BREAK");
+                    yield break;
+                }
+            }
 
             // GAME OVER SCREEN
             gameOverMenu.SetActive(true);
@@ -137,6 +168,58 @@ public class GameManager : MonoBehaviour
             int newScore = spawnPeopleScript.CalculateScore();
             HighScoreLogger.instance.UpdateHighScore(newScore, false);
         }
+    }
+
+    void ResetInfectionTimers()
+    {
+        List<GameObject> trulyInfectedPeople = new List<GameObject>();
+        foreach (GameObject person in ExtensionMethods.GetChildren(peopleGO))
+        {
+            if (person.CompareTag("Infected"))
+            {
+                trulyInfectedPeople.Add(person);
+            }
+        }
+
+        foreach (GameObject person in trulyInfectedPeople)
+        {
+            PersonController personControllerScript = person.GetComponent<PersonController>();
+            GameObject infectionCylinder = personControllerScript.infectionCylinderScript.gameObject;
+            if (areParticlesOn)
+            {
+                KillPausedCoroutine("PlayInfectionParticles " + personControllerScript.GetInstanceID());
+                personControllerScript.infectionParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+            if (areSymptomsDelayed && isResettingDelayedSymptoms)
+            {
+                int infectionProcessKillTotal = KillPausedCoroutine("InfectionProcess " + personControllerScript.GetInstanceID());
+                if (infectionProcessKillTotal == 0)
+                {
+                    KillPausedCoroutine("DelaySymptoms " + personControllerScript.GetInstanceID());
+                }
+                Timing.RunCoroutine(personControllerScript.DelaySymptoms(), "DelaySymptoms " + personControllerScript.GetInstanceID());
+
+                personControllerScript.meshRenderer.material = personControllerScript.infectedMaterials[0];
+                infectionCylinder.SetActive(true);
+                infectionCylinder.GetComponent<MeshRenderer>().enabled = true;
+                // personControllerScript.infectionCylinderScript.isManuallyEnablingMeshRenderer = true;
+            }
+            else
+            {
+                KillPausedCoroutine("InfectionProcess " + personControllerScript.GetInstanceID());
+                Timing.RunCoroutine(personControllerScript.InfectionProcess(), "InfectionProcess " + personControllerScript.GetInstanceID());
+                // Timing.RunCoroutine(personControllerScript.infectionCylinderScript.SinusoidalRadius(), "SinusoidalRadius " + personControllerScript.GetInstanceID());
+
+                infectionCylinder.SetActive(true);
+            }
+            Timing.ResumeCoroutines();
+        }
+    }
+
+    int KillPausedCoroutine(string tag)
+    {
+        Timing.ResumeCoroutines(tag);
+        return Timing.KillCoroutines(tag);
     }
 
     IEnumerator<float> BeginAfterCountdown()
@@ -236,7 +319,20 @@ public class GameManager : MonoBehaviour
             mainCamera.backgroundColor = backgroundColors[gameMode];
         }
     }
-    
+
+    public IEnumerator<float> FadeObjectsBehindMenu()
+    {
+        fadingMask.SetActive(true);
+        float timer = 0;
+        while (timer < fadeInTime)
+        {
+            Color maskColor = fadingMask.GetComponent<Image>().color;
+            fadingMask.GetComponent<Image>().color = new Color(maskColor.r, maskColor.g, maskColor.b, Mathf.Lerp(minTransparency, maxTransparency, timer / fadeInTime));
+            timer += Time.deltaTime;
+            yield return Timing.WaitForOneFrame;
+        }
+    }
+
     public void ResetStaticVariables()
     {
         HospitalTile.isOccupied = false;
@@ -244,6 +340,7 @@ public class GameManager : MonoBehaviour
         HealProgressBar.isOccupiedByInfectedPerson = true;
         PersonController.infectedPeopleTotal = 0;
         PauseManager.isPaused = false;
+        AdManager.isInitialized = false;
         Time.timeScale = 1;  // Resetting time scale when restarting or quitting game
         Debug.Log("Static variables reset!");
     }
