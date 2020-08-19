@@ -31,7 +31,7 @@ public class OptionsEasterEgg : MonoBehaviour
 
     private TouchScreenKeyboard keyboard;
 
-    private string linkUrl = "https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/social-distancing.html";
+    private string linkUrl = "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public";
 
     // Start is called before the first frame update
     void Start()
