@@ -9,6 +9,8 @@ public class BeforeMainMenuLoaded : MonoBehaviour
     internal bool isReadyToLoadMainMenu = false;
     public GameObject usernameCreationMenu;
 
+    internal static bool isFirstTimeLoadingSinceAppOpened = true;
+
     // Start is called before the first frame update
     void Start()
     {

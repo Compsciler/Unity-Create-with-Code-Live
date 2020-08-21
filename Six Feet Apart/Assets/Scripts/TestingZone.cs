@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Experimental.UIElements;
 
 public class TestingZone : MonoBehaviour
 {
@@ -46,7 +45,7 @@ public class TestingZone : MonoBehaviour
                             break;
                         case "UAGM":  // Unlock all game modes
                             HighScoreLogger.instance.UnlockAllGameModes(int.Parse(parsedStringArr[1]));
-                            Debug.Log(int.Parse(parsedStringArr[1]));
+                            Debug.Log("Unlocked all game modes");
                             break;
                         case "CU":  // Change username (only for testing, doesn't modify database)
                             Debug.Log("Username changed from " + PlayerPrefs.GetString("Username") + " to " + parsedStringArr[1]);
@@ -55,6 +54,10 @@ public class TestingZone : MonoBehaviour
                         case "DU":  // Delete username (only for testing, doesn't modify database)
                             PlayerPrefs.SetString("Username", null);
                             Debug.Log("Deleted username");
+                            break;
+                        case "RSRRT":  // Reset store review request total
+                            PlayerPrefs.SetInt("StoreReviewRequestTotal", 0);
+                            Debug.Log("Reset store review request total");
                             break;
                     }
                 }

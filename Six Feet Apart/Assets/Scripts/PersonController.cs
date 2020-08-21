@@ -194,7 +194,7 @@ public class PersonController : MonoBehaviour
         {
             if (agent.remainingDistance <= minDistanceRelocation && pathDestinationIndex < pathDestinations.Length)
             {
-                // Debug.Log(pathDestinationIndex);
+                // Debug.Log("Path destination: " + pathDestinationIndex);
                 agent.SetDestination(pathDestinations[pathDestinationIndex]);
                 pathDestinationIndex++;
             }

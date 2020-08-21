@@ -8,7 +8,13 @@ public class RateGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (GameManager.isReadyToRequestStoreReview)
+        {
+            Device.RequestStoreReview();
+            GameManager.isReadyToRequestStoreReview = false;
+            PlayerPrefs.SetInt("StoreReviewRequestTotal", 1);
+            Debug.Log("Requeseted store review!");
+        }
     }
 
     // Update is called once per frame
@@ -19,6 +25,6 @@ public class RateGame : MonoBehaviour
 
     public void RequestStoreReview()
     {
-        Device.RequestStoreReview();  // iOS SPECIFIC, may also have this pop up after first tutorial complete
+        Device.RequestStoreReview();  // iOS SPECIFIC, will change to link to store page
     }
 }

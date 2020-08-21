@@ -3873,7 +3873,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -113.5, y: -149.8}
-  m_SizeDelta: {x: 174, y: 100}
+  m_SizeDelta: {x: 174, y: 174}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &209084375
 MonoBehaviour:
@@ -11470,7 +11470,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Credits
+  m_text: Credits & Information
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0da7275fcede6bc4ab384877e6bda60e, type: 2}
   m_sharedMaterial: {fileID: 21730799868929018, guid: 0da7275fcede6bc4ab384877e6bda60e,
@@ -15686,7 +15686,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: version 0.9.6
+  m_text: version 0.9.7
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 145bbd9f43cda6b47a883bded8221965, type: 2}
   m_sharedMaterial: {fileID: 21914024979671456, guid: 145bbd9f43cda6b47a883bded8221965,
@@ -19122,7 +19122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   svgImageGO: {fileID: 988037329}
-  isShowingLogoScreen: 0
+  isShowingLogoScreen: 1
   fadeInTime: 1.2
   startImageAdditionalDelay: 0
   individualImageTime: 0.35
@@ -22793,6 +22793,17 @@ MonoBehaviour:
       - m_Target: {fileID: 163469530}
         m_MethodName: SetIsDoneWritingUsername
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1172870085}
+        m_MethodName: PlaySound
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

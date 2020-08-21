@@ -33,7 +33,7 @@ public class LogoAnimation : MonoBehaviour
         beforeMainMenuLoadedScript = GameObject.Find("Background").GetComponent<BeforeMainMenuLoaded>();
 
         Timing.RunCoroutine(ImmediatelyPauseMusic());
-        if (isShowingLogoScreen)
+        if (isShowingLogoScreen && BeforeMainMenuLoaded.isFirstTimeLoadingSinceAppOpened)
         {
             gameObject.SetActive(false);
             logoScreen.SetActive(true);
@@ -45,6 +45,7 @@ public class LogoAnimation : MonoBehaviour
             // gameObject.SetActive(true);
             beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
         }
+        BeforeMainMenuLoaded.isFirstTimeLoadingSinceAppOpened = false;
     }
 
     // Update is called once per frame

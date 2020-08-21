@@ -8,7 +8,6 @@ using System;
 using Unity.UIWidgets.material;
 using GreatArcStudios;
 using TMPro;
-using UnityEditorInternal;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -31,6 +30,7 @@ public class GameManager : MonoBehaviour
     public GameObject adMenu;
     public GameObject peopleGO;
     public bool isResettingDelayedSymptoms;
+    internal static bool isReadyToRequestStoreReview = false;
 
     private GenerateWalls generateWallsScript;
     private SpawnPeople spawnPeopleScript;
@@ -82,7 +82,10 @@ public class GameManager : MonoBehaviour
 
         // Timing.RunCoroutine(InfectionSpread());
         infectedPathDistances = new Dictionary<GameObject, float>();
-        countdownGameMask.SetActive(true);
+        if (gameCountdownTime > 0)
+        {
+            countdownGameMask.SetActive(true);
+        }
         Timing.RunCoroutine(BeginAfterCountdown());
 
         // SceneManager.sceneUnloaded -= OnSceneUnloaded;  // Why can't the delegate be reset here?
@@ -123,6 +126,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator<float> GameOver()
     {
         isGameActive = false;
+        pauseButton.GetComponent<Button>().interactable = false;
         if (isTutorial)
         {
             Timing.KillCoroutines();
@@ -131,6 +135,11 @@ public class GameManager : MonoBehaviour
             scoreText.text = "";
             gameOverMenu.SetActive(true);
             Debug.Log("Tutorial Complete!");
+
+            if (PlayerPrefs.GetInt("StoreReviewRequestTotal", 0) == 0)
+            {
+                isReadyToRequestStoreReview = true;
+            }
             yield return Timing.WaitForOneFrame;
         }
         else if (isUsingGameOver)
@@ -138,7 +147,6 @@ public class GameManager : MonoBehaviour
             // JUST BEFORE REVIVE SCREEN
             Timing.PauseCoroutines();  // Not perfect solution if second chance used, hopefully no coroutines will be used during Game Over screen
             Timing.ResumeCoroutines("GameOver");
-            pauseButton.GetComponent<Button>().interactable = false;
 
             yield return Timing.WaitUntilDone(Timing.RunCoroutine(FadeObjectsBehindMenu()));
 

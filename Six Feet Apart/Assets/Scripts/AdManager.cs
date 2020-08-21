@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
 using MEC;
-using UnityEditor.PackageManager;
-using System;
 using TMPro;
 
 public class AdManager : MonoBehaviour, IUnityAdsListener
@@ -16,7 +14,7 @@ public class AdManager : MonoBehaviour, IUnityAdsListener
     public GameObject adMenu;
     public GameObject adClock;
     public TMP_Text descriptionErrorText;
-    private bool isTestMode = true;
+    private bool isTestMode = false;
     private bool isTimeScaleZeroDuringAd;
     private string placement = "rewardedVideo";
 

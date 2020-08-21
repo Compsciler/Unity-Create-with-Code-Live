@@ -1021,8 +1021,8 @@ MonoBehaviour:
       is to heal the infected citizens and keep everyone healthy as long as possible.
     - "Fortunately, I've cod\u2014 structured the city in such a way that pressing
       any tile rotates the green walls around it in a clockwise direction."
-    - (Keep in mind you can't rotate the four arrowed tiles near the edges, though,
-      which you'll see the true function of any second now.)
+    - (Keep in mind you can't rotate the four arrowed tiles near the edges, though.
+      I wonder what they do...)
     - Look! Our first citizen has arrived!
     - Right now they're just walking around aimlessly in a public area (the entrance),
       which is something not to do when facing a pandemic.
@@ -1032,21 +1032,21 @@ MonoBehaviour:
     - Rotate the marked tile so we can shelther them off away from the entrance.
     - Healthy people will always travel to a random location within their walled-off
       enclosures, so we expect this person to go up instead of down, which they do.
-    - Now rotate the same tile again to make sure that they don't leave the space
-      which they currently are in.
+    - Now rotate the same tile again to make sure that they don't leave their current
+      space.
     - An infected person will approach when the progress bar at the top fills up.
     - Make sure you can get them to the purple hospital tile to heal. (You typically
       have 40 seconds to do this.)
-    - Oh no! Infected people always travel the shortest route to the hospital, which
+    - Oh no! Infected people always travel the shortest route to the hospital, so
       the one that just appeared will walk right by the healthy person, possibly infecting
       them as well through close contact.
     - Rotate this tile to block off the direct path.
     - 
-    - Now rotate the tile to the left three times to safeguard the healthy person
-      from roaming about freely.
+    - Now rotate the tile to the left three times to ensure the healthy person doesn't
+      roam about freely.
     - Remember that only one person can occupy the hospital at a time.
     - Now that everybody here is healthy, you can further protect the first person
-      by making their enclosure even more compact.
+      by making their shelter even more compact.
     - Rotate this tile twice.
     - 
     - And rotate this tile once.
@@ -26467,10 +26467,10 @@ RectTransform:
   m_Father: {fileID: 83241000}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 25}
-  m_SizeDelta: {x: -150, y: -100}
+  m_SizeDelta: {x: 1540, y: 176}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1833783307
 MonoBehaviour:
