@@ -35,6 +35,8 @@ public class TestingButton : MonoBehaviour
 
         // Debug.Log(PersonController.infectedPeopleTotal);
         // GameManager.instance.ResetStaticVariables();
+
+        // Debug.Log(Screen.width + "x" + Screen.height);
         if (Time.timeScale > 1)
         {
             Time.timeScale = 1;
