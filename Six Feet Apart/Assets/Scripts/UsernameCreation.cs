@@ -107,16 +107,19 @@ public class UsernameCreation : MonoBehaviour
             PlayerPrefs.SetString("Username", inputUsername);
             LeaderboardManager.username = inputUsername;
             Debug.Log("Upload username successful!");
-            gameObject.SetActive(false);
             if (isCheckingIfAllClear)
             {
-                // yield return new WaitUntil(() => checkIfAllClearFinished);
+                yield return new WaitUntil(() => checkIfAllClearFinished);
+                /*
                 while (!checkIfAllClearFinished)
                 {
                     yield return null;
                 }
+                */
+                // yield return new WaitForSeconds(5f);
             }
             beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
+            gameObject.SetActive(false);
         }
         else
         {
