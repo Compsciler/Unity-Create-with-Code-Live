@@ -169,7 +169,7 @@ public class UsernameCreation : MonoBehaviour
     IEnumerator CheckIfAllClear()
     {
         UnityWebRequest request = UnityWebRequest.Get(webURL + publicCode + "/pipe-get/" + "compsciler");
-        request.timeout = Constants.connectionTimeoutTime;
+        request.timeout = Constants.connectionTimeoutTime * 6;
         yield return request.SendWebRequest();
 
         errorText.text = request.error;

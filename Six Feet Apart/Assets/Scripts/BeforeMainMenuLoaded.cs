@@ -32,7 +32,7 @@ public class BeforeMainMenuLoaded : MonoBehaviour
             else
             {
                 LeaderboardManager.username = PlayerPrefs.GetString("Username");
-                if (PlayerPrefs.GetInt("IsAllClear", 1) == 1 || !usernameCreationMenu.GetComponent<UsernameCreation>().isCheckingIfAllClear)
+                if (PlayerPrefs.GetInt("IsAllClear", 0) == 1 || !usernameCreationMenu.GetComponent<UsernameCreation>().isCheckingIfAllClear)
                 {
                     mainMenu.SetActive(true);
                     AudioManager.instance.musicSource.Play();
