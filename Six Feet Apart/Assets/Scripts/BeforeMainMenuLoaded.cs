@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BeforeMainMenuLoaded : MonoBehaviour
 {
@@ -31,8 +32,15 @@ public class BeforeMainMenuLoaded : MonoBehaviour
             else
             {
                 LeaderboardManager.username = PlayerPrefs.GetString("Username");
-                mainMenu.SetActive(true);
-                AudioManager.instance.musicSource.Play();
+                if (PlayerPrefs.GetInt("IsAllClear", 1) == 1 || !usernameCreationMenu.GetComponent<UsernameCreation>().isCheckingIfAllClear)
+                {
+                    mainMenu.SetActive(true);
+                    AudioManager.instance.musicSource.Play();
+                }
+                else
+                {
+                    SceneManager.LoadScene(Constants.bonusGameBuildIndex);
+                }
             }
         }
     }

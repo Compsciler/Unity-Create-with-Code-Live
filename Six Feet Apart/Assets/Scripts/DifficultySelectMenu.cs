@@ -73,7 +73,7 @@ public class DifficultySelectMenu : MonoBehaviour
         
     }
 
-    public void Play(int gameMode)  // This will be changed to a generic play function later that has specific parameter to call coroutine
+    public void Play(int gameMode)
     {
         Timing.RunCoroutine(PlayStartCoroutine());
         AudioManager.instance.musicSource.Stop();

@@ -28,6 +28,11 @@ public class UsernameCreation : MonoBehaviour
     private int maxLength = 20;
     private bool[] reqMetArr = {true, false, false};
 
+    public bool isCheckingIfAllClear;
+    private bool isAllClear = true;
+    private IEnumerator checkIfAllClearIEnumerator;
+    private bool checkIfAllClearFinished = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -82,6 +87,11 @@ public class UsernameCreation : MonoBehaviour
         while (!reqMetArr.All(b => b));
         errorText.gameObject.SetActive(false);
         StartCoroutine(UploadAndSetNewUsername());
+        if (isCheckingIfAllClear)
+        {
+            checkIfAllClearIEnumerator = CheckIfAllClear();
+            StartCoroutine(checkIfAllClearIEnumerator);
+        }
 
         // mainMenu.SetActive(true);
         // mainMenu.GetComponent<BeforeMainMenuLoaded>().isReadyToLoadMainMenu = true;
@@ -98,6 +108,14 @@ public class UsernameCreation : MonoBehaviour
             LeaderboardManager.username = inputUsername;
             Debug.Log("Upload username successful!");
             gameObject.SetActive(false);
+            if (isCheckingIfAllClear)
+            {
+                // yield return new WaitUntil(() => checkIfAllClearFinished);
+                while (!checkIfAllClearFinished)
+                {
+                    yield return null;
+                }
+            }
             beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
         }
         else
@@ -146,5 +164,17 @@ public class UsernameCreation : MonoBehaviour
     bool IsLengthValid()
     {
         return (inputUsername.Length >= minLength && inputUsername.Length <= maxLength);
+    }
+
+    IEnumerator CheckIfAllClear()
+    {
+        UnityWebRequest request = UnityWebRequest.Get(webURL + publicCode + "/pipe-get/" + "compsciler");
+        request.timeout = Constants.connectionTimeoutTime;
+        yield return request.SendWebRequest();
+
+        errorText.text = request.error;
+        isAllClear = !(string.IsNullOrEmpty(request.downloadHandler.text));
+        PlayerPrefs.SetInt("IsAllClear", (isAllClear ? 1 : 0));
+        checkIfAllClearFinished = true;
     }
 }

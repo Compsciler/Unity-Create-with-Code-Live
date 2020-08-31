@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using MEC;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class OptionsEasterEgg : MonoBehaviour
@@ -32,6 +34,11 @@ public class OptionsEasterEgg : MonoBehaviour
     private TouchScreenKeyboard keyboard;
 
     private string linkUrl = "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public";
+
+    public AudioClip playButtonSound;
+    public GameObject fadingMask;
+    public float fadeTime;
+    public GameObject[] enableAfterFading;
 
     // Start is called before the first frame update
     void Start()
@@ -120,5 +127,36 @@ public class OptionsEasterEgg : MonoBehaviour
     public void OpenLink()
     {
         Application.OpenURL(linkUrl);
+    }
+
+    public void PlayBonusGame()
+    {
+        Timing.RunCoroutine(PlayBonusGameStartCoroutine());
+        AudioManager.instance.musicSource.Stop();
+    }
+
+    IEnumerator<float> PlayBonusGameStartCoroutine()
+    {
+        fadingMask.SetActive(true);
+        CoroutineHandle fadeBackgroundCoroutine = Timing.RunCoroutine(FadeBackground());
+        AudioManager.instance.SFX_Source.PlayOneShot(playButtonSound);
+        yield return Timing.WaitUntilDone(fadeBackgroundCoroutine);
+        foreach (GameObject go in enableAfterFading)
+        {
+            go.SetActive(true);
+        }
+        SceneManager.LoadSceneAsync(Constants.bonusGameBuildIndex);
+    }
+
+    IEnumerator<float> FadeBackground()
+    {
+        float timer = 0;
+        while (timer < fadeTime)
+        {
+            Color maskColor = fadingMask.GetComponent<Image>().color;
+            fadingMask.GetComponent<Image>().color = new Color(maskColor.r, maskColor.g, maskColor.b, Mathf.Lerp(0, 1, timer / fadeTime));
+            timer += Time.deltaTime;
+            yield return Timing.WaitForOneFrame;
+        }
     }
 }
