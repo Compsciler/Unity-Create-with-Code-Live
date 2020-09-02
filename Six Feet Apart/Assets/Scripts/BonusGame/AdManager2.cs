@@ -25,7 +25,14 @@ public class AdManager2 : MonoBehaviour, IUnityAdsListener
         {
             isInitialized = true;
             Advertisement.AddListener(this);
-            Advertisement.Initialize(Constants.appleGameId, isTestMode);  // iOS SPECIFIC
+            if (Constants.platform == Constants.Platform.iOS)
+            {
+                Advertisement.Initialize(Constants.appleGameId, isTestMode);  // iOS SPECIFIC
+            }
+            else
+            {
+                Advertisement.Initialize(Constants.androidGameId, isTestMode);  // Android SPECIFIC
+            }
         }
     }
 
@@ -53,7 +60,7 @@ public class AdManager2 : MonoBehaviour, IUnityAdsListener
 
     public void ShowAdIfNotAllClear()
     {
-        if (PlayerPrefs.GetInt("IsAllClear") == 0)
+        if (PlayerPrefs.GetInt("IsAllClear") == 0 && Constants.isMobilePlatform)
         {
             Timing.RunCoroutine(ShowAd());
         }

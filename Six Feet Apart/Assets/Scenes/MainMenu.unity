@@ -3012,7 +3012,7 @@ MonoBehaviour:
   mainMenu: {fileID: 1259022829}
   inputField: {fileID: 1467988607}
   errorText: {fileID: 1721447994}
-  isCheckingIfAllClear: 1
+  isCheckingIfAllClear: 0
 --- !u!1 &173686626
 GameObject:
   m_ObjectHideFlags: 0
@@ -19451,6 +19451,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9036ac6b7ccf9b745acdf3e166188dac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rateButton: {fileID: 1458914664669046123}
+  creditsButton: {fileID: 2836507068798720334}
+  xTranslation: -40
 --- !u!1 &1259513810
 GameObject:
   m_ObjectHideFlags: 0

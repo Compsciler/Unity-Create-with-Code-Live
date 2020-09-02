@@ -17,4 +17,12 @@
     internal static int priorityHealthyAgentID = 65107623;  // Basically unused
 
     internal static int connectionTimeoutTime = 10;
+
+    internal static Platform platform = Platform.PC;
+    internal static bool isMobilePlatform = (platform == Platform.iOS || platform == Platform.Android);
+
+    internal enum Platform
+    {
+        PC, iOS, Android
+    }
 }

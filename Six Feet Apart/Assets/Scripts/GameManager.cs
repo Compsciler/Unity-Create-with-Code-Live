@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
 
             yield return Timing.WaitUntilDone(Timing.RunCoroutine(FadeObjectsBehindMenu()));
 
-            if (AdManager.instance.adsWatchedTotal < AdManager.instance.maxAdsWatchedPerGame)
+            if ((AdManager.instance.adsWatchedTotal < AdManager.instance.maxAdsWatchedPerGame) && Constants.isMobilePlatform)
             {
                 adMenu.SetActive(true);
                 yield return Timing.WaitUntilDone(Timing.RunCoroutine(AdManager.instance.InfiniteWaitToBreakFrom().CancelWith(adMenu)));

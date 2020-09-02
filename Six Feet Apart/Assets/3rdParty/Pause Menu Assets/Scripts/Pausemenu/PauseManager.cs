@@ -500,7 +500,7 @@ namespace GreatArcStudios
                 pauseMenu.text = "PAUSED";  //| Changed from "Pause Menu"
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape) && mainPanel.active == false)
+            if (Input.GetKeyDown(KeyCode.Escape) && mainPanel.active == false && pauseButton.interactable)  //| Added last parameter
             {
                 Pause(true);  //| Replaced with function call
             }

@@ -32,7 +32,14 @@ public class AdManager : MonoBehaviour, IUnityAdsListener
         {
             isInitialized = true;
             Advertisement.AddListener(this);  // Was being added twice before isInitialized
-            Advertisement.Initialize(Constants.appleGameId, isTestMode);  // iOS SPECIFIC
+            if (Constants.platform == Constants.Platform.iOS)
+            {
+                Advertisement.Initialize(Constants.appleGameId, isTestMode);  // iOS SPECIFIC
+            }
+            else
+            {
+                Advertisement.Initialize(Constants.androidGameId, isTestMode);  // Android SPECIFIC
+            }
         }
 
         if (GameManager.instance.areSymptomsDelayed && GameManager.instance.isResettingDelayedSymptoms)
