@@ -272,8 +272,12 @@ public class GameManager : MonoBehaviour
         switch (gameMode)
         {
             case 0:
+                spawnPeopleScript.isUsingExceptionWaves = true;
+                spawnPeopleScript.isUsingSemiQuickWaves = true;
                 break;
             case 1:
+                spawnPeopleScript.isUsingExceptionWaves = true;
+                spawnPeopleScript.isUsingSemiQuickWaves = true;
                 canHealthyHeal = true;
                 generateWallsScript.wallTotal = 35;
                 break;
@@ -285,6 +289,7 @@ public class GameManager : MonoBehaviour
                 spawnPeopleScript.areWavesRandom = true;
                 break;
             case 3:
+                spawnPeopleScript.isUsingExceptionWaves = true;
                 spawnPeopleScript.startRepeatRate = 15f;
                 spawnPeopleScript.repeatRateDecrease = 1f;
                 break;
@@ -293,9 +298,13 @@ public class GameManager : MonoBehaviour
                 spawnPeopleScript.repeatRateDecreaseWaveInterval = 2;
                 break;
             case 5:
+                spawnPeopleScript.isUsingExceptionWaves = true;
+                spawnPeopleScript.isUsingSemiQuickWaves = true;
                 spawnPeopleScript.spawnPosListIndex = 1;
                 break;
             case 6:
+                spawnPeopleScript.isUsingExceptionWaves = true;
+                spawnPeopleScript.isUsingSemiQuickWaves = true;
                 generateWallsScript.wallTotal = 35;
                 tileDisablerScript.tileSetEnables = new bool[]{false, true};
                 break;

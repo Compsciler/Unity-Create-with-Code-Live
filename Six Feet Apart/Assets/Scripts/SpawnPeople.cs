@@ -54,6 +54,11 @@ public class SpawnPeople : MonoBehaviour
     private int peopleTotal = 0;
 
     [Space(10)]
+    public bool isUsingExceptionWaves = false;  // Used when not random and non spawning multiple
+    public List<int> exceptionSpawnWaves = new List<int>(){2, 7};
+    public bool isUsingSemiQuickWaves = false;
+
+    [Space(10)]
     public TMP_Text waveText;
     public TMP_Text gameOverScoreText;
     public TMP_Text unlockedModeText;
@@ -65,6 +70,12 @@ public class SpawnPeople : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (isUsingSemiQuickWaves)
+        {
+            startRepeatRate = 20f;
+            repeatRateDecrease = 1f;
+        }
+
         timer = startDelay;
         repeatRate = startRepeatRate;
 
@@ -133,6 +144,14 @@ public class SpawnPeople : MonoBehaviour
                 else
                 {
                     isInfectedWave = (wave % infectedWaveInterval == infectedWaveInterval - 1);
+                    if (isUsingExceptionWaves && !isInfectedWave)
+                    {
+                        isInfectedWave = (exceptionSpawnWaves.Count > 0 && exceptionSpawnWaves[0] == (wave + 1));
+                        if (isInfectedWave)
+                        {
+                            exceptionSpawnWaves.RemoveAt(0);
+                        }
+                    }
                 }
             }
             if (!isFirstSpawnSoundDisabled || wave != 1)

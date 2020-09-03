@@ -26,6 +26,7 @@ public class LogoAnimation : MonoBehaviour
     public GameObject logoSpeedButton;
     public Sprite logoScreenSpedUpSprite;
     public Sprite logoScreenNormalSpeedSprite;
+    public int defaultSpeed = 1;
 
     public GameObject logoScreen;
 
@@ -44,7 +45,7 @@ public class LogoAnimation : MonoBehaviour
         {
             gameObject.SetActive(false);
             logoScreen.SetActive(true);
-            isLogoScreenSpedUp = (PlayerPrefs.GetInt("IsLogoScreenSpedUp", 0) == 1);
+            isLogoScreenSpedUp = (PlayerPrefs.GetInt("IsLogoScreenSpedUp", defaultSpeed) == 1);
             Timing.RunCoroutine(AnimationProcess());
         }
         else
@@ -157,13 +158,15 @@ public class LogoAnimation : MonoBehaviour
 
     public void DisplayCorrectLogoScreenSpeedUI()
     {
-        if (PlayerPrefs.GetInt("IsLogoScreenSpedUp", 0) == 1)
+        if (PlayerPrefs.GetInt("IsLogoScreenSpedUp", defaultSpeed) == 1)
         {
             logoSpeedButton.GetComponent<Image>().sprite = logoScreenSpedUpSprite;
+            PlayerPrefs.SetInt("IsLogoScreenSpedUp", 1);
         }
         else
         {
             logoSpeedButton.GetComponent<Image>().sprite = logoScreenNormalSpeedSprite;
+            PlayerPrefs.SetInt("IsLogoScreenSpedUp", 0);
         }
     }
 }

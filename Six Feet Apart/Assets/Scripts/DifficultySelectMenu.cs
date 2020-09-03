@@ -38,12 +38,12 @@ public class DifficultySelectMenu : MonoBehaviour
     internal static int[][,] gameModeUnlockReqs = new int[][,]{
         new int[,] {{}},
         new int[,] {{}},
-        new int[,] {{0, 25}},
-        new int[,] {{1, 30}},
-        new int[,] {{0, 25}},
-        new int[,] {{3, 30}},
-        new int[,] {{0, 25}},
-        new int[,] {{5, 30}},
+        new int[,] {{0, 20}},  // Changed from 25 to 20
+        new int[,] {{1, 25}},  // Changed from 30 to 25
+        new int[,] {{0, 20}},  // Changed from 25 to 20
+        new int[,] {{3, 25}},  // Changed from 30 to 25
+        new int[,] {{0, 20}},  // Changed from 25 to 20
+        new int[,] {{5, 25}},  // Changed from 30 to 25
         new int[,] {{2, 30}, {4, 20}, {6, 35}}  // Changed from {2, 40} to {2, 20}
     };
 

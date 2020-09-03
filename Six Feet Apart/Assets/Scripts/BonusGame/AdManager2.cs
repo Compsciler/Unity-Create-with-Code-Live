@@ -44,6 +44,8 @@ public class AdManager2 : MonoBehaviour, IUnityAdsListener
 
     IEnumerator<float> ShowAd()
     {
+        AudioManager.instance.SFX_Source.Stop();
+
         isAdCompleted = false;
         if (!Advertisement.IsReady())
         {

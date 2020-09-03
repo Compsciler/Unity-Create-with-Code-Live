@@ -2095,6 +2095,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 113387577}
   m_CullTransparentMesh: 0
+--- !u!1 &121519323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 121519324}
+  - component: {fileID: 121519326}
+  - component: {fileID: 121519325}
+  m_Layer: 0
+  m_Name: TMP SubMeshUI [Roboto-Regular SDF Material + LiberationSans SDF Atlas]
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &121519324
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121519323}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1395630708}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &121519325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121519323}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 058cba836c1846c3aa1c5fd2e28aea77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_spriteAsset: {fileID: 0}
+  m_material: {fileID: 0}
+  m_sharedMaterial: {fileID: 0}
+  m_isDefaultMaterial: 0
+  m_padding: 1.25
+  m_canvasRenderer: {fileID: 121519326}
+  m_TextComponent: {fileID: 1395630709}
+  m_materialReferenceIndex: 1
+--- !u!222 &121519326
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121519323}
+  m_CullTransparentMesh: 0
 --- !u!1 &123862418
 GameObject:
   m_ObjectHideFlags: 0
@@ -3012,7 +3084,7 @@ MonoBehaviour:
   mainMenu: {fileID: 1259022829}
   inputField: {fileID: 1467988607}
   errorText: {fileID: 1721447994}
-  isCheckingIfAllClear: 0
+  isCheckingIfAllClear: 1
 --- !u!1 &173686626
 GameObject:
   m_ObjectHideFlags: 0
@@ -3051,7 +3123,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Breakneck Mode:\n\u2022 40 Walls\n\u2022 25-second waves to start, decreases
     by 2 seconds every even wave\n\u2022 3 healthy people spawn on odd waves, 1 healthy
-    and 1 infected person spawn on even waves\n[Score <color=#00ffff>30</color> in
+    and 1 infected person spawn on even waves\n[Score <color=#00ffff>25</color> in
     Quick Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
@@ -5357,7 +5429,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Difficult Mode:\n\u2022 35 Walls\n\u2022 Normal wave progression\n\u2022
-    Hospital open to all\n[Score <color=\"green\">25</color> in Normal Mode to unlock]"
+    Hospital open to all\n[Score <color=\"green\">20</color> in Normal Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6193,8 +6265,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Quick Mode:\n\u2022 40 Walls\n\u2022 15-second waves to start, decreases
-    by 1 second every fifth wave\n[Score <color=\"green\">25</color> in Normal Mode
-    to unlock]\n\n"
+    by 1 second every fifth wave\n\u2022 Normal infected waves\n[Score <color=\"green\">20</color>
+    in Normal Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9811,7 +9883,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Oblique Mode:\n\u2022 40 Walls\n\u2022 Normal wave progression\n\u2022
-    People now spawn in the corners\n[Score <color=\"green\">25</color> in Normal
+    People now spawn in the corners\n[Score <color=\"green\">20</color> in Normal
     Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
@@ -11939,7 +12011,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Holesome Mode:\n\u2022 35 Walls\n\u2022 Normal wave progression\n\u2022
-    4 tiles removed from the cement ground\n[Score <color=\"blue\">30</color> in Oblique
+    4 tiles removed from the cement ground\n[Score <color=\"blue\">25</color> in Oblique
     Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
@@ -15843,7 +15915,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: version 1.0.0
+  m_text: version 1.0.1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 145bbd9f43cda6b47a883bded8221965, type: 2}
   m_sharedMaterial: {fileID: 21914024979671456, guid: 145bbd9f43cda6b47a883bded8221965,
@@ -16920,7 +16992,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 86fa8a6636406ae469fc34914499a79a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f1177b3318287ee4680853473baeb65a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19438,6 +19510,7 @@ MonoBehaviour:
     type: 3}
   logoScreenNormalSpeedSprite: {fileID: 21300000, guid: 86fa8a6636406ae469fc34914499a79a,
     type: 3}
+  defaultSpeed: 1
   logoScreen: {fileID: 1839561093}
 --- !u!114 &1259022832
 MonoBehaviour:
@@ -19453,7 +19526,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rateButton: {fileID: 1458914664669046123}
   creditsButton: {fileID: 2836507068798720334}
-  xTranslation: -40
 --- !u!1 &1259513810
 GameObject:
   m_ObjectHideFlags: 0
@@ -21140,7 +21212,8 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 121519324}
   m_Father: {fileID: 15696571}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -21167,11 +21240,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Normal Mode:\n\u2022 40 Walls\n\u2022 25-second waves to start, decreases
-    by 2 seconds every fifth wave (to a minimum of 5-second waves)"
+  m_text: "Normal Mode:\n\u2022 40 Walls\n\u2022 20-second waves to start, decreases
+    by 1 second every fifth wave (to a minimum of 5-second waves)\n\u2022 Infected
+    people spawn on every fifth wave and on Waves 2 and 7"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 21573621589201580, guid: 36d6004f008bd91459b813bf1b27d209,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -21237,21 +21312,21 @@ MonoBehaviour:
   m_margin: {x: -43.817078, y: -91.14636, z: -163.42505, w: -54.450226}
   m_textInfo:
     textComponent: {fileID: 1395630709}
-    characterCount: 124
+    characterCount: 188
     spriteCount: 0
-    spaceCount: 22
-    wordCount: 21
+    spaceCount: 36
+    wordCount: 34
     linkCount: 0
-    lineCount: 5
+    lineCount: 7
     pageCount: 1
-    materialCount: 1
+    materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 121519325}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -29642,7 +29717,7 @@ MonoBehaviour:
   m_text: "Ultimate Mode:\n\u2022 35 walls\n\u2022 25-second waves to start, decreases
     by 2 seconds every fourth wave\n\u2022 1 infected and 1 healthy person spawns
     on every fourth wave\n\u2022 People spawn in 8 unique locations!\n[Score <color=\"red\">30</color>
-    in Extreme Mode, <color=\"orange\">20</color> in Breakneck Mode, and <color=\"purple\">40</color>
+    in Extreme Mode, <color=\"orange\">20</color> in Breakneck Mode, and <color=\"purple\">35</color>
     in Holesome Mode to unlock]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
@@ -31599,7 +31674,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Extreme Mode:\n\u2022 35 Walls\n\u2022 Randomized waves (2 infected waves
     every 10 waves) with normal wave time intervals\n\u2022 Hospital open to all\n\u2022
-    Infected don't show symptoms until 15 seconds after being infected\n[Score <color=\"yellow\">30</color>
+    Infected don't show symptoms until 15 seconds after being infected\n[Score <color=\"yellow\">25</color>
     in Difficult Mode to unlock]\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36d6004f008bd91459b813bf1b27d209, type: 2}
