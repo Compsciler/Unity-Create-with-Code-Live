@@ -15,7 +15,7 @@ public class BeforeMainMenuLoaded : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -25,13 +25,20 @@ public class BeforeMainMenuLoaded : MonoBehaviour
         {
             Debug.Log("Username: " + PlayerPrefs.GetString("Username"));
             isReadyToLoadMainMenu = false;
-            if (PlayerPrefs.GetString("Username", "").Equals(""))
+            if (PlayerPrefs.GetString("Username", "").Equals("") && !LeaderboardManager.isPlayingAsGuest)
             {
                 StartCoroutine(usernameCreationMenu.GetComponent<UsernameCreation>().CreateUsername());
             }
             else
             {
-                LeaderboardManager.username = PlayerPrefs.GetString("Username");
+                if (LeaderboardManager.isPlayingAsGuest)
+                {
+                    LeaderboardManager.username = "Guest";
+                }
+                else
+                {
+                    LeaderboardManager.username = PlayerPrefs.GetString("Username");
+                }
                 if (PlayerPrefs.GetInt("IsAllClear", 0) == 1 || !usernameCreationMenu.GetComponent<UsernameCreation>().isCheckingIfAllClear)
                 {
                     mainMenu.SetActive(true);

@@ -142,7 +142,7 @@ namespace GreatArcStudios
                 PauseManager.aoBool = read.aoBool;
                 QualitySettings.SetQualityLevel(read.curQualityLevel);
                 QualitySettings.shadowCascades = read.lastShadowCascade;
-                Screen.SetResolution(read.resWidth, read.resHeight, read.fullscreenBool);
+                // Screen.SetResolution(read.resWidth, read.resHeight, read.fullscreenBool);  //| Disabled screen resolution save
                 if (read.anisoLevel == 0)
                 {
                     QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;

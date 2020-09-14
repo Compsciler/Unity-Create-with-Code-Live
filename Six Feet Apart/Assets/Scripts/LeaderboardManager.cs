@@ -37,6 +37,7 @@ public class LeaderboardManager : MonoBehaviour
 	const string webURL = "http://dreamlo.com/lb/";
 
 	internal static string username;
+	internal static bool isPlayingAsGuest = false;
 
 	private HighScore[][] allOnlineHighScores;  // Change to 2D array to hold a struct for each game mode
 	public GameObject[] leaderboards;

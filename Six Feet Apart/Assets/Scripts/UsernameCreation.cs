@@ -169,6 +169,13 @@ public class UsernameCreation : MonoBehaviour
         return (inputUsername.Length >= minLength && inputUsername.Length <= maxLength);
     }
 
+    public void PlayAsGuest()  // Temporarily sets username as "Guest"
+    {
+        LeaderboardManager.isPlayingAsGuest = true;
+        beforeMainMenuLoadedScript.isReadyToLoadMainMenu = true;
+        gameObject.SetActive(false);
+    }
+
     IEnumerator CheckIfAllClear()
     {
         UnityWebRequest request = UnityWebRequest.Get(webURL + publicCode + "/pipe-get/" + "compsciler");
