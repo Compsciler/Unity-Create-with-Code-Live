@@ -1,7 +1,7 @@
 # Unity-Create-with-Code-Live
 Unity Prototype Projects and social distancing game
 
-[iOS Download Link](https://apps.apple.com/us/app/id1528923866) (removed from sale)
+[iOS Download Link](https://apps.apple.com/us/app/id1528923866) (currently removed from sale)
 
 [Six Feet Apart Gameplay Demo](https://drive.google.com/file/d/1tKfv6sBRw1yCoX0sUIvrsA-rcEljyXT8/view?usp=sharing)
 
@@ -16,6 +16,8 @@ App Store Icon:
 Alternate Icon Design:
 
 <img src=https://user-images.githubusercontent.com/43767079/148474202-1c81fde8-a0dd-451d-a3d8-b73676943583.jpg height="128px">
+
+&nbsp;
 
 Features:
 - 8 unique game modes
